@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth 回調</title>
+</head>
+<body>
+    <p id="msg">正在處理授權...</p>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const error = params.get('error');
+        const platform = (window.location.pathname.match(/\/oauth\/(\w+)\/callback/) || [])[1] || 'linkedin';
+        
+        if (error) {
+            document.getElementById('msg').textContent = '授權失敗: ' + error;
+            if (window.opener) window.opener.postMessage({ type: 'OAUTH_ERROR', platform, error }, '*');
+            setTimeout(() => window.close(), 2000);
+        } else if (code) {
+            const cbName = platform + 'OAuthCallback';
+            const cb = window.opener?.[cbName];
+            if (typeof cb === 'function') {
+                cb(code);
+            } else if (window.opener) {
+                window.opener.postMessage({ type: 'OAUTH_CALLBACK', platform, code }, '*');
+            }
+            document.getElementById('msg').textContent = '授權成功，請關閉此視窗';
+            window.close();
+        } else {
+            document.getElementById('msg').textContent = '未收到授權碼';
+        }
+    </script>
+</body>
+</html>

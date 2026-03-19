@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推廣中心 - 能力與效能測試</title>
+    <link rel="stylesheet" href="app-new.css">
+    <style>
+        .test-section { margin-bottom: 24px; }
+        .test-item { padding: 8px 12px; margin: 4px 0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .test-item.pass { background: rgba(46, 204, 113, 0.15); border-left: 4px solid #2ecc71; }
+        .test-item.fail { background: rgba(231, 76, 60, 0.15); border-left: 4px solid #e74c3c; }
+        .test-item.warn { background: rgba(241, 196, 15, 0.15); border-left: 4px solid #f1c40f; }
+        .perf-bar { height: 8px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+        .perf-bar span { display: block; height: 100%; background: var(--accent); transition: width 0.3s; }
+        .summary-card { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .summary-card > div { padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; text-align: center; }
+        .summary-card .val { font-size: 1.5rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <main class="main" style="max-width:900px;margin:0 auto;padding:24px">
+        <h1>🧪 推廣中心 - 能力與效能測試</h1>
+        <p class="notice-text">測試所有模組載入、功能正確性與效能基準</p>
+        
+        <div class="panel">
+            <h3>測試控制</h3>
+            <button type="button" class="primary-btn" id="btn-run">執行全部測試</button>
+            <button type="button" class="secondary-btn" id="btn-perf">僅效能基準</button>
+        </div>
+        
+        <div class="panel">
+            <h3>測試摘要</h3>
+            <div class="summary-card" id="summary">
+                <div><span class="val" id="s-total">0</span><br>總計</div>
+                <div><span class="val" id="s-pass">0</span><br>通過</div>
+                <div><span class="val" id="s-fail">0</span><br>失敗</div>
+                <div><span class="val" id="s-perf">-</span><br>平均耗時</div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>模組載入與功能</h3>
+            <div id="results-modules"></div>
+        </div>
+        
+        <div class="panel">
+            <h3>效能基準 (ms)</h3>
+            <div id="results-perf"></div>
+        </div>
+        
+        <div class="panel">
+            <h3>整合流程測試</h3>
+            <div id="results-integration"></div>
+        </div>
+        
+        <p><a href="app-new.html">← 返回推廣中心</a></p>
+    </main>
+
+    <script src="data-deduplication.js"></script>
+    <script src="compliance-manager.js"></script>
+    <script src="website-analyzer.js"></script>
+    <script src="ai-knowledge-base.js"></script>
+    <script src="report-generator.js"></script>
+    <script src="contacts.js"></script>
+    <script src="crm-database.js"></script>
+    <script src="social-media-prospect-crawler.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="ai-promotion-workflow.js"></script>
+    <script>
+        const results = { pass: 0, fail: 0, perf: [] };
+        
+        function addResult(containerId, name, ok, detail = '', ms = null) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const item = document.createElement('div');
+            item.className = 'test-item ' + (ok ? 'pass' : 'fail');
+            item.innerHTML = `<span>${name}${detail ? ': ' + detail : ''}</span><span>${ok ? '✅' : '❌'}${ms != null ? ' ' + ms + 'ms' : ''}</span>`;
+            el.appendChild(item);
+            if (ok) results.pass++; else results.fail++;
+            if (ms != null) results.perf.push({ name, ms });
+        }
+        
+        async function runTests() {
+            results.pass = 0; results.fail = 0; results.perf = [];
+            document.getElementById('results-modules').innerHTML = '';
+            document.getElementById('results-perf').innerHTML = '';
+            document.getElementById('results-integration').innerHTML = '';
+            
+            const R = 'results-modules';
+            const P = 'results-perf';
+            const I = 'results-integration';
+            
+            // 1. 模組載入
+            addResult(R, 'dataDeduplication', !!window.dataDeduplication);
+            addResult(R, 'complianceManager', !!window.complianceManager);
+            addResult(R, 'websiteAnalyzer', !!window.websiteAnalyzer);
+            addResult(R, 'aiKnowledgeBase', !!window.aiKnowledgeBase);
+            addResult(R, 'reportGenerator', !!window.reportGenerator);
+            addResult(R, 'crmDatabase', !!window.crmDatabase);
+            addResult(R, 'socialMediaProspectCrawler', !!window.socialMediaProspectCrawler);
+            addResult(R, 'aiAssistant', !!window.aiAssistant);
+            addResult(R, 'aiPromotionWorkflow', !!window.aiPromotionWorkflow);
+            addResult(R, 'getTargetProspects', typeof getTargetProspects === 'function');
+            
+            // 2. 去重模組
+            if (window.dataDeduplication) {
+                const ok = window.dataDeduplication.isValidEmail('valid@company.com');
+                const bad = !window.dataDeduplication.isValidEmail('bad@example.com');
+                addResult(R, '去重-email驗證', ok && bad);
+                const dup = window.dataDeduplication.findDuplicate([{ email: 'a@b.com', company: 'X' }], { email: 'a@b.com' });
+                addResult(R, '去重-重複偵測', dup.duplicate && dup.reason === 'email');
+            }
+            
+            // 3. 合規模組
+            if (window.complianceManager) {
+                const can = window.complianceManager.canSend('email', 'new-user');
+                addResult(R, '合規-canSend', can.ok !== false);
+                addResult(R, '合規-邊界說明', !!window.complianceManager.getAllowedActions?.());
+            }
+            
+            // 4. AI 知識庫
+            if (window.aiKnowledgeBase) {
+                addResult(R, '知識庫-產品數', (window.aiKnowledgeBase.products?.length || 0) >= 1);
+                addResult(R, '知識庫-context', !!window.aiKnowledgeBase.getContextForAI?.());
+            }
+            
+            // 5. CRM 擴充
+            if (window.crmDatabase) {
+                addResult(R, 'CRM-Pipeline階段', (window.crmDatabase.pipelineStages?.length || 0) >= 8);
+                addResult(R, 'CRM-getDueFollowUps', typeof window.crmDatabase.getDueFollowUps === 'function');
+                addResult(R, 'CRM-getPerformanceMetrics', typeof window.crmDatabase.getPerformanceMetrics === 'function');
+            }
+            
+            // 6. AI 需求判斷
+            if (window.aiAssistant) {
+                const t0 = performance.now();
+                try {
+                    const r = await window.aiAssistant.classifyCustomer({ name: 'Test', company: 'X', title: 'CEO', tags: ['新名單'] });
+                    addResult(R, 'AI-classifyCustomer', !!r.lead_score && !!r.need_type, '', Math.round(performance.now() - t0));
+                } catch (e) { addResult(R, 'AI-classifyCustomer', false, e.message); }
+            }
+            
+            // 7. 效能基準
+            let t0 = performance.now();
+            const prospects = typeof getTargetProspects === 'function' ? getTargetProspects() : [];
+            addResult(P, 'getTargetProspects', true, prospects.length + ' 筆', Math.round(performance.now() - t0));
+            
+            if (window.crmDatabase) {
+                t0 = performance.now();
+                window.crmDatabase.searchCustomers('test');
+                addResult(P, 'CRM searchCustomers', true, '', Math.round(performance.now() - t0));
+            }
+            
+            if (window.aiAssistant) {
+                t0 = performance.now();
+                try {
+                    const r = await window.aiAssistant.generatePromotionMessage({
+                        target: { name: '測試', company: 'X' },
+                        product: { name: 'Y' },
+                        userProfile: {}
+                    });
+                    addResult(P, 'AI generatePromotionMessage', r.success, '', Math.round(performance.now() - t0));
+                } catch (e) { addResult(P, 'AI generatePromotionMessage', false, e.message); }
+            }
+            
+            // 8. 整合流程：新增客戶（使用非黑名單 email）
+            const testEmail = 'test-perf-' + Date.now() + '@testdomain.local';
+            try {
+                t0 = performance.now();
+                const cust = window.crmDatabase.addCustomer({
+                    name: '效能測試客戶',
+                    email: testEmail,
+                    company: '測試公司',
+                    title: '負責人'
+                });
+                const addMs = Math.round(performance.now() - t0);
+                addResult(I, '整合-新增CRM客戶', !!cust.id, cust.id, addMs);
+                // 清理
+                window.crmDatabase.deleteCustomer(cust.id);
+            } catch (e) {
+                addResult(I, '整合-新增CRM客戶', false, e.message);
+            }
+            
+            // 9. 網站分析（可能因 CORS 失敗）
+            if (window.websiteAnalyzer) {
+                t0 = performance.now();
+                try {
+                    const a = await window.websiteAnalyzer.analyze('https://example.com');
+                    addResult(I, '整合-網站分析', a.success !== false, a.success ? 'OK' : (a.error || 'CORS'), Math.round(performance.now() - t0));
+                } catch (e) { addResult(I, '整合-網站分析', false, e.message); }
+            }
+            
+            // 10. 報告產生
+            if (window.reportGenerator) {
+                t0 = performance.now();
+                try {
+                    const r = await window.reportGenerator.generateWebsiteAudit('測試公司', 'https://example.com');
+                    addResult(I, '整合-健檢報告', !r.error, r.summary ? 'OK' : (r.error || ''), Math.round(performance.now() - t0));
+                } catch (e) { addResult(I, '整合-健檢報告', false, e.message); }
+            }
+            
+            updateSummary();
+        }
+        
+        function runPerfOnly() {
+            results.perf = [];
+            document.getElementById('results-perf').innerHTML = '';
+            const P = 'results-perf';
+            
+            const iterations = 100;
+            let t0 = performance.now();
+            for (let i = 0; i < iterations; i++) getTargetProspects();
+            addResult(P, 'getTargetProspects x' + iterations, true, '', Math.round((performance.now() - t0) / iterations));
+            
+            if (window.crmDatabase) {
+                t0 = performance.now();
+                for (let i = 0; i < iterations; i++) window.crmDatabase.searchCustomers('公司');
+                addResult(P, 'CRM search x' + iterations, true, '', Math.round((performance.now() - t0) / iterations));
+            }
+            
+            if (window.dataDeduplication) {
+                const list = Array.from({ length: 100 }, (_, i) => ({ email: 'u' + i + '@test.com', company: 'C' + i }));
+                t0 = performance.now();
+                for (let i = 0; i < 10; i++) window.dataDeduplication.deduplicateBatch(list.slice(0, 50), []);
+                addResult(P, '去重批次 x10', true, '', Math.round((performance.now() - t0) / 10));
+            }
+            
+            updateSummary();
+        }
+        
+        function updateSummary() {
+            const total = results.pass + results.fail;
+            const avgMs = results.perf.length ? Math.round(results.perf.reduce((a, p) => a + p.ms, 0) / results.perf.length) : '-';
+            document.getElementById('s-total').textContent = total;
+            document.getElementById('s-pass').textContent = results.pass;
+            document.getElementById('s-fail').textContent = results.fail;
+            document.getElementById('s-perf').textContent = avgMs + (avgMs !== '-' ? 'ms' : '');
+        }
+        
+        document.getElementById('btn-run').onclick = runTests;
+        document.getElementById('btn-perf').onclick = runPerfOnly;
+        
+        // 自動執行
+        window.addEventListener('load', () => setTimeout(runTests, 500));
+    </script>
+</body>
+</html>

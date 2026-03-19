@@ -1,0 +1,63 @@
+{
+  "name": "ai-marketing-assistant",
+  "version": "1.0.0",
+  "description": "AI 推銷助手桌面應用程式",
+  "main": "main.js",
+  "scripts": {
+    "backend": "node backend-server.js",
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never",
+    "pack": "electron-builder --dir",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "AI",
+    "marketing",
+    "automation",
+    "desktop",
+    "app"
+  ],
+  "author": "AI Marketing Assistant",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.aimarketing.assistant",
+    "productName": "AI 推銷助手",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "*.html",
+      "*.css",
+      "*.js",
+      "*.md"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AI 推銷助手"
+    }
+  }
+} 

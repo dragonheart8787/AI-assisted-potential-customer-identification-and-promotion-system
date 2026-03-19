@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統架構說明 - 推廣中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; margin: 0; padding: 24px; background: #0f0f12; color: #e4e4e7; line-height: 1.6; }
+        h1 { font-size: 1.5rem; margin-bottom: 8px; }
+        .sub { color: #71717a; font-size: 0.9rem; margin-bottom: 24px; }
+        section { margin-bottom: 32px; }
+        h2 { font-size: 1.1rem; color: #a1a1aa; margin-bottom: 12px; border-bottom: 1px solid #27272a; padding-bottom: 8px; }
+        .flow { font-family: monospace; background: #18181b; padding: 16px; border-radius: 8px; overflow-x: auto; white-space: pre; font-size: 0.85rem; color: #a1a1aa; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #27272a; }
+        th { color: #71717a; font-weight: 500; }
+        .mod { color: #22c55e; }
+        .api { color: #3b82f6; }
+        .test { margin-top: 16px; padding: 12px; background: #18181b; border-radius: 8px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <h1>推廣中心 - 系統架構說明</h1>
+    <p class="sub">AI 輔助潛在客戶探勘與推廣系統</p>
+
+    <section>
+        <h2>一、系統架構圖</h2>
+        <div class="flow">使用者輸入關鍵字
+        ↓
+[名單蒐集層] Google Places / Facebook / 招募頁(104,1111) / 手動
+        ↓
+[資料處理層] data-deduplication（去重、驗證） · compliance-manager（頻率、黑名單）
+        ↓
+[分析層] website-analyzer（網站分析、聯絡抓取、website_need_score、security_need_score）
+        ↓
+[AI 層] ai-assistant（分類、訊息生成、回覆建議） · ai-knowledge-base（產品、案例、產業話術）
+        ↓
+[業務層] crm-database（客戶、Pipeline） · auto-followup（3天、7天跟進） · ai-promotion-workflow
+        ↓
+[輸出層] report-generator（健檢、SEO、資安、3分鐘摘要、一頁提案） · 匯出（CSV、PDF）</div>
+    </section>
+
+    <section>
+        <h2>二、模組清單</h2>
+        <table>
+            <tr><th>模組</th><th>職責</th><th>用途</th></tr>
+            <tr><td class="mod">data-deduplication</td><td>去重、email 驗證、過期標記</td><td>提高資料品質</td></tr>
+            <tr><td class="mod">compliance-manager</td><td>頻率限制、黑名單、退訂</td><td>合規與風險控管</td></tr>
+            <tr><td class="mod">website-analyzer</td><td>網站分析、聯絡抓取、評分</td><td>需求判斷</td></tr>
+            <tr><td class="mod">ai-knowledge-base</td><td>產品、案例、產業話術</td><td>AI 上下文</td></tr>
+            <tr><td class="mod">report-generator</td><td>健檢、SEO、資安、成交報告</td><td>提案素材</td></tr>
+            <tr><td class="mod">crm-database</td><td>客戶、Pipeline、互動</td><td>追蹤開發流程</td></tr>
+            <tr><td class="mod">ai-assistant</td><td>分類、訊息生成、回覆建議</td><td>推廣策略</td></tr>
+            <tr><td class="mod">ai-promotion-workflow</td><td>整合流程</td><td>串接各模組</td></tr>
+            <tr><td class="mod">auto-followup</td><td>多步驟跟進</td><td>第 3、7 天追蹤</td></tr>
+            <tr><td class="mod">job-board-crawler</td><td>招募頁搜尋</td><td>B2B 需求訊號</td></tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>三、後端 API</h2>
+        <table>
+            <tr><th>端點</th><th>用途</th></tr>
+            <tr><td class="api">GET /api/config</td><td>後端狀態</td></tr>
+            <tr><td class="api">GET /api/proxy?url=</td><td>CORS 代理</td></tr>
+            <tr><td class="api">POST /api/send-email</td><td>發送 Email（含開信追蹤）</td></tr>
+            <tr><td class="api">GET /api/track?type=open&id=</td><td>開信追蹤 pixel</td></tr>
+            <tr><td class="api">GET /api/redirect?to=&id=</td><td>點擊追蹤 302</td></tr>
+            <tr><td class="api">GET/POST /api/events</td><td>事件記錄</td></tr>
+            <tr><td class="api">GET /api/kpi</td><td>KPI 彙總</td></tr>
+            <tr><td class="api">GET /api/google-places</td><td>Google 搜尋</td></tr>
+            <tr><td class="api">GET /api/facebook-places</td><td>Facebook 搜尋</td></tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>四、評分機制</h2>
+        <table>
+            <tr><th>分數</th><th>範圍</th><th>說明</th></tr>
+            <tr><td>website_need_score</td><td>0–100</td><td>網站撰寫需求（CTA、表單、SEO、速度等）</td></tr>
+            <tr><td>security_need_score</td><td>0–100</td><td>資安需求（HTTPS、標頭、security.txt 等）</td></tr>
+            <tr><td>lead_score</td><td>0–100</td><td>AI 客戶分類（決策者、互動、標籤）</td></tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>五、測試方法</h2>
+        <div class="test">
+            <strong>後端測試：</strong> node run-tests.js<br>
+            <strong>瀏覽器測試：</strong> http://localhost:3856/test-app-new.html<br>
+            <strong>KPI 儀表板：</strong> http://localhost:3856/kpi-dashboard.html
+        </div>
+    </section>
+</body>
+</html>

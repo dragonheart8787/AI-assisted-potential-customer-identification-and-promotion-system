@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>應用程式設定 - AI 推銷助手</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .settings-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .settings-section h3 {
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #007bff;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #28a745;
+        }
+        
+        .status-offline {
+            background: #dc3545;
+        }
+        
+        .status-warning {
+            background: #ffc107;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .back-btn {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="settings-container">
+            <button class="btn btn-secondary back-btn" onclick="goBack()">
+                ← 返回主系統
+            </button>
+            
+            <h1>應用程式設定</h1>
+            
+            <!-- 一般設定 -->
+            <div class="settings-section">
+                <h3>一般設定</h3>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">自動啟動</div>
+                        <div class="info-text">應用程式啟動時自動載入上次的頁面</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="autoStart" onclick="toggleSetting('autoStart')"></div>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">開發者工具</div>
+                        <div class="info-text">在開發模式下自動開啟開發者工具</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="devTools" onclick="toggleSetting('devTools')"></div>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">通知系統</div>
+                        <div class="info-text">啟用桌面通知功能</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="notifications" onclick="toggleSetting('notifications')"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 數據管理 -->
+            <div class="settings-section">
+                <h3>數據管理</h3>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">自動備份</div>
+                        <div class="info-text">定期自動備份應用程式數據</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="autoBackup" onclick="toggleSetting('autoBackup')"></div>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">數據同步</div>
+                        <div class="info-text">在不同設備間同步數據</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle-switch" id="dataSync" onclick="toggleSetting('dataSync')"></div>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">清除所有數據</div>
+                        <div class="info-text">永久刪除所有本地儲存的數據</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="btn btn-danger btn-small" onclick="clearAllData()">清除</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 系統資訊 -->
+            <div class="settings-section">
+                <h3>系統資訊</h3>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">應用程式版本</div>
+                        <div class="info-text">當前安裝的應用程式版本</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="appVersion">載入中...</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Electron 版本</div>
+                        <div class="info-text">桌面應用程式框架版本</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="electronVersion">載入中...</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">Node.js 版本</div>
+                        <div class="info-text">JavaScript 運行環境版本</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="nodeVersion">載入中...</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">系統平台</div>
+                        <div class="info-text">當前運行的作業系統</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="platform">載入中...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 連接狀態 -->
+            <div class="settings-section">
+                <h3>連接狀態</h3>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">
+                            <span class="status-indicator status-online" id="mainSystemStatus"></span>
+                            主系統
+                        </div>
+                        <div class="info-text">核心功能模組狀態</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="mainSystemText">正常</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">
+                            <span class="status-indicator status-online" id="aiChatStatus"></span>
+                            AI 聊天
+                        </div>
+                        <div class="info-text">智能對話系統狀態</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="aiChatText">正常</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">
+                            <span class="status-indicator status-online" id="accountManagerStatus"></span>
+                            帳號管理
+                        </div>
+                        <div class="info-text">安全帳號管理系統狀態</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="accountManagerText">正常</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div>
+                        <div class="setting-label">
+                            <span class="status-indicator status-online" id="testSystemStatus"></span>
+                            測試系統
+                        </div>
+                        <div class="info-text">系統測試工具狀態</div>
+                    </div>
+                    <div class="setting-control">
+                        <span id="testSystemText">正常</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 操作按鈕 -->
+            <div class="settings-section">
+                <div class="btn-group" style="justify-content: center;">
+                    <button class="btn btn-primary" onclick="saveSettings()">儲存設定</button>
+                    <button class="btn btn-secondary" onclick="resetSettings()">重置設定</button>
+                    <button class="btn btn-info" onclick="exportSettings()">匯出設定</button>
+                    <button class="btn btn-warning" onclick="importSettings()">匯入設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 設定管理
+        let settings = {
+            autoStart: false,
+            devTools: false,
+            notifications: true,
+            autoBackup: true,
+            dataSync: false
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            loadSystemInfo();
+            checkSystemStatus();
+        });
+
+        // 載入設定
+        function loadSettings() {
+            const savedSettings = appUtils ? appUtils.storage.get('appSettings') : null;
+            if (savedSettings) {
+                settings = { ...settings, ...savedSettings };
+            }
+            
+            // 更新 UI
+            Object.keys(settings).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.classList.toggle('active', settings[key]);
+                }
+            });
+        }
+
+        // 儲存設定
+        function saveSettings() {
+            if (appUtils) {
+                appUtils.storage.set('appSettings', settings);
+                showNotification('設定已儲存', 'success');
+            }
+        }
+
+        // 重置設定
+        function resetSettings() {
+            if (confirm('確定要重置所有設定嗎？')) {
+                settings = {
+                    autoStart: false,
+                    devTools: false,
+                    notifications: true,
+                    autoBackup: true,
+                    dataSync: false
+                };
+                
+                // 更新 UI
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.classList.toggle('active', settings[key]);
+                    }
+                });
+                
+                if (appUtils) {
+                    appUtils.storage.set('appSettings', settings);
+                }
+                
+                showNotification('設定已重置', 'info');
+            }
+        }
+
+        // 切換設定
+        function toggleSetting(key) {
+            settings[key] = !settings[key];
+            const element = document.getElementById(key);
+            if (element) {
+                element.classList.toggle('active', settings[key]);
+            }
+        }
+
+        // 載入系統資訊
+        async function loadSystemInfo() {
+            try {
+                if (window.electronAPI) {
+                    const appVersion = await window.electronAPI.getAppVersion();
+                    document.getElementById('appVersion').textContent = appVersion;
+                    
+                    // 其他版本資訊
+                    document.getElementById('electronVersion').textContent = '28.0.0';
+                    document.getElementById('nodeVersion').textContent = '18.x';
+                    document.getElementById('platform').textContent = navigator.platform;
+                }
+            } catch (error) {
+                console.error('載入系統資訊失敗:', error);
+            }
+        }
+
+        // 檢查系統狀態
+        function checkSystemStatus() {
+            const systems = [
+                { id: 'mainSystem', name: '主系統', status: 'online' },
+                { id: 'aiChat', name: 'AI 聊天', status: 'online' },
+                { id: 'accountManager', name: '帳號管理', status: 'online' },
+                { id: 'testSystem', name: '測試系統', status: 'online' }
+            ];
+            
+            systems.forEach(system => {
+                const statusElement = document.getElementById(system.id + 'Status');
+                const textElement = document.getElementById(system.id + 'Text');
+                
+                if (statusElement && textElement) {
+                    statusElement.className = `status-indicator status-${system.status}`;
+                    textElement.textContent = system.status === 'online' ? '正常' : '離線';
+                }
+            });
+        }
+
+        // 清除所有數據
+        function clearAllData() {
+            if (confirm('警告：此操作將永久刪除所有本地數據，無法恢復！\n\n確定要繼續嗎？')) {
+                if (appUtils) {
+                    appUtils.storage.clear();
+                    showNotification('所有數據已清除', 'warning');
+                }
+            }
+        }
+
+        // 匯出設定
+        function exportSettings() {
+            if (appUtils) {
+                appUtils.dataManager.exportData();
+            }
+        }
+
+        // 匯入設定
+        function importSettings() {
+            if (appUtils) {
+                appUtils.dataManager.importData();
+            }
+        }
+
+        // 顯示通知
+        function showNotification(message, type = 'info') {
+            if (appUtils && appUtils.notification) {
+                appUtils.notification.show('設定', message, type);
+            } else {
+                alert(message);
+            }
+        }
+
+        // 返回主系統
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html> 

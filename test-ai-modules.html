@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 模組測試</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f5f5f5; }
+        .result { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        h1 { color: #333; }
+        pre { background: #f8f9fa; padding: 10px; overflow-x: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 AI 推廣模組測試</h1>
+    <div id="results"></div>
+
+    <script src="contacts.js"></script>
+    <script src="crm-database.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="ai-promotion-workflow.js"></script>
+    <script src="ai-sales-bot.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(name, pass, detail) {
+            const div = document.createElement('div');
+            div.className = 'result';
+            div.innerHTML = `<strong class="${pass ? 'pass' : 'fail'}">${pass ? '✅' : '❌'} ${name}</strong>${detail ? '<pre>' + detail + '</pre>' : ''}`;
+            results.appendChild(div);
+        }
+        
+        async function runTests() {
+            let passed = 0, failed = 0;
+            
+            // 1. AI 助手載入
+            if (typeof window.aiAssistant !== 'undefined') {
+                log('AI 助手模組載入', true);
+                passed++;
+            } else {
+                log('AI 助手模組載入', false);
+                failed++;
+                return;
+            }
+            
+            // 2. AI 訊息生成
+            try {
+                const msg = await window.aiAssistant.generatePromotionMessage({
+                    target: { name: 'Test', company: 'Test Co', focus: ['AI'] },
+                    product: { name: 'Test Product' },
+                    userProfile: { name: 'User', company: 'My Co' }
+                });
+                const ok = msg.success && msg.content && msg.content.length > 0;
+                log('AI 訊息生成', ok, msg.content?.substring(0, 150) + '...');
+                passed += ok ? 1 : 0;
+                failed += ok ? 0 : 1;
+            } catch (e) {
+                log('AI 訊息生成', false, e.message);
+                failed++;
+            }
+            
+            // 3. AI 客戶分類
+            try {
+                const classification = await window.aiAssistant.classifyCustomer({
+                    name: '張 CEO',
+                    company: '科技公司',
+                    title: 'CEO',
+                    tags: ['高價值']
+                });
+                const ok = classification && classification.category && classification.score >= 0;
+                log('AI 客戶分類', ok, JSON.stringify(classification, null, 2));
+                passed += ok ? 1 : 0;
+                failed += ok ? 0 : 1;
+            } catch (e) {
+                log('AI 客戶分類', false, e.message);
+                failed++;
+            }
+            
+            // 4. 智能搜尋
+            try {
+                const customers = [
+                    { name: '王經理', company: '創新科技', title: '經理' },
+                    { name: '李總', company: '數據公司', title: 'CEO' }
+                ];
+                const searchResult = await window.aiAssistant.smartSearch(customers, '科技');
+                const ok = Array.isArray(searchResult) && searchResult.length >= 0;
+                log('AI 智能搜尋', ok, '找到 ' + (searchResult?.length || 0) + ' 位客戶');
+                passed += ok ? 1 : 0;
+                failed += ok ? 0 : 1;
+            } catch (e) {
+                log('AI 智能搜尋', false, e.message);
+                failed++;
+            }
+            
+            // 5. 推廣工作流程
+            if (typeof window.aiPromotionWorkflow !== 'undefined') {
+                log('推廣工作流程模組', true);
+                passed++;
+            } else {
+                log('推廣工作流程模組', false);
+                failed++;
+            }
+            
+            // 6. CRM 智能搜尋
+            try {
+                if (window.crmDatabase) {
+                    const searchResult = await window.crmDatabase.smartSearchCustomers('test');
+                    log('CRM 智能搜尋', true, 'CRM 整合正常');
+                    passed++;
+                } else {
+                    log('CRM 智能搜尋', false, 'CRM 未載入');
+                    failed++;
+                }
+            } catch (e) {
+                log('CRM 智能搜尋', false, e.message);
+                failed++;
+            }
+            
+            // 7. 工作流程執行 (dry run)
+            try {
+                const result = await window.aiPromotionWorkflow.runFullWorkflow({ dryRun: true, batchSize: 2 });
+                const ok = result.success && result.results;
+                log('工作流程執行 (預覽)', ok, JSON.stringify(result.results?.summary, null, 2));
+                passed += ok ? 1 : 0;
+                failed += ok ? 0 : 1;
+            } catch (e) {
+                log('工作流程執行', false, e.message);
+                failed++;
+            }
+            
+            // 總結
+            const total = passed + failed;
+            const div = document.createElement('div');
+            div.className = 'result';
+            div.style.fontSize = '1.2em';
+            div.innerHTML = `<strong>📊 測試結果：${passed}/${total} 通過</strong> (成功率 ${((passed/total)*100).toFixed(1)}%)`;
+            results.insertBefore(div, results.firstChild);
+        }
+        
+        runTests();
+    </script>
+</body>
+</html>

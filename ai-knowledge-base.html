@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 知識庫</title>
+    <link rel="stylesheet" href="app-new.css">
+</head>
+<body>
+    <div class="main" style="max-width:800px;margin:0 auto;padding:24px">
+        <h1>AI 知識庫</h1>
+        <p class="notice-text">知識庫內容會餵給 AI，讓生成的推廣訊息更貼近您的產品與風格。</p>
+        
+        <div class="panel">
+            <h3>產品與服務</h3>
+            <div id="kb-products"></div>
+            <button type="button" class="secondary-btn" id="btn-add-product">新增產品</button>
+        </div>
+        
+        <div class="panel">
+            <h3>成功案例</h3>
+            <div id="kb-cases"></div>
+            <button type="button" class="secondary-btn" id="btn-add-case">新增案例</button>
+        </div>
+        
+        <div class="panel">
+            <h3>語氣設定</h3>
+            <select id="kb-tone">
+                <option value="professional">正式商務</option>
+                <option value="direct">簡潔直接</option>
+                <option value="consultative">顧問式建議</option>
+                <option value="urgent">資安警示</option>
+            </select>
+            <button type="button" class="primary-btn" id="btn-save-tone">儲存</button>
+        </div>
+        
+        <p><a href="app-new.html">← 返回推廣中心</a></p>
+    </div>
+    <script src="ai-knowledge-base.js"></script>
+    <script>
+        const kb = window.aiKnowledgeBase;
+        function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function renderProducts() {
+            const el = document.getElementById('kb-products');
+            el.innerHTML = (kb.products || []).map((p) => `
+                <div class="form-group" style="margin-bottom:12px;padding:12px;background:var(--bg-elevated);border-radius:8px">
+                    <strong>${esc(p.name)}</strong> - ${esc(p.description)}
+                    <br><small>${esc(p.priceRange)}</small>
+                </div>
+            `).join('') || '<p class="muted-text">尚無產品，請新增</p>';
+        }
+        function renderCases() {
+            const el = document.getElementById('kb-cases');
+            el.innerHTML = (kb.cases || []).map(c => `
+                <div class="form-group" style="margin-bottom:12px;padding:12px;background:var(--bg-elevated);border-radius:8px">
+                    <strong>${esc(c.industry)}</strong> - ${esc(c.result)}
+                    <br><small>${esc(c.summary)}</small>
+                </div>
+            `).join('') || '<p class="muted-text">尚無案例</p>';
+        }
+        document.getElementById('kb-tone').value = kb.tone || 'professional';
+        document.getElementById('btn-save-tone').onclick = () => {
+            kb.setTone(document.getElementById('kb-tone').value);
+            alert('已儲存');
+        };
+        renderProducts();
+        renderCases();
+    </script>
+</body>
+</html>

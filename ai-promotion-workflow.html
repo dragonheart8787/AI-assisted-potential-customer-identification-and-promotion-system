@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 推廣工作流程</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        h1 { margin-bottom: 10px; color: #333; }
+        .subtitle { color: #666; margin-bottom: 25px; }
+        .section { margin-bottom: 25px; }
+        .section h3 { margin-bottom: 15px; color: #667eea; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        .result-item { padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .log { font-family: monospace; font-size: 12px; color: #555; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 AI 推廣工作流程</h1>
+        <p class="subtitle">自動分類客戶、生成訊息、聯絡客戶</p>
+        
+        <div class="section">
+            <h3>📋 執行設定</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>篩選階段</label>
+                    <select id="filter-stage">
+                        <option value="">全部</option>
+                        <option value="new">新名單</option>
+                        <option value="contacted">已聯繫</option>
+                        <option value="responded">已回覆</option>
+                        <option value="interested">有興趣</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>標籤篩選</label>
+                    <select id="filter-tag">
+                        <option value="">全部</option>
+                        <option value="高價值">高價值</option>
+                        <option value="熱門潛在客戶">熱門潛在客戶</option>
+                        <option value="有興趣">有興趣</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>批次大小</label>
+                    <input type="number" id="batch-size" value="5" min="1" max="20">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><input type="checkbox" id="dry-run" checked> 預覽模式 (不實際發送)</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🔍 智能搜尋</h3>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <input type="text" id="search-query" placeholder="輸入關鍵字搜尋客戶 (姓名、公司、職位...)">
+                </div>
+                <button class="btn btn-primary" onclick="runSearch()">搜尋</button>
+            </div>
+            <div id="search-results" class="result-box" style="display: none;"></div>
+        </div>
+        
+        <div class="section">
+            <h3>🚀 執行工作流程</h3>
+            <button class="btn btn-success" id="run-btn" onclick="runWorkflow()">開始執行</button>
+            <button class="btn btn-warning" onclick="runAIClassification()">AI 客戶分類</button>
+        </div>
+        
+        <div class="section">
+            <h3>📊 執行結果</h3>
+            <div id="workflow-result" class="result-box log">等待執行...</div>
+        </div>
+    </div>
+    
+    <script src="crm-database.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="ai-promotion-workflow.js"></script>
+    <script>
+        async function runWorkflow() {
+            const btn = document.getElementById('run-btn');
+            btn.disabled = true;
+            const resultDiv = document.getElementById('workflow-result');
+            resultDiv.textContent = '執行中...';
+            
+            const options = {
+                customerFilter: {
+                    stage: document.getElementById('filter-stage').value || undefined,
+                    tag: document.getElementById('filter-tag').value || undefined
+                },
+                batchSize: parseInt(document.getElementById('batch-size').value) || 5,
+                dryRun: document.getElementById('dry-run').checked
+            };
+            
+            try {
+                const result = await window.aiPromotionWorkflow.runFullWorkflow(options);
+                let html = `✅ 完成！\n`;
+                html += `處理: ${result.results?.summary?.processed || 0} 位\n`;
+                html += `聯絡: ${result.results?.summary?.contacted || 0} 位\n`;
+                html += `失敗: ${result.results?.summary?.failed || 0} 位\n`;
+                if (options.dryRun) html += `\n(預覽模式，未實際發送)`;
+                
+                if (result.results?.contacted?.length) {
+                    html += `\n\n--- 生成的訊息範例 ---\n`;
+                    const first = result.results.contacted[0];
+                    html += `\n給 ${first.customer?.name}:\n${first.message?.substring(0, 200)}...`;
+                }
+                
+                resultDiv.textContent = html;
+            } catch (e) {
+                resultDiv.textContent = '錯誤: ' + e.message;
+            }
+            btn.disabled = false;
+        }
+        
+        async function runSearch() {
+            const query = document.getElementById('search-query').value.trim();
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (!query) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+            
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '搜尋中...';
+            
+            try {
+                const result = await window.aiPromotionWorkflow.searchAndExport(query);
+                if (result.customers?.length) {
+                    resultsDiv.innerHTML = result.customers.map(c => 
+                        `<div class="result-item">${c.name} - ${c.company} (${c.title || '-'})</div>`
+                    ).join('');
+                } else {
+                    resultsDiv.innerHTML = '未找到符合的客戶';
+                }
+            } catch (e) {
+                resultsDiv.innerHTML = '搜尋失敗: ' + e.message;
+            }
+        }
+        
+        async function runAIClassification() {
+            const resultDiv = document.getElementById('workflow-result');
+            resultDiv.textContent = 'AI 分類中...';
+            
+            try {
+                const customers = window.crmDatabase?.getAllCustomers() || [];
+                if (customers.length === 0) {
+                    resultDiv.textContent = 'CRM 中沒有客戶資料，請先匯入客戶';
+                    return;
+                }
+                
+                const classified = await window.aiAssistant.classifyCustomers(customers);
+                let html = `✅ 完成！共分類 ${classified.length} 位客戶\n\n`;
+                
+                const byCategory = {};
+                classified.forEach(c => {
+                    const cat = c.category || 'standard';
+                    if (!byCategory[cat]) byCategory[cat] = [];
+                    byCategory[cat].push({ name: c.customer?.name, score: c.score });
+                });
+                
+                Object.entries(byCategory).forEach(([cat, list]) => {
+                    html += `\n【${cat}】共 ${list.length} 位\n`;
+                    list.slice(0, 5).forEach(i => html += `  - ${i.name} (${i.score}分)\n`);
+                });
+                
+                resultDiv.textContent = html;
+            } catch (e) {
+                resultDiv.textContent = '分類失敗: ' + e.message;
+            }
+        }
+        
+        if (window.opener) {
+            window.crmDatabase = window.opener.crmDatabase || window.crmDatabase;
+            window.aiAssistant = window.opener.aiAssistant || window.aiAssistant;
+            window.aiPromotionWorkflow = window.opener.aiPromotionWorkflow || window.aiPromotionWorkflow;
+        }
+    </script>
+</body>
+</html>

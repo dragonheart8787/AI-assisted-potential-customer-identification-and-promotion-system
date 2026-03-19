@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技高層對話式推銷策略指南</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .strategy-guide {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .guide-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-button {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-button:hover, .nav-button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .guide-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .guide-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .strategy-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .strategy-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .dialogue-example {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc1 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .trigger-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .trigger-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 3px solid #667eea;
+        }
+        
+        .case-study {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .strategy-guide {
+                padding: 15px;
+            }
+            
+            .guide-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .trigger-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .back-button {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="strategy-guide">
+        <div class="guide-header">
+            <h1>🎯 科技高層對話式推銷策略指南</h1>
+            <p class="subtitle">與科技產業高階主管建立聯繫並維繫關係的完整攻略</p>
+        </div>
+        
+        <div class="guide-nav">
+            <button class="nav-button active" onclick="showSection('conversation-sales')">對話式推銷</button>
+            <button class="nav-button" onclick="showSection('chatbot-strategy')">聊天機器人策略</button>
+            <button class="nav-button" onclick="showSection('case-studies')">成功案例</button>
+            <button class="nav-button" onclick="showSection('practical-tips')">實用技巧</button>
+        </div>
+        
+        <!-- 對話式推銷策略 -->
+        <div id="conversation-sales" class="guide-section active">
+            <h2>🗣️ 一、對科技高層的高效對話式推銷策略</h2>
+            
+            <div class="strategy-card">
+                <h3>1. 對話而非簡報 – Talk with them, not at them</h3>
+                <p>研究顯示有 <span class="highlight">88% 的企業高層決策者偏好對話而非聽簡報</span>。即使被給予20分鐘來呈現提案內容，也不要一味地照稿演示。</p>
+                
+                <div class="dialogue-example">
+                    <strong>對話式開場範例：</strong><br><br>
+                    <strong>創業者（您）：</strong> "Thank you for meeting with me, Lisa. I understand you only have 20 minutes, so I'll get straight to it. We've noticed many fintech firms like yours are struggling with data security in AI models – is that something you're concerned about as well?"<br><br>
+                    <strong>CTO（對方）：</strong> "確實如此，我們非常在意AI模型的安全性。你們有什麼看法？"<br><br>
+                    <strong>創業者：</strong> "Exactly. In fact, we developed a new approach that could reduce breach risks by 30%. But before介紹, 我想先了解您目前的做法，以確保我們的方案符合您的需求…"
+                </div>
+                
+                <p><strong>關鍵要點：</strong></p>
+                <ul>
+                    <li>透過提問將對方帶入話題</li>
+                    <li>先建立共鳴，再介紹方案</li>
+                    <li>讓整個pitch變成討論而非演講</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>2. 黃金一分鐘法則 – 聚焦WIIFM利益</h3>
+                <p><span class="highlight">如果前1分鐘內無法引發興趣，後面很可能再也爭取不回對方的注意</span>。高層只關心「這對我有何好處」（WIIFM: What's In It For Me）。</p>
+                
+                <p><strong>黃金一分鐘要素：</strong></p>
+                <ul>
+                    <li><strong>直指痛點：</strong>用一句話概括他們面臨的主要問題</li>
+                    <li><strong>強調收益：</strong>說明你的方案如何帶來具體利益</li>
+                    <li><strong>引發好奇：</strong>提出相關事實或mini故事</li>
+                    <li><strong>切忌冗長：</strong>避免長篇介紹公司背景</li>
+                </ul>
+                
+                <div class="dialogue-example">
+                    <strong>範例：</strong><br>
+                    "目前許多銀行在AI風控上遇到欺詐偵測困難（痛點），我們的模型可以將偵測準確率提升20%（利益），這意味著每年可避免上千萬元的潛在損失。"
+                </div>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>3. 建立信任與專業形象</h3>
+                <p><strong>(a) 表現專業和權威：</strong></p>
+                <ul>
+                    <li>瞭解產品細節到極致</li>
+                    <li>準備具體案例和數據佐證</li>
+                    <li>避免空洞說法如「我們是業界領導者」</li>
+                    <li>用具體證據支撐主張</li>
+                </ul>
+                
+                <p><strong>(b) 保持自信與堅定：</strong></p>
+                <ul>
+                    <li>使用肯定有力的語言</li>
+                    <li>避免不確定的語句如「我覺得這或許對您有用」</li>
+                    <li>面對質疑時鎮定自若地回答</li>
+                    <li>有理有據地堅持觀點</li>
+                </ul>
+                
+                <p><strong>(c) 誠懇傾聽與共情：</strong></p>
+                <ul>
+                    <li>主動傾聽和共情式回應</li>
+                    <li>復述對方重點確認理解</li>
+                    <li>運用同理心與相似性拉近距離</li>
+                    <li>讓對方感受到被重視</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>4. 七大心理觸發點</h3>
+                <div class="trigger-list">
+                    <div class="trigger-item">
+                        <h4>🤝 互惠（Reciprocity）</h4>
+                        <p>先給予價值，如免費分析報告、技術白皮書等。當你無償提供有用資訊時，對方會覺得欠你一份人情。</p>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>👥 社會認同（Social Proof）</h4>
+                        <p>引用其他權威人士或同行企業的成功案例。「我們目前正與XYZ合作，他們在使用我們的模型後，預測精度提升了15%」</p>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>⏰ 稀缺感（Scarcity）</h4>
+                        <p>適度製造緊迫感。「我們這次僅開放5個合作試點名額，目前已有4家公司確認加入」</p>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>✅ 承諾與一致（Commitment）</h4>
+                        <p>循序漸進讓對方點頭。先要求小的認可，逐步累積到大的承諾。</p>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>😊 喜好與相似（Liking）</h4>
+                        <p>找到共同點，建立個人連結。真誠讚賞和輕度幽默能建立好感。</p>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>🎓 權威（Authority）</h4>
+                        <p>建立專家形象，引用權威觀點。「麻省理工最近的研究也支持我們的方法」</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 聊天機器人策略 -->
+        <div id="chatbot-strategy" class="guide-section">
+            <h2>🤖 二、透過聊天機器人聯繫並維繫科技高層的策略</h2>
+            
+            <div class="strategy-card">
+                <h3>1. 初次接觸腳本：禮貌高效地開啟對話</h3>
+                <p>聊天機器人可以成為您與高層「初次接觸」的代理，在對方方便的時間點發起問候和介紹。</p>
+                
+                <div class="dialogue-example">
+                    <strong>初次接觸範例：</strong><br><br>
+                    "李總您好，我是XXX的智能助理🤖。Jack 想邀請您認識一下我們最新的AI模型，它針對您公司在自動駕駛數據處理上的需求可能有所幫助。不知您是否方便，我可以先請教您幾個小問題，幫我們更了解您的需求？"
+                </div>
+                
+                <p><strong>設計要點：</strong></p>
+                <ul>
+                    <li><strong>自我介紹：</strong>清楚表明身份是某人的智能助理</li>
+                    <li><strong>說明緣由：</strong>點出對方公司領域或需求</li>
+                    <li><strong>小請求開場：</strong>以詢問方式徵求同意</li>
+                    <li><strong>收集資訊：</strong>為後續真人對話做準備</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>2. 提供個人化資訊：成為價值內容的傳遞者</h3>
+                <p>利用聊天機器人做定期的資訊分享，在不冒犯的前提下保持曝光度。</p>
+                
+                <p><strong>內容類型：</strong></p>
+                <ul>
+                    <li><strong>產業快訊：</strong>最新行業報告、趨勢分析</li>
+                    <li><strong>專屬洞見：</strong>專欄文章或技術博客</li>
+                    <li><strong>案例成果：</strong>新的應用案例或成效數據</li>
+                    <li><strong>重要新聞：</strong>對方公司的新聞提醒和祝賀</li>
+                </ul>
+                
+                <div class="dialogue-example">
+                    <strong>資訊分享範例：</strong><br><br>
+                    "James您好，本週看到一份關於5G車聯網的報告，其中提到一些可能影響自動駕駛的趨勢。我摘取了幾個重點供您參考，希望對您有用。"
+                </div>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>3. 保持規律互動：掌握節奏但不打擾</h3>
+                <p><strong>互動頻率建議：</strong></p>
+                <ul>
+                    <li><strong>週期性更新：</strong>每月或每季度一次重要更新</li>
+                    <li><strong>節日問候：</strong>新年、生日、公司周年等特殊日</li>
+                    <li><strong>針對性跟進：</strong>根據先前約定的時間點主動聯繫</li>
+                    <li><strong>即時響應：</strong>對方主動詢問時及時回應</li>
+                </ul>
+                
+                <div class="dialogue-example">
+                    <strong>週期性更新範例：</strong><br><br>
+                    "李董您好！這個月我們團隊在AI模型上有一些新突破（運算速度提升了15%），我想和您分享。如果您有興趣深入了解，我可以安排時間說明細節。"
+                </div>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>4. 多功能助理化：善用機器人處理安排與反饋</h3>
+                <p><strong>實用功能：</strong></p>
+                <ul>
+                    <li><strong>日程安排：</strong>協助約會議或通話</li>
+                    <li><strong>活動邀約：</strong>處理發表會、研討會邀請</li>
+                    <li><strong>收集反饋：</strong>請教高層對議題或互動的意見</li>
+                    <li><strong>後勤支援：</strong>提供地點資訊、交通安排等</li>
+                </ul>
+                
+                <div class="dialogue-example">
+                    <strong>日程安排範例：</strong><br><br>
+                    "請問您下週哪幾天方便會議？我這裡可以提供三個選項：週二10am、週三2pm或週五4pm，哪個對您比較合適？"
+                </div>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>5. 專業而溫度適宜的語氣</h3>
+                <p><strong>語氣設計原則：</strong></p>
+                <ul>
+                    <li><strong>保持專業禮貌：</strong>使用敬稱，避免過度隨意</li>
+                    <li><strong>簡明扼要：</strong>每條訊息短小精悍，一目瞭然</li>
+                    <li><strong>個性化內容：</strong>使用對方姓名、公司、職位資訊</li>
+                    <li><strong>適度溫度：</strong>輕微的人格特徵和幽默感</li>
+                    <li><strong>中英靈活：</strong>專業術語保持英文，解釋用中文</li>
+                </ul>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>6. 人機協作平衡</h3>
+                <p><strong>平衡要點：</strong></p>
+                <ul>
+                    <li><strong>關鍵時刻親自出馬：</strong>對方表現興趣時由真人接手</li>
+                    <li><strong>透明但不突顯：</strong>坦誠AI身份但不反覆強調</li>
+                    <li><strong>維持人工溫度：</strong>定期加入真人關懷</li>
+                    <li><strong>輔助而非取代：</strong>AI協助提升效率，不喧賓奪主</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 成功案例 -->
+        <div id="case-studies" class="guide-section">
+            <h2>📊 三、優秀案例分析</h2>
+            
+            <div class="case-study">
+                <h3>🎯 案例一：AI助力超個人化對話，成功拓展大額商機</h3>
+                <p><strong>背景：</strong>英國市場行銷顧問 Heather Murray 的4人小型代理公司，替能源巨頭 Centrica 推廣價值 £1000萬英鎊等級的電池優化產品。</p>
+                
+                <p><strong>策略執行：</strong></p>
+                <ul>
+                    <li><strong>洞察與個性分析：</strong>使用AI人格分析工具（CrystalKnows）分析目標客戶的網路公開資訊</li>
+                    <li><strong>資料分桶與內容定制：</strong>整理個人資料、行業新聞、公司資訊、職務洞見四大類資料</li>
+                    <li><strong>對話式腳本與引導：</strong>為每位客戶撰寫高度個人化的三階段LinkedIn對話腳本</li>
+                    <li><strong>社交對話觸達：</strong>透過LinkedIn以對話形式發出交流邀請</li>
+                </ul>
+                
+                <p><strong>驚人成果：</strong></p>
+                <div class="highlight" style="display: block; padding: 15px; margin: 10px 0; text-align: center;">
+                    在不到兩週內，成功吸引 6位每筆價值約 £1000萬的潛在客戶安排會談<br>
+                    總計 £6000萬 潛在銷售額的客戶管線！
+                </div>
+                
+                <p><strong>關鍵啟示：</strong>高度個人化與價值導向的對話設計，使高層感受到這不是一般推銷，而是值得花時間交流的討論。</p>
+            </div>
+            
+            <div class="case-study">
+                <h3>🤖 案例二：AI個人助理融入高層社交圈</h3>
+                <p><strong>背景：</strong>x.ai公司的虛擬會議助理 "Amy Ingram"，專門透過Email為用戶安排會議。</p>
+                
+                <p><strong>實際情境：</strong></p>
+                <div class="dialogue-example">
+                    一位創投顧問Sarah收到紐約AI公司CEO的郵件助理"Amy"來信約時間見面。Amy的郵件充滿人情味：
+                    <br><br>
+                    • "I'm sorry for the delay"<br>
+                    • "Have a nice weekend"<br>
+                    • "Thank you!"<br>
+                    <br>
+                    Sarah完全沒意識到Amy是機器人，以為只是CEO的真人助理。
+                </div>
+                
+                <p><strong>成功效果：</strong></p>
+                <ul>
+                    <li>高層感受到高度的效率和尊重</li>
+                    <li>7x24小時及時又體貼的回應</li>
+                    <li>節省大量往返郵件的時間</li>
+                    <li>Sarah後來也成為Amy服務的付費用戶</li>
+                </ul>
+                
+                <p><strong>關鍵啟示：</strong>當聊天機器人的對話體驗接近真人，商務社交流程中的一部分就能放心交給AI處理。關鍵在於對話腳本的圓融和豐富的處理邏輯。</p>
+            </div>
+        </div>
+        
+        <!-- 實用技巧 -->
+        <div id="practical-tips" class="guide-section">
+            <h2>💡 四、實用技巧與話術</h2>
+            
+            <div class="strategy-card">
+                <h3>🗣️ 有效對話話術示例</h3>
+                
+                <p><strong>1. 開場先求「方便」：</strong></p>
+                <div class="dialogue-example">
+                    "您好，耽誤您一分鐘聊一個AI研發上的洞見，可以嗎？"
+                </div>
+                <p>使用登門檻效應，降低對方防備。</p>
+                
+                <p><strong>2. 建立連結：</strong></p>
+                <div class="dialogue-example">
+                    "看您的背景您也做過工程師，我自己寫了十年碼，非常明白技術團隊對產品穩定性的要求。"
+                </div>
+                <p>找共同點，拉近心理距離。</p>
+                
+                <p><strong>3. 問題引導：</strong></p>
+                <div class="dialogue-example">
+                    "您認為目前AI部署最大的瓶頸是什麼？"<br>
+                    "除了Accuracy之外，您是否考慮過模型的公平性議題？"
+                </div>
+                <p>用開放式問題引導對方暢談需求。</p>
+                
+                <p><strong>4. 積極傾聽與確認：</strong></p>
+                <div class="dialogue-example">
+                    "您剛提到模型透明度很重要，這點我非常認同..."
+                </div>
+                <p>復述重點確認理解，讓對方感受到尊重。</p>
+                
+                <p><strong>5. 處理異議：</strong></p>
+                <div class="dialogue-example">
+                    對方："你們方案看起來不錯，但整合我們現有系統可能很麻煩。"<br><br>
+                    回應："您提的顧慮很實際。我們也預想到客戶會擔心整合問題，所以特別設計了兼容API，保證不需要大幅更改您現有系統。"
+                </div>
+                <p>先肯定對方觀點的合理性，然後給出解法。</p>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>📋 聊天機器人腳本模板</h3>
+                
+                <p><strong>初次接觸模板：</strong></p>
+                <div class="dialogue-example">
+                    "{領袖姓名}您好，我是{您的名字}的智能助理🤖。{您的名字} 想邀請您認識一下我們最新的{產品/服務}，它針對您公司在{相關領域}的需求可能有所幫助。不知您是否方便，我可以先請教您幾個小問題，幫我們更了解您的需求？"
+                </div>
+                
+                <p><strong>價值分享模板：</strong></p>
+                <div class="dialogue-example">
+                    "{領袖姓名}您好，本週看到一份關於{相關主題}的報告，其中提到一些可能影響{對方業務領域}的趨勢。我摘取了幾個重點供您參考，希望對您有用。[附上連結或摘要]"
+                </div>
+                
+                <p><strong>會議安排模板：</strong></p>
+                <div class="dialogue-example">
+                    "請問您下週哪幾天方便會議？我這裡可以提供三個選項：{選項1}、{選項2}或{選項3}，哪個對您比較合適？"
+                </div>
+                
+                <p><strong>跟進模板：</strong></p>
+                <div class="dialogue-example">
+                    "{領袖姓名}您好，上次我們討論到{具體話題}，現在已進入{時間節點}，不知道您是否考慮討論一下我們{項目/服務}的可行性？我可協助安排會議時間。"
+                </div>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>⏰ 最佳實踐時間表</h3>
+                
+                <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+                    <tr style="background: #667eea; color: white;">
+                        <th style="padding: 12px; text-align: left;">時機</th>
+                        <th style="padding: 12px; text-align: left;">行動</th>
+                        <th style="padding: 12px; text-align: left;">目的</th>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">初次接觸</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">機器人禮貌問候+小問題</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">破冰+資訊收集</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">3-5天後</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">真人跟進對話</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">建立真實聯繫</td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">每2-4週</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">價值內容分享</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">保持存在感</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">重要節日</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">節日問候</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">情感維繫</td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">每季度</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">進展更新</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">展示持續創新</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="strategy-card">
+                <h3>🎯 成功指標與KPI</h3>
+                
+                <div class="trigger-list">
+                    <div class="trigger-item">
+                        <h4>📊 互動指標</h4>
+                        <ul>
+                            <li>回覆率 > 30%</li>
+                            <li>對話輪數 > 3輪</li>
+                            <li>主動詢問頻率</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>📈 關係深度</h4>
+                        <ul>
+                            <li>從機器人對話轉為真人交流</li>
+                            <li>主動分享公司近況</li>
+                            <li>邀請參加活動</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>💼 商業成果</h4>
+                        <ul>
+                            <li>安排面對面會議</li>
+                            <li>介紹其他團隊成員</li>
+                            <li>討論具體合作方案</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="trigger-item">
+                        <h4>🤝 信任建立</h4>
+                        <ul>
+                            <li>尋求專業建議</li>
+                            <li>分享內部挑戰</li>
+                            <li>推薦給同行</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <a href="index.html" class="back-button">
+        ← 返回主系統
+    </a>
+    
+    <script>
+        function showSection(sectionId) {
+            // 隱藏所有區塊
+            document.querySelectorAll('.guide-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 移除所有按鈕的active狀態
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 顯示選中的區塊
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 設置對應按鈕為active
+            event.target.classList.add('active');
+        }
+        
+        // 平滑滾動到頂部
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html> 

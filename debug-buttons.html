@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>按鈕調試頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:active {
+            background: #004085;
+        }
+        .btn-success { background: #28a745; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-danger { background: #dc3545; }
+        .btn-info { background: #17a2b8; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 按鈕互動調試頁面</h1>
+    
+    <div class="debug-container">
+        <h2>基本按鈕測試</h2>
+        <button class="btn" onclick="testClick('基本按鈕')">基本按鈕</button>
+        <button class="btn btn-success" onclick="testClick('成功按鈕')">成功按鈕</button>
+        <button class="btn btn-warning" onclick="testClick('警告按鈕')">警告按鈕</button>
+        <button class="btn btn-danger" onclick="testClick('危險按鈕')">危險按鈕</button>
+        <button class="btn btn-info" onclick="testClick('資訊按鈕')">資訊按鈕</button>
+    </div>
+    
+    <div class="debug-container">
+        <h2>事件監聽器測試</h2>
+        <button class="btn" id="event-btn">事件監聽器按鈕</button>
+        <button class="btn" id="event-btn-2">事件監聽器按鈕2</button>
+    </div>
+    
+    <div class="debug-container">
+        <h2>模組載入測試</h2>
+        <button class="btn" onclick="testModules()">測試模組載入</button>
+        <button class="btn" onclick="testFunctions()">測試函數</button>
+    </div>
+    
+    <div class="debug-container">
+        <h2>調試日誌</h2>
+        <div id="debug-log" class="log"></div>
+        <button class="btn" onclick="clearLog()">清除日誌</button>
+    </div>
+
+    <!-- 載入所有腳本 -->
+    <script src="crm-database.js"></script>
+    <script src="ab-testing.js"></script>
+    <script src="auto-followup.js"></script>
+    <script src="unified-inbox.js"></script>
+    <script src="real-social-media-api.js"></script>
+    <script src="account-login-manager.js"></script>
+    <script src="ai-conversation-model.js"></script>
+    <script src="ai-enhancement-module.js"></script>
+
+    <script>
+        let logCount = 0;
+        
+        function log(message) {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('debug-log').textContent = '';
+            logCount = 0;
+        }
+        
+        function testClick(buttonName) {
+            log(`✅ ${buttonName} 被點擊了！`);
+        }
+        
+        function testModules() {
+            log('🔍 開始測試模組載入...');
+            
+            const modules = [
+                { name: 'CRM資料庫', obj: window.crmDatabase },
+                { name: 'A/B測試系統', obj: window.abTestingSystem },
+                { name: '自動跟進系統', obj: window.autoFollowupSystem },
+                { name: '統一收件箱', obj: window.unifiedInbox },
+                { name: '真實API整合', obj: window.realSocialMediaAPI },
+                { name: '帳號登入管理', obj: window.accountLoginManager },
+                { name: 'AI對話模型', obj: window.aiConversationModel },
+                { name: 'AI增強模組', obj: window.aiEnhancementModule }
+            ];
+            
+            modules.forEach(module => {
+                if (module.obj) {
+                    log(`✅ ${module.name} - 已載入`);
+                } else {
+                    log(`❌ ${module.name} - 未載入`);
+                }
+            });
+        }
+        
+        function testFunctions() {
+            log('🔍 開始測試函數...');
+            
+            // 測試CRM功能
+            if (window.crmDatabase) {
+                try {
+                    const testCustomer = {
+                        name: '測試客戶',
+                        email: 'test@example.com',
+                        company: '測試公司'
+                    };
+                    const customer = window.crmDatabase.addCustomer(testCustomer);
+                    log('✅ CRM - 添加客戶成功');
+                } catch (error) {
+                    log(`❌ CRM - 添加客戶失敗: ${error.message}`);
+                }
+            }
+            
+            // 測試A/B測試功能
+            if (window.abTestingSystem) {
+                try {
+                    const testData = {
+                        name: '測試A/B測試',
+                        description: '測試描述',
+                        variants: [
+                            { id: 'v1', name: '版本A', content: '測試內容A' }
+                        ]
+                    };
+                    const test = window.abTestingSystem.createTest(testData);
+                    log('✅ A/B測試 - 創建測試成功');
+                } catch (error) {
+                    log(`❌ A/B測試 - 創建測試失敗: ${error.message}`);
+                }
+            }
+        }
+        
+        // 頁面載入完成後的事件監聽器測試
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📄 頁面載入完成');
+            
+            // 測試事件監聽器
+            const eventBtn = document.getElementById('event-btn');
+            if (eventBtn) {
+                eventBtn.addEventListener('click', function() {
+                    log('✅ 事件監聽器按鈕被點擊了！');
+                });
+                log('✅ 事件監聽器已綁定');
+            }
+            
+            const eventBtn2 = document.getElementById('event-btn-2');
+            if (eventBtn2) {
+                eventBtn2.addEventListener('click', function() {
+                    log('✅ 事件監聽器按鈕2被點擊了！');
+                });
+                log('✅ 事件監聽器2已綁定');
+            }
+            
+            // 測試模組載入
+            setTimeout(() => {
+                testModules();
+            }, 1000);
+        });
+        
+        // 錯誤處理
+        window.addEventListener('error', function(e) {
+            log(`❌ JavaScript錯誤: ${e.message} (${e.filename}:${e.lineno})`);
+        });
+        
+        // 未處理的Promise錯誤
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`❌ Promise錯誤: ${e.reason}`);
+        });
+    </script>
+</body>
+</html>
+

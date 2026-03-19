@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能客戶發現系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .prospect-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .prospect-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.3s ease;
+        }
+
+        .prospect-item:hover {
+            background: #f8f9fa;
+        }
+
+        .prospect-item:last-child {
+            border-bottom: none;
+        }
+
+        .prospect-info {
+            flex: 1;
+        }
+
+        .prospect-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .prospect-details {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .prospect-score {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .score-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .score-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .score-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .score-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .prospect-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .filter-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .search-progress {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .source-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .source-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .source-count {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .source-status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .source-status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .source-status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 智能客戶發現系統</h1>
+            <p>自動發現和評分高價值潛在客戶</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 搜索設定面板 -->
+            <div class="panel">
+                <h2>🎯 搜索設定</h2>
+                
+                <div class="form-group">
+                    <label for="search-keywords">關鍵字</label>
+                    <input type="text" id="search-keywords" placeholder="例如：AI, 科技, 創業" value="AI, 科技, 創業">
+                </div>
+                
+                <div class="form-group">
+                    <label for="target-industry">目標行業</label>
+                    <select id="target-industry">
+                        <option value="">所有行業</option>
+                        <option value="Technology">科技</option>
+                        <option value="Software">軟體</option>
+                        <option value="Internet">網路</option>
+                        <option value="Mobile">行動裝置</option>
+                        <option value="AI">人工智能</option>
+                        <option value="Fintech">金融科技</option>
+                        <option value="Healthcare">醫療</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="company-size">公司規模</label>
+                    <select id="company-size">
+                        <option value="">所有規模</option>
+                        <option value="startup">初創公司</option>
+                        <option value="small">小型企業</option>
+                        <option value="medium">中型企業</option>
+                        <option value="large">大型企業</option>
+                        <option value="enterprise">企業級</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="funding-stage">融資階段</label>
+                    <select id="funding-stage">
+                        <option value="">所有階段</option>
+                        <option value="seed">種子輪</option>
+                        <option value="series_a">A輪</option>
+                        <option value="series_b">B輪</option>
+                        <option value="series_c">C輪</option>
+                        <option value="ipo">IPO</option>
+                        <option value="public">上市公司</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">地區</label>
+                    <input type="text" id="location" placeholder="例如：台北, 上海, 北京" value="台北, 上海, 北京">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="startIntelligentSearch()">
+                        🔍 開始智能搜索
+                    </button>
+                    <button class="btn btn-warning" onclick="clearResults()">
+                        🗑️ 清空結果
+                    </button>
+                </div>
+            </div>
+
+            <!-- 統計面板 -->
+            <div class="panel">
+                <h2>📊 發現統計</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-prospects">0</div>
+                        <div class="stat-label">總潛在客戶</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="high-score-prospects">0</div>
+                        <div class="stat-label">高分客戶</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="average-score">0</div>
+                        <div class="stat-label">平均評分</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-value" id="sources-used">0</div>
+                        <div class="stat-label">搜索來源</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>篩選條件</label>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>最低評分</label>
+                            <input type="number" id="min-score" placeholder="0" min="0" max="100" value="60">
+                        </div>
+                        <div class="filter-group">
+                            <label>行業</label>
+                            <select id="filter-industry">
+                                <option value="">所有行業</option>
+                                <option value="Technology">科技</option>
+                                <option value="Software">軟體</option>
+                                <option value="Internet">網路</option>
+                                <option value="Mobile">行動裝置</option>
+                                <option value="AI">人工智能</option>
+                                <option value="Fintech">金融科技</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>來源</label>
+                            <select id="filter-source">
+                                <option value="">所有來源</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="crunchbase">Crunchbase</option>
+                                <option value="angellist">AngelList</option>
+                                <option value="google_search">Google搜索</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-success btn-sm" onclick="applyFilters()">應用篩選</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索進度 -->
+        <div class="search-progress" id="search-progress">
+            <h3>🔍 正在搜索潛在客戶...</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progress-text">準備開始搜索...</div>
+            
+            <div id="source-status-list">
+                <!-- 來源狀態將在這裡顯示 -->
+            </div>
+        </div>
+
+        <!-- 潛在客戶列表 -->
+        <div class="panel" style="margin: 0 30px 30px;">
+            <h2>👥 發現的潛在客戶</h2>
+            
+            <div class="filter-panel">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>排序方式</label>
+                        <select id="sort-by" onchange="sortProspects()">
+                            <option value="score">評分</option>
+                            <option value="name">姓名</option>
+                            <option value="company">公司</option>
+                            <option value="industry">行業</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>排序順序</label>
+                        <select id="sort-order" onchange="sortProspects()">
+                            <option value="desc">降序</option>
+                            <option value="asc">升序</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary btn-sm" onclick="exportProspects()">📤 導出結果</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="prospect-list" id="prospect-list">
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <p>🔍 點擊「開始智能搜索」來發現潛在客戶</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入相關腳本 -->
+    <script src="intelligent-prospect-discovery.js"></script>
+    
+    <script>
+        // 全域變數
+        let discoveredProspects = [];
+        let filteredProspects = [];
+        let currentSearchId = null;
+
+        // 初始化界面
+        function initializeInterface() {
+            console.log('🚀 初始化智能客戶發現界面...');
+            
+            // 載入已保存的潛在客戶
+            loadSavedProspects();
+            
+            console.log('✅ 界面初始化完成');
+        }
+
+        // 開始智能搜索
+        async function startIntelligentSearch() {
+            console.log('🔍 開始智能搜索...');
+            
+            // 獲取搜索條件
+            const searchCriteria = getSearchCriteria();
+            
+            // 顯示搜索進度
+            showSearchProgress();
+            
+            try {
+                // 使用智能客戶發現系統
+                const results = await window.intelligentProspectDiscovery.intelligentSearch(searchCriteria);
+                
+                // 保存結果
+                discoveredProspects = results;
+                filteredProspects = [...results];
+                
+                // 更新統計
+                updateStats();
+                
+                // 顯示結果
+                displayProspects();
+                
+                // 隱藏搜索進度
+                hideSearchProgress();
+                
+                console.log(`✅ 搜索完成，發現 ${results.length} 個潛在客戶`);
+                
+            } catch (error) {
+                console.error('搜索失敗:', error);
+                hideSearchProgress();
+                alert('搜索失敗：' + error.message);
+            }
+        }
+
+        // 獲取搜索條件
+        function getSearchCriteria() {
+            return {
+                keywords: document.getElementById('search-keywords').value.split(',').map(k => k.trim()),
+                industry: document.getElementById('target-industry').value,
+                companySize: document.getElementById('company-size').value,
+                fundingStage: document.getElementById('funding-stage').value,
+                location: document.getElementById('location').value.split(',').map(l => l.trim())
+            };
+        }
+
+        // 顯示搜索進度
+        function showSearchProgress() {
+            const progressPanel = document.getElementById('search-progress');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const sourceStatusList = document.getElementById('source-status-list');
+            
+            progressPanel.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = '準備開始搜索...';
+            
+            // 顯示來源狀態
+            const sources = [
+                { name: 'LinkedIn', status: 'loading' },
+                { name: 'Crunchbase', status: 'loading' },
+                { name: 'AngelList', status: 'loading' },
+                { name: 'Google搜索', status: 'loading' }
+            ];
+            
+            sourceStatusList.innerHTML = '';
+            sources.forEach(source => {
+                const statusItem = document.createElement('div');
+                statusItem.className = `source-status ${source.status}`;
+                statusItem.innerHTML = `
+                    <span class="source-name">${source.name}</span>
+                    <span class="source-count">搜索中...</span>
+                `;
+                sourceStatusList.appendChild(statusItem);
+            });
+            
+            // 模擬搜索進度
+            simulateSearchProgress();
+        }
+
+        // 模擬搜索進度
+        function simulateSearchProgress() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const sourceStatusList = document.getElementById('source-status-list');
+            const sources = sourceStatusList.children;
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                
+                if (progress < 25) {
+                    progressText.textContent = '正在搜索LinkedIn...';
+                    if (sources[0]) sources[0].className = 'source-status loading';
+                } else if (progress < 50) {
+                    progressText.textContent = '正在搜索Crunchbase...';
+                    if (sources[0]) sources[0].className = 'source-status success';
+                    if (sources[0]) sources[0].querySelector('.source-count').textContent = '15個結果';
+                    if (sources[1]) sources[1].className = 'source-status loading';
+                } else if (progress < 75) {
+                    progressText.textContent = '正在搜索AngelList...';
+                    if (sources[1]) sources[1].className = 'source-status success';
+                    if (sources[1]) sources[1].querySelector('.source-count').textContent = '8個結果';
+                    if (sources[2]) sources[2].className = 'source-status loading';
+                } else if (progress < 100) {
+                    progressText.textContent = '正在搜索Google...';
+                    if (sources[2]) sources[2].className = 'source-status success';
+                    if (sources[2]) sources[2].querySelector('.source-count').textContent = '12個結果';
+                    if (sources[3]) sources[3].className = 'source-status loading';
+                } else {
+                    progressText.textContent = '搜索完成！';
+                    if (sources[3]) sources[3].className = 'source-status success';
+                    if (sources[3]) sources[3].querySelector('.source-count').textContent = '6個結果';
+                    clearInterval(interval);
+                }
+            }, 500);
+        }
+
+        // 隱藏搜索進度
+        function hideSearchProgress() {
+            document.getElementById('search-progress').style.display = 'none';
+        }
+
+        // 顯示潛在客戶
+        function displayProspects() {
+            const prospectList = document.getElementById('prospect-list');
+            
+            if (filteredProspects.length === 0) {
+                prospectList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #6c757d;">
+                        <p>😔 沒有找到符合條件的潛在客戶</p>
+                        <p>請嘗試調整搜索條件</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            prospectList.innerHTML = '';
+            
+            filteredProspects.forEach(prospect => {
+                const item = document.createElement('div');
+                item.className = 'prospect-item';
+                
+                const scoreClass = getScoreClass(prospect.score);
+                
+                item.innerHTML = `
+                    <div class="prospect-info">
+                        <div class="prospect-name">${prospect.name}</div>
+                        <div class="prospect-details">
+                            ${prospect.title} | ${prospect.company} | ${prospect.industry}
+                        </div>
+                        <div class="prospect-details">
+                            📍 ${prospect.location} | 💰 ${prospect.fundingStage} | 🏢 ${prospect.companySize}
+                        </div>
+                    </div>
+                    <div class="prospect-score">
+                        <span class="score-badge ${scoreClass}">${prospect.score}分</span>
+                    </div>
+                    <div class="prospect-actions">
+                        <button class="btn btn-primary btn-sm" onclick="viewProspectDetails('${prospect.id}')">查看詳情</button>
+                        <button class="btn btn-success btn-sm" onclick="addToSalesBot('${prospect.id}')">加入推銷</button>
+                    </div>
+                `;
+                
+                prospectList.appendChild(item);
+            });
+        }
+
+        // 獲取評分樣式類別
+        function getScoreClass(score) {
+            if (score >= 80) return 'score-high';
+            if (score >= 60) return 'score-medium';
+            return 'score-low';
+        }
+
+        // 更新統計
+        function updateStats() {
+            const total = discoveredProspects.length;
+            const highScore = discoveredProspects.filter(p => p.score >= 80).length;
+            const average = total > 0 ? Math.round(discoveredProspects.reduce((sum, p) => sum + p.score, 0) / total) : 0;
+            const sources = new Set(discoveredProspects.map(p => p.source)).size;
+            
+            document.getElementById('total-prospects').textContent = total;
+            document.getElementById('high-score-prospects').textContent = highScore;
+            document.getElementById('average-score').textContent = average;
+            document.getElementById('sources-used').textContent = sources;
+        }
+
+        // 應用篩選
+        function applyFilters() {
+            const minScore = parseInt(document.getElementById('min-score').value) || 0;
+            const filterIndustry = document.getElementById('filter-industry').value;
+            const filterSource = document.getElementById('filter-source').value;
+            
+            filteredProspects = discoveredProspects.filter(prospect => {
+                if (prospect.score < minScore) return false;
+                if (filterIndustry && prospect.industry !== filterIndustry) return false;
+                if (filterSource && prospect.source !== filterSource) return false;
+                return true;
+            });
+            
+            displayProspects();
+            console.log(`篩選後剩餘 ${filteredProspects.length} 個潛在客戶`);
+        }
+
+        // 排序潛在客戶
+        function sortProspects() {
+            const sortBy = document.getElementById('sort-by').value;
+            const sortOrder = document.getElementById('sort-order').value;
+            
+            filteredProspects.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch (sortBy) {
+                    case 'score':
+                        aValue = a.score;
+                        bValue = b.score;
+                        break;
+                    case 'name':
+                        aValue = a.name;
+                        bValue = b.name;
+                        break;
+                    case 'company':
+                        aValue = a.company;
+                        bValue = b.company;
+                        break;
+                    case 'industry':
+                        aValue = a.industry;
+                        bValue = b.industry;
+                        break;
+                    default:
+                        aValue = a.score;
+                        bValue = b.score;
+                }
+                
+                if (sortOrder === 'asc') {
+                    return aValue > bValue ? 1 : -1;
+                } else {
+                    return aValue < bValue ? 1 : -1;
+                }
+            });
+            
+            displayProspects();
+        }
+
+        // 查看潛在客戶詳情
+        function viewProspectDetails(prospectId) {
+            const prospect = discoveredProspects.find(p => p.id === prospectId);
+            if (!prospect) return;
+            
+            const details = `
+潛在客戶詳情：
+
+姓名：${prospect.name}
+職位：${prospect.title}
+公司：${prospect.company}
+行業：${prospect.industry}
+地區：${prospect.location}
+公司規模：${prospect.companySize}
+融資階段：${prospect.fundingStage}
+評分：${prospect.score}分
+
+聯繫方式：
+Email：${prospect.email}
+LinkedIn：${prospect.linkedin}
+電話：${prospect.phone}
+網站：${prospect.website}
+
+評分細項：
+${Object.entries(prospect.scoreBreakdown || {}).map(([key, value]) => 
+    `${key}: ${value.score}分 (權重: ${(value.weight * 100).toFixed(1)}%)`
+).join('\n')}
+
+發現來源：${prospect.source}
+發現時間：${new Date(prospect.discoveredAt).toLocaleString()}
+            `;
+            
+            alert(details);
+        }
+
+        // 加入推銷機器人
+        function addToSalesBot(prospectId) {
+            const prospect = discoveredProspects.find(p => p.id === prospectId);
+            if (!prospect) return;
+            
+            // 轉換為推銷機器人格式
+            const salesTarget = {
+                id: prospect.id,
+                name: prospect.name,
+                company: prospect.company,
+                type: getSalesTargetType(prospect),
+                email: prospect.email,
+                phone: prospect.phone,
+                linkedin: prospect.linkedin,
+                score: prospect.score,
+                industry: prospect.industry,
+                addedFrom: 'prospect_discovery'
+            };
+            
+            // 保存到localStorage
+            const existingTargets = JSON.parse(localStorage.getItem('aiSalesBotTargets') || '[]');
+            existingTargets.push(salesTarget);
+            localStorage.setItem('aiSalesBotTargets', JSON.stringify(existingTargets));
+            
+            alert(`✅ 已將 ${prospect.name} 加入推銷機器人目標列表！`);
+        }
+
+        // 獲取推銷目標類型
+        function getSalesTargetType(prospect) {
+            const title = prospect.title.toLowerCase();
+            if (title.includes('ceo') || title.includes('founder')) return 'ceo';
+            if (title.includes('cto')) return 'cto';
+            if (title.includes('investor') || title.includes('vc')) return 'venture_capitalist';
+            return 'other';
+        }
+
+        // 導出潛在客戶
+        function exportProspects() {
+            if (filteredProspects.length === 0) {
+                alert('沒有可導出的潛在客戶');
+                return;
+            }
+            
+            const csvContent = [
+                ['姓名', '職位', '公司', '行業', '地區', '評分', 'Email', 'LinkedIn', '來源'],
+                ...filteredProspects.map(p => [
+                    p.name, p.title, p.company, p.industry, p.location, 
+                    p.score, p.email, p.linkedin, p.source
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `prospects-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            console.log(`導出了 ${filteredProspects.length} 個潛在客戶`);
+        }
+
+        // 清空結果
+        function clearResults() {
+            if (confirm('確定要清空所有結果嗎？')) {
+                discoveredProspects = [];
+                filteredProspects = [];
+                displayProspects();
+                updateStats();
+                console.log('已清空所有結果');
+            }
+        }
+
+        // 載入已保存的潛在客戶
+        function loadSavedProspects() {
+            if (window.intelligentProspectDiscovery) {
+                const saved = window.intelligentProspectDiscovery.getProspects();
+                if (saved.length > 0) {
+                    discoveredProspects = saved;
+                    filteredProspects = [...saved];
+                    updateStats();
+                    displayProspects();
+                    console.log(`載入了 ${saved.length} 個已保存的潛在客戶`);
+                }
+            }
+        }
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeInterface, 500);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

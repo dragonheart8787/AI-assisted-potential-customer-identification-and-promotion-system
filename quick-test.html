@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系統功能測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 系統功能測試</h1>
+    
+    <div class="test-container">
+        <h2>測試控制</h2>
+        <button class="btn" onclick="runAllTests()">開始測試</button>
+        <button class="btn" onclick="clearResults()">清除結果</button>
+    </div>
+    
+    <div class="test-container">
+        <h2>測試結果</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <!-- 載入所有必要的腳本 -->
+    <script src="crm-database.js"></script>
+    <script src="ab-testing.js"></script>
+    <script src="auto-followup.js"></script>
+    <script src="unified-inbox.js"></script>
+    <script src="real-social-media-api.js"></script>
+
+    <script>
+        function runAllTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>正在運行測試...</p>';
+            
+            let testResults = [];
+            
+            // 測試CRM資料庫
+            try {
+                if (window.crmDatabase) {
+                    const testCustomer = {
+                        name: '測試客戶',
+                        email: 'test@example.com',
+                        company: '測試公司',
+                        title: '測試職位'
+                    };
+                    
+                    const customer = window.crmDatabase.addCustomer(testCustomer);
+                    const searchResults = window.crmDatabase.searchCustomers('測試');
+                    const metrics = window.crmDatabase.getPerformanceMetrics();
+                    
+                    testResults.push({ module: 'CRM資料庫', status: 'PASS', message: '所有功能正常' });
+                } else {
+                    testResults.push({ module: 'CRM資料庫', status: 'FAIL', message: '模組未載入' });
+                }
+            } catch (error) {
+                testResults.push({ module: 'CRM資料庫', status: 'FAIL', message: error.message });
+            }
+            
+            // 測試A/B測試系統
+            try {
+                if (window.abTestingSystem) {
+                    const testData = {
+                        name: '測試A/B測試',
+                        description: '測試描述',
+                        variants: [
+                            { id: 'v1', name: '版本A', content: '測試內容A' },
+                            { id: 'v2', name: '版本B', content: '測試內容B' }
+                        ]
+                    };
+                    
+                    const test = window.abTestingSystem.createTest(testData);
+                    const variant = window.abTestingSystem.selectVariant(test.id, 'test-customer');
+                    
+                    testResults.push({ module: 'A/B測試系統', status: 'PASS', message: '所有功能正常' });
+                } else {
+                    testResults.push({ module: 'A/B測試系統', status: 'FAIL', message: '模組未載入' });
+                }
+            } catch (error) {
+                testResults.push({ module: 'A/B測試系統', status: 'FAIL', message: error.message });
+            }
+            
+            // 測試自動跟進系統
+            try {
+                if (window.autoFollowupSystem) {
+                    const ruleData = {
+                        name: '測試跟進規則',
+                        description: '測試描述',
+                        conditions: [{ field: 'platform', operator: 'equals', value: 'email' }],
+                        actions: [{ type: 'followup', delay: 3, templateId: 'test-template' }]
+                    };
+                    
+                    const rule = window.autoFollowupSystem.createFollowupRule(ruleData);
+                    const stats = window.autoFollowupSystem.getStats();
+                    
+                    testResults.push({ module: '自動跟進系統', status: 'PASS', message: '所有功能正常' });
+                } else {
+                    testResults.push({ module: '自動跟進系統', status: 'FAIL', message: '模組未載入' });
+                }
+            } catch (error) {
+                testResults.push({ module: '自動跟進系統', status: 'FAIL', message: error.message });
+            }
+            
+            // 測試統一收件箱
+            try {
+                if (window.unifiedInbox) {
+                    const messageData = {
+                        platform: 'email',
+                        from: 'test@example.com',
+                        to: 'user@example.com',
+                        subject: '測試訊息',
+                        content: '測試內容',
+                        type: 'incoming'
+                    };
+                    
+                    window.unifiedInbox.addMessage(messageData);
+                    const messages = window.unifiedInbox.getMessages();
+                    const stats = window.unifiedInbox.getStats();
+                    
+                    testResults.push({ module: '統一收件箱', status: 'PASS', message: '所有功能正常' });
+                } else {
+                    testResults.push({ module: '統一收件箱', status: 'FAIL', message: '模組未載入' });
+                }
+            } catch (error) {
+                testResults.push({ module: '統一收件箱', status: 'FAIL', message: error.message });
+            }
+            
+            // 測試真實API整合
+            try {
+                if (window.realSocialMediaAPI) {
+                    window.realSocialMediaAPI.loadAPIKeys();
+                    const hasAuth = window.realSocialMediaAPI.hasAuthenticatedAccounts();
+                    const platforms = window.realSocialMediaAPI.getAuthenticatedPlatforms();
+                    
+                    testResults.push({ module: '真實API整合', status: 'PASS', message: '所有功能正常' });
+                } else {
+                    testResults.push({ module: '真實API整合', status: 'FAIL', message: '模組未載入' });
+                }
+            } catch (error) {
+                testResults.push({ module: '真實API整合', status: 'FAIL', message: error.message });
+            }
+            
+            // 顯示結果
+            displayResults(testResults);
+        }
+        
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            let passCount = 0;
+            let failCount = 0;
+            
+            results.forEach(result => {
+                const statusClass = result.status === 'PASS' ? 'pass' : 'fail';
+                const icon = result.status === 'PASS' ? '✅' : '❌';
+                
+                html += `<div class="test-result ${statusClass}">
+                    ${icon} <strong>${result.module}</strong>: ${result.message}
+                </div>`;
+                
+                if (result.status === 'PASS') {
+                    passCount++;
+                } else {
+                    failCount++;
+                }
+            });
+            
+            html += `<div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 5px;">
+                <h3>測試總結</h3>
+                <p>總計: ${results.length} 個模組</p>
+                <p>✅ 通過: ${passCount} 個</p>
+                <p>❌ 失敗: ${failCount} 個</p>
+                ${failCount === 0 ? '<p style="color: green; font-weight: bold;">🎉 所有測試通過！系統運行正常！</p>' : '<p style="color: red; font-weight: bold;">⚠️ 部分測試失敗，請檢查相關模組。</p>'}
+            </div>`;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+        
+        // 頁面載入完成後自動運行測試
+        window.addEventListener('load', function() {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
+

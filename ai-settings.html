@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 模型設定</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        input[type="password"] { font-family: monospace; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd6; }
+        .btn-secondary { background: #e9ecef; color: #333; margin-left: 10px; }
+        .hint { font-size: 12px; color: #888; margin-top: 4px; }
+        .status { padding: 10px; border-radius: 6px; margin-top: 20px; font-size: 14px; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI 模型設定</h1>
+        <p class="hint" style="margin-bottom: 20px;">設定 AI 模型以協助生成推廣訊息、客戶分類與智能搜尋</p>
+        
+        <div class="form-group">
+            <label>AI 提供者</label>
+            <select id="ai-provider">
+                <option value="local">本地規則引擎 (無需 API)</option>
+                <option value="openai">OpenAI (GPT)</option>
+            </select>
+            <p class="hint">本地模式使用內建規則，OpenAI 需配置 API 金鑰</p>
+        </div>
+        
+        <div class="form-group" id="api-key-group">
+            <label>OpenAI API 金鑰</label>
+            <input type="password" id="ai-api-key" placeholder="sk-...">
+            <p class="hint">金鑰僅儲存於本機，不會上傳</p>
+        </div>
+        
+        <div class="form-group">
+            <label>模型</label>
+            <select id="ai-model">
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            </select>
+        </div>
+        
+        <div style="margin-top: 25px;">
+            <button class="btn btn-primary" onclick="saveSettings()">💾 儲存設定</button>
+            <button class="btn btn-secondary" onclick="testConnection()">🧪 測試連線</button>
+        </div>
+        
+        <div id="status" class="status info" style="display: none;"></div>
+    </div>
+    
+    <script>
+        document.getElementById('ai-provider').addEventListener('change', function() {
+            document.getElementById('api-key-group').style.display = 
+                this.value === 'openai' ? 'block' : 'none';
+        });
+        
+        function loadSettings() {
+            if (window.aiAssistant) {
+                document.getElementById('ai-provider').value = window.aiAssistant.config.provider || 'local';
+                document.getElementById('ai-api-key').value = window.aiAssistant.config.apiKey || '';
+                document.getElementById('ai-model').value = window.aiAssistant.config.model || 'gpt-3.5-turbo';
+                document.getElementById('api-key-group').style.display = 
+                    window.aiAssistant.config.provider === 'openai' ? 'block' : 'none';
+            }
+        }
+        
+        function saveSettings() {
+            if (!window.aiAssistant) {
+                showStatus('AI 助手未載入，請重新整理主頁面', 'warning');
+                return;
+            }
+            window.aiAssistant.config.provider = document.getElementById('ai-provider').value;
+            window.aiAssistant.config.apiKey = document.getElementById('ai-api-key').value;
+            window.aiAssistant.config.model = document.getElementById('ai-model').value;
+            window.aiAssistant.saveConfig();
+            showStatus('設定已儲存！', 'success');
+        }
+        
+        async function testConnection() {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status info';
+            status.textContent = '測試中...';
+            
+            if (document.getElementById('ai-provider').value === 'local') {
+                try {
+                    const result = await window.aiAssistant.generatePromotionMessage({
+                        target: { name: '測試', company: '測試公司' },
+                        product: { name: '測試產品' },
+                        userProfile: { name: '測試用戶' }
+                    });
+                    status.className = 'status success';
+                    status.textContent = '本地 AI 運作正常！';
+                } catch (e) {
+                    status.className = 'status warning';
+                    status.textContent = '測試失敗: ' + e.message;
+                }
+                return;
+            }
+            
+            if (!document.getElementById('ai-api-key').value) {
+                status.className = 'status warning';
+                status.textContent = '請先輸入 API 金鑰';
+                return;
+            }
+            
+            saveSettings();
+            
+            try {
+                const result = await window.aiAssistant.generatePromotionMessage({
+                    target: { name: 'Test', company: 'Test Co' },
+                    product: { name: 'Test Product' },
+                    userProfile: { name: 'Test User' }
+                });
+                status.className = 'status success';
+                status.textContent = 'OpenAI 連線成功！';
+            } catch (e) {
+                status.className = 'status warning';
+                status.textContent = '連線失敗: ' + e.message;
+            }
+        }
+        
+        function showStatus(msg, type) {
+            const status = document.getElementById('status');
+            status.style.display = 'block';
+            status.className = 'status ' + type;
+            status.textContent = msg;
+        }
+        
+        if (window.opener && window.opener.aiAssistant) {
+            window.aiAssistant = window.opener.aiAssistant;
+        }
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html>

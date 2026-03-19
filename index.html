@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商家推廣系統 - 社交媒體客戶發現</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>商家推廣系統</h1>
+                    <p class="subtitle">鎖定所有商家與隱藏客群，從社交媒體發現適合客戶並建立聯繫</p>
+                </div>
+                <div class="app-controls">
+                <button class="btn btn-info btn-small" onclick="openSettings()">⚙️ 設定</button>
+                <button class="btn btn-secondary btn-small" onclick="exportData()">📤 匯出</button>
+                <button class="btn btn-warning btn-small" onclick="importData()">📥 匯入</button>
+                <span class="app-status" id="app-status">🟢 桌面應用程式</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 用戶資料設定區域 -->
+        <div class="user-profile-section">
+            <h2>👤 用戶資料設定</h2>
+            <div class="profile-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="user-name">姓名</label>
+                        <input type="text" id="user-name" placeholder="您的姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-company">公司</label>
+                        <input type="text" id="user-company" placeholder="您的公司">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="user-title">職位</label>
+                        <input type="text" id="user-title" placeholder="您的職位">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-industry">產業</label>
+                        <input type="text" id="user-industry" placeholder="您的產業">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="user-email">Email</label>
+                        <input type="email" id="user-email" placeholder="您的Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-linkedin">LinkedIn</label>
+                        <input type="text" id="user-linkedin" placeholder="您的LinkedIn">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="save-profile-btn">💾 保存資料</button>
+            </div>
+        </div>
+
+        <!-- 帳號登入區域 -->
+        <div class="account-login-section collapsible-section">
+            <button class="section-toggle" onclick="toggleSection('account-login')" aria-expanded="true">
+                <h2>🔐 社群媒體帳號登入</h2>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="section-content" id="account-login-content">
+            <div class="login-notice">
+                <p>⚠️ 請登入您的社群媒體帳號以啟用真實訊息發送功能</p>
+            </div>
+            <div class="platform-login-grid">
+                <div class="platform-login-card">
+                    <div class="platform-header twitter">
+                        <h3>🐦 Twitter/X</h3>
+                        <span class="status" id="twitter-status">未登入</span>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('twitter', 'manual')" id="twitter-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('twitter', 'google')" id="twitter-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="twitter-manual-inputs">
+                            <input type="text" id="twitter-username" placeholder="用戶名或Email">
+                            <input type="password" id="twitter-password" placeholder="密碼">
+                            <button class="btn btn-twitter" onclick="loginPlatform('twitter')">登入 Twitter</button>
+                        </div>
+                        <div class="login-inputs" id="twitter-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('twitter')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                使用Google登入Twitter
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('twitter')" style="display: none;" id="twitter-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <div class="platform-login-card">
+                    <div class="platform-header linkedin">
+                        <h3>💼 LinkedIn</h3>
+                        <span class="status" id="linkedin-status">未登入</span>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('linkedin', 'manual')" id="linkedin-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('linkedin', 'google')" id="linkedin-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="linkedin-manual-inputs">
+                            <input type="email" id="linkedin-email" placeholder="Email">
+                            <input type="password" id="linkedin-password" placeholder="密碼">
+                            <button class="btn btn-linkedin" onclick="loginPlatform('linkedin')">登入 LinkedIn</button>
+                        </div>
+                        <div class="login-inputs" id="linkedin-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('linkedin')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                使用Google登入LinkedIn
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('linkedin')" style="display: none;" id="linkedin-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <div class="platform-login-card">
+                    <div class="platform-header instagram">
+                        <h3>📸 Instagram</h3>
+                        <span class="status" id="instagram-status">未登入</span>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('instagram', 'manual')" id="instagram-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('instagram', 'google')" id="instagram-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="instagram-manual-inputs">
+                            <input type="text" id="instagram-username" placeholder="用戶名">
+                            <input type="password" id="instagram-password" placeholder="密碼">
+                            <button class="btn btn-instagram" onclick="loginPlatform('instagram')">登入 Instagram</button>
+                        </div>
+                        <div class="login-inputs" id="instagram-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('instagram')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                使用Google登入Instagram
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('instagram')" style="display: none;" id="instagram-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <div class="platform-login-card">
+                    <div class="platform-header facebook">
+                        <h3>📘 Facebook</h3>
+                        <span class="status" id="facebook-status">未登入</span>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('facebook', 'manual')" id="facebook-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('facebook', 'google')" id="facebook-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="facebook-manual-inputs">
+                            <input type="email" id="facebook-email" placeholder="Email">
+                            <input type="password" id="facebook-password" placeholder="密碼">
+                            <button class="btn btn-facebook" onclick="loginPlatform('facebook')">登入 Facebook</button>
+                        </div>
+                        <div class="login-inputs" id="facebook-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('facebook')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                使用Google登入Facebook
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('facebook')" style="display: none;" id="facebook-logout-btn">登出</button>
+                    </div>
+                </div>
+            </div>
+            <div class="login-actions">
+                <button class="btn btn-success" onclick="testAllConnections()">🧪 測試所有連接</button>
+                <button class="btn btn-info" onclick="clearAllLogins()">🗑️ 清除所有登入</button>
+                <button class="btn btn-primary" onclick="openAPISettings()">🔐 API設定</button>
+                <button class="btn btn-primary" onclick="openGoogleAPISettings()">🔑 Google API設定</button>
+                <button class="btn btn-warning" onclick="switchToRealLogin()">🚀 切換真實登入</button>
+                <button class="btn btn-primary" onclick="openCRMInterface()">📊 CRM管理</button>
+                <button class="btn btn-success" onclick="openAISettings()">🤖 AI設定</button>
+                <button class="btn btn-info" onclick="openPromotionWorkflow()">🔄 推廣工作流程</button>
+                <button class="btn btn-secondary" onclick="openProspectDiscovery()">🔍 客戶發現介面</button>
+            </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 左側：商家與客群選擇區域 -->
+            <div class="leaders-section">
+                <h2>📋 目標客戶（商家與隱藏客群）</h2>
+                <div class="social-discovery-bar">
+                    <input type="text" id="prospect-search-keywords" placeholder="關鍵字 (產業、地區...)">
+                    <select id="prospect-platform">
+                        <option value="all">全部平台</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter</option>
+                    </select>
+                    <select id="prospect-category">
+                        <option value="">商家類別</option>
+                        <option value="餐飲業">餐飲業</option>
+                        <option value="零售業">零售業</option>
+                        <option value="服飾業">服飾業</option>
+                        <option value="電商賣家">電商賣家</option>
+                        <option value="美容美髮">美容美髮</option>
+                        <option value="教育培訓">教育培訓</option>
+                        <option value="local_business">隱藏客群：在地商家</option>
+                        <option value="niche_community">隱藏客群：小眾社群</option>
+                        <option value="group_buyers">隱藏客群：團購群組</option>
+                        <option value="micro_influencers">隱藏客群：微網紅</option>
+                    </select>
+                    <button class="btn btn-primary btn-small" onclick="searchSocialProspects()">🔍 從社交媒體發現</button>
+                </div>
+                <div class="leaders-list" id="leaders-list">
+                    <!-- 動態生成客戶卡片 -->
+                </div>
+            </div>
+
+            <!-- 右側：訊息編輯區域 -->
+            <div class="message-section">
+                <div class="message-composer">
+                    <h2>✍️ 訊息編輯</h2>
+                    
+                    <!-- 策略模式切換 -->
+                    <div class="strategy-toggle">
+                        <div class="strategy-panel">
+                            <h4>🎯 對話式推銷模式</h4>
+                            <label class="toggle-label">
+                                <input type="checkbox" id="conversation-mode">
+                                <span>啟用對話式推銷策略（運用心理觸發點和個人化技巧）</span>
+                            </label>
+                            <div id="strategy-info" class="strategy-info">
+                                ✨ 將自動應用WIIFM原則、黃金一分鐘法則和心理觸發點
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模板選擇 -->
+                    <div class="template-selector">
+                        <h3>📝 訊息模板</h3>
+                        <div class="template-buttons">
+                            <button class="template-btn" data-template="product-intro">📦 產品介紹</button>
+                            <button class="template-btn" data-template="partnership">🤝 合作提案</button>
+                            <button class="template-btn" data-template="investment">💰 投資邀請</button>
+                            <button class="template-btn" data-template="feedback">💭 意見回饋</button>
+                        </div>
+                        <div id="template-strategy-hint" class="strategy-hint">
+                            <strong>💡 策略提示：</strong>
+                            <span id="hint-content"></span>
+                        </div>
+                    </div>
+
+                    <!-- 訊息內容編輯 -->
+                    <div class="message-editor">
+                        <div class="input-group">
+                            <label for="message-subject">主旨：</label>
+                            <input type="text" id="message-subject" placeholder="輸入訊息主旨...">
+                        </div>
+                        <div class="input-group">
+                            <label for="message-content">內容：</label>
+                            <textarea id="message-content" rows="8" placeholder="輸入訊息內容..."></textarea>
+                        </div>
+                        
+                        <!-- 個人化選項 -->
+                        <div class="personalization-options">
+                            <h4>🎨 個人化選項</h4>
+                            <div class="option-group">
+                                <label>
+                                    <input type="checkbox" id="auto-personalize" checked>
+                                    自動個人化（根據選中領袖調整內容）
+                                </label>
+                            </div>
+                            <div class="option-group">
+                                <label>
+                                    <input type="checkbox" id="platform-adapt" checked>
+                                    平台適配（根據社群平台調整格式）
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 發送選項 -->
+                        <div class="sending-options">
+                            <h4>📤 發送選項</h4>
+                            <div class="option-group">
+                                <label>
+                                    <input type="radio" name="send-mode" value="immediate" checked>
+                                    立即發送
+                                </label>
+                                <label>
+                                    <input type="radio" name="send-mode" value="scheduled">
+                                    排程發送
+                                </label>
+                            </div>
+                            <div id="schedule-options" class="schedule-options" style="display: none;">
+                                <input type="datetime-local" id="schedule-time">
+                            </div>
+                        </div>
+
+                        <!-- 操作按鈕 -->
+                        <div class="action-buttons">
+                            <button id="preview-btn" class="btn btn-secondary">👁️ 預覽</button>
+                            <button id="personalize-btn" class="btn btn-secondary">🎯 個人化</button>
+                            <button id="send-btn" class="btn btn-primary">📤 發送訊息</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 統計資訊 -->
+        <div class="stats-section">
+            <h3>📊 發送統計</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" id="total-sent">0</span>
+                    <span class="stat-label">已發送</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-pending">0</span>
+                    <span class="stat-label">待發送</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-failed">0</span>
+                    <span class="stat-label">發送失敗</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-leaders">0</span>
+                    <span class="stat-label">目標客戶</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 發送記錄 -->
+        <div class="log-section">
+            <h3>📋 發送記錄</h3>
+            <div class="log-table-container">
+                <table class="log-table" id="log-table">
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>目標</th>
+                            <th>平台</th>
+                            <th>主旨</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-tbody">
+                        <!-- 動態生成記錄 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 策略指南連結 -->
+        <div class="strategy-link">
+            <a href="strategy-guide.html" target="_blank" class="btn btn-outline">
+                📖 查看完整策略指南
+            </a>
+        </div>
+
+        <!-- 直接帳號控制區域 -->
+        <div class="direct-account-section collapsible-section">
+            <button class="section-toggle compact" onclick="toggleSection('direct-account')" aria-expanded="false">
+                <h3>🔐 直接帳號控制</h3>
+                <span class="toggle-icon">▶</span>
+            </button>
+            <div class="section-content collapsed" id="direct-account-content">
+            <div class="direct-controls">
+                <button class="btn btn-primary" id="open-account-manager">🔐 開啟帳號管理器</button>
+                <button class="btn btn-success" id="test-direct-sending">📤 測試直接發送</button>
+                <button class="btn btn-warning" id="check-account-status">📊 檢查帳號狀態</button>
+            </div>
+            <div class="account-status-display" id="account-status-display">
+                <div class="status-item">
+                    <span class="platform-name">X (Twitter)</span>
+                    <span class="status-indicator disconnected">未連接</span>
+                </div>
+                <div class="status-item">
+                    <span class="platform-name">LinkedIn</span>
+                    <span class="status-indicator disconnected">未連接</span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- 系統測試區域 -->
+        <div class="test-section collapsible-section">
+            <button class="section-toggle compact" onclick="toggleSection('test-section')" aria-expanded="false">
+                <h3>🧪 系統測試</h3>
+                <span class="toggle-icon">▶</span>
+            </button>
+            <div class="section-content collapsed" id="test-section-content">
+            <div class="test-controls">
+                <button class="btn btn-primary" id="run-all-tests">🚀 執行全面測試</button>
+                <button class="btn btn-secondary" id="test-ai-functions">🤖 測試AI功能</button>
+                <button class="btn btn-secondary" id="test-real-sending">📤 測試真實傳送</button>
+                <button class="btn btn-secondary" id="test-intelligent-bot">🤖 測試智能機器人</button>
+                <button class="btn btn-secondary" id="test-direct-control">🔐 測試直接帳號控制</button>
+            </div>
+            <div class="test-results" id="test-results">
+                <div class="test-status">等待測試...</div>
+            </div>
+            </div>
+        </div>
+
+        <footer class="main-footer">
+            <p>⚠️ 本系統僅供學習和策略規劃使用，實際發送功能為模擬</p>
+        </footer>
+    </div>
+
+    <!-- 預覽模態框 -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👁️ 訊息預覽</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="preview-content">
+                <!-- 預覽內容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功訊息模態框 -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✅ 發送成功</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="success-content">
+                <!-- 成功訊息內容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入相關腳本 -->
+    <script src="contacts.js"></script>
+    <script src="templates.js"></script>
+    <script src="social-media-prospect-crawler.js"></script>
+    <script src="ai-assistant.js"></script>
+    <script src="ai-promotion-workflow.js"></script>
+    <script src="messaging.js"></script>
+    <script src="conversation-enhancer.js"></script>
+    <script src="real-account-integration.js"></script>
+    <script src="ai-conversation-model.js"></script>
+    <script src="ai-enhancement-module.js"></script>
+    <script src="account-login-manager.js"></script>
+    <script src="real-social-media-api.js"></script>
+    <script src="crm-database.js"></script>
+    <script src="ab-testing.js"></script>
+    <script src="auto-followup.js"></script>
+    <script src="unified-inbox.js"></script>
+    <script src="google-oauth-integration.js"></script>
+    <script src="simple-google-login.js"></script>
+    <script src="test-system.js"></script>
+    <script>
+        // 初始化訊息發送系統
+        function initializeMessagingSystem() {
+            window.messagingSystem = new MessagingSystem();
+            
+            // 綁定用戶資料保存事件
+            document.getElementById('save-profile-btn').addEventListener('click', function() {
+                const profile = {
+                    name: document.getElementById('user-name').value,
+                    company: document.getElementById('user-company').value,
+                    title: document.getElementById('user-title').value,
+                    industry: document.getElementById('user-industry').value,
+                    email: document.getElementById('user-email').value,
+                    linkedin: document.getElementById('user-linkedin').value
+                };
+                
+                localStorage.setItem('userProfile', JSON.stringify(profile));
+                
+                // 更新對話增強器的用戶資料
+                if (window.conversationEnhancer) {
+                    window.conversationEnhancer.userProfile = profile;
+                }
+                
+                alert('用戶資料已保存！');
+            });
+            
+            // 載入已保存的用戶資料
+            const savedProfile = localStorage.getItem('userProfile');
+            if (savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                document.getElementById('user-name').value = profile.name || '';
+                document.getElementById('user-company').value = profile.company || '';
+                document.getElementById('user-title').value = profile.title || '';
+                document.getElementById('user-industry').value = profile.industry || '';
+                document.getElementById('user-email').value = profile.email || '';
+                document.getElementById('user-linkedin').value = profile.linkedin || '';
+            }
+            
+            // 更新發送按鈕以支援真實發送
+            const sendBtn = document.getElementById('send-btn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', async function() {
+                    const hasRealAccounts = window.realSocialMediaAPI && 
+                                         window.realSocialMediaAPI.hasAuthenticatedAccounts();
+                    
+                    if (hasRealAccounts) {
+                        const useRealAccount = confirm('檢測到已認證的真實帳號。是否使用真實帳號發送訊息？\n\n選擇「確定」使用真實帳號發送\n選擇「取消」使用模擬發送');
+                        
+                        if (useRealAccount) {
+                            await sendRealMessages();
+                        } else {
+                            // 使用原有的模擬發送
+                            window.messagingSystem.sendMessage();
+                        }
+                    } else {
+                        // 沒有真實帳號，使用模擬發送
+                        window.messagingSystem.sendMessage();
+                    }
+                });
+            }
+            
+            // 真實發送訊息函數
+            async function sendRealMessages() {
+                const selectedLeaders = window.conversationEnhancer ? 
+                    window.conversationEnhancer.getSelectedLeaders() : [];
+                
+                if (selectedLeaders.length === 0) {
+                    alert('請先選擇目標領袖');
+                    return;
+                }
+                
+                const subject = document.getElementById('message-subject').value;
+                const content = document.getElementById('message-content').value;
+                
+                if (!subject || !content) {
+                    alert('請填寫訊息主旨和內容');
+                    return;
+                }
+                
+                const messages = [];
+                
+                selectedLeaders.forEach(leader => {
+                    // 為每個領袖的每個平台創建訊息
+                    Object.entries(leader.platforms).forEach(([platform, platformInfo]) => {
+                        if (platformInfo.active && window.realSocialMediaAPI.authenticatedAccounts[platform]) {
+                            messages.push({
+                                platform: platform,
+                                data: {
+                                    recipientId: platformInfo.handle,
+                                    subject: subject,
+                                    message: content
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                if (messages.length === 0) {
+                    alert('沒有找到匹配的已認證帳號和目標平台');
+                    return;
+                }
+                
+                try {
+                    const results = [];
+                    
+                    for (const message of messages) {
+                        try {
+                            const result = await window.realSocialMediaAPI.sendRealMessage(
+                                message.platform,
+                                message.data.recipientId,
+                                message.data.message
+                            );
+                            results.push({ ...message, success: true, result });
+                        } catch (error) {
+                            results.push({ ...message, success: false, error: error.message });
+                        }
+                    }
+                    
+                    let successCount = 0;
+                    let failCount = 0;
+                    
+                    results.forEach(result => {
+                        if (result.success) {
+                            successCount++;
+                        } else {
+                            failCount++;
+                        }
+                    });
+                    
+                    alert(`發送完成！\n成功: ${successCount} 則\n失敗: ${failCount} 則`);
+                    
+                    // 清空表單
+                    document.getElementById('message-subject').value = '';
+                    document.getElementById('message-content').value = '';
+                    
+                } catch (error) {
+                    alert(`發送失敗: ${error.message}`);
+                }
+            }
+            
+            // 綁定測試按鈕事件
+            document.addEventListener('click', (e) => {
+                if (e.target.id === 'run-all-tests') {
+                    runAllTests();
+                } else if (e.target.id === 'test-ai-functions') {
+                    testAIFunctions();
+                } else if (e.target.id === 'test-real-sending') {
+                    testRealSending();
+                } else if (e.target.id === 'test-intelligent-bot') {
+                    testIntelligentBot();
+                } else if (e.target.id === 'test-direct-control') {
+                    testDirectControl();
+                } else if (e.target.id === 'open-account-manager') {
+                    openAccountManager();
+                } else if (e.target.id === 'test-direct-sending') {
+                    testDirectSending();
+                } else if (e.target.id === 'check-account-status') {
+                    checkAccountStatus();
+                }
+            });
+            
+            // 執行全面測試
+            async function runAllTests() {
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '<div class="test-status running">正在執行全面測試...</div>';
+                
+                try {
+                    const tester = new SystemTester();
+                    await tester.runAllTests();
+                    
+                    const { passed, failed, total } = tester.testResults;
+                    const successRate = ((passed / total) * 100).toFixed(1);
+                    
+                    testResults.innerHTML = `
+                        <div class="test-status success">測試完成！成功率: ${successRate}%</div>
+                        <div class="test-details">
+                            <div class="test-detail-item">
+                                <span class="test-detail-name">總測試數</span>
+                                <span class="test-detail-status passed">${total}</span>
+                            </div>
+                            <div class="test-detail-item">
+                                <span class="test-detail-name">通過</span>
+                                <span class="test-detail-status passed">${passed}</span>
+                            </div>
+                            <div class="test-detail-item">
+                                <span class="test-detail-name">失敗</span>
+                                <span class="test-detail-status failed">${failed}</span>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML = `<div class="test-status error">測試失敗: ${error.message}</div>`;
+                }
+            }
+            
+            // 測試AI功能
+            async function testAIFunctions() {
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '<div class="test-status running">正在測試AI功能...</div>';
+                
+                try {
+                    const tests = [
+                        { name: 'AI對話模型', test: () => typeof window.aiConversationModel !== 'undefined' },
+                        { name: 'AI建議功能', test: () => document.getElementById('ai-suggest') !== null },
+                        { name: 'AI生成功能', test: () => document.getElementById('ai-generate') !== null },
+                        { name: 'AI分析功能', test: () => document.getElementById('ai-analyze') !== null },
+                        { name: 'AI優化功能', test: () => document.getElementById('ai-optimize') !== null }
+                    ];
+                    
+                    let passed = 0;
+                    const results = [];
+                    
+                    for (const test of tests) {
+                        try {
+                            const result = await test.test();
+                            if (result) passed++;
+                            results.push({ name: test.name, status: result ? 'passed' : 'failed' });
+                        } catch (error) {
+                            results.push({ name: test.name, status: 'error' });
+                        }
+                    }
+                    
+                    const successRate = ((passed / tests.length) * 100).toFixed(1);
+                    
+                    testResults.innerHTML = `
+                        <div class="test-status success">AI功能測試完成！成功率: ${successRate}%</div>
+                        <div class="test-details">
+                            ${results.map(r => `
+                                <div class="test-detail-item">
+                                    <span class="test-detail-name">${r.name}</span>
+                                    <span class="test-detail-status ${r.status}">${r.status === 'passed' ? '✅' : '❌'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML = `<div class="test-status error">AI功能測試失敗: ${error.message}</div>`;
+                }
+            }
+            
+            // 測試真實傳送
+            async function testRealSending() {
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '<div class="test-status running">正在測試真實傳送功能...</div>';
+                
+                try {
+                    const tests = [
+                        { name: '真實帳號整合', test: () => typeof window.realAccountIntegration !== 'undefined' },
+                        { name: 'API端點配置', test: () => window.realAccountIntegration && window.realAccountIntegration.apiEndpoints },
+                        { name: '平台支援', test: () => window.realAccountIntegration && window.realAccountIntegration.getSupportedPlatforms().length > 0 },
+                        { name: '帳號管理', test: () => window.realAccountIntegration && typeof window.realAccountIntegration.hasAuthenticatedAccounts === 'function' }
+                    ];
+                    
+                    let passed = 0;
+                    const results = [];
+                    
+                    for (const test of tests) {
+                        try {
+                            const result = await test.test();
+                            if (result) passed++;
+                            results.push({ name: test.name, status: result ? 'passed' : 'failed' });
+                        } catch (error) {
+                            results.push({ name: test.name, status: 'error' });
+                        }
+                    }
+                    
+                    const successRate = ((passed / tests.length) * 100).toFixed(1);
+                    
+                    testResults.innerHTML = `
+                        <div class="test-status success">真實傳送測試完成！成功率: ${successRate}%</div>
+                        <div class="test-details">
+                            ${results.map(r => `
+                                <div class="test-detail-item">
+                                    <span class="test-detail-name">${r.name}</span>
+                                    <span class="test-detail-status ${r.status}">${r.status === 'passed' ? '✅' : '❌'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML = `<div class="test-status error">真實傳送測試失敗: ${error.message}</div>`;
+                }
+            }
+            
+            // 測試智能機器人
+            async function testIntelligentBot() {
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '<div class="test-status running">正在測試智能機器人...</div>';
+                
+                try {
+                    const tests = [
+                        { name: '智能機器人初始化', test: () => typeof window.intelligentAutoBot !== 'undefined' },
+                        { name: '智能引擎', test: () => window.intelligentAutoBot && window.intelligentAutoBot.intelligenceEngine },
+                        { name: '實時追蹤', test: () => window.intelligentAutoBot && window.intelligentAutoBot.realTimeTracker },
+                        { name: '自動回應', test: () => window.intelligentAutoBot && window.intelligentAutoBot.autoResponder },
+                        { name: '真實傳送測試', test: () => window.intelligentAutoBot && typeof window.intelligentAutoBot.testRealSending === 'function' }
+                    ];
+                    
+                    let passed = 0;
+                    const results = [];
+                    
+                    for (const test of tests) {
+                        try {
+                            const result = await test.test();
+                            if (result) passed++;
+                            results.push({ name: test.name, status: result ? 'passed' : 'failed' });
+                        } catch (error) {
+                            results.push({ name: test.name, status: 'error' });
+                        }
+                    }
+                    
+                    const successRate = ((passed / tests.length) * 100).toFixed(1);
+                    
+                    testResults.innerHTML = `
+                        <div class="test-status success">智能機器人測試完成！成功率: ${successRate}%</div>
+                        <div class="test-details">
+                            ${results.map(r => `
+                                <div class="test-detail-item">
+                                    <span class="test-detail-name">${r.name}</span>
+                                    <span class="test-detail-status ${r.status}">${r.status === 'passed' ? '✅' : '❌'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML = `<div class="test-status error">智能機器人測試失敗: ${error.message}</div>`;
+                }
+            }
+            
+            // 測試直接帳號控制
+            async function testDirectControl() {
+                const testResults = document.getElementById('test-results');
+                testResults.innerHTML = '<div class="test-status running">正在測試直接帳號控制...</div>';
+                
+                try {
+                    const tests = [
+                        { name: '直接帳號控制模組', test: () => typeof window.directAccountControl !== 'undefined' },
+                        { name: '帳號管理器', test: () => typeof window.accountManager !== 'undefined' },
+                        { name: '瀏覽器自動化', test: () => window.directAccountControl && window.directAccountControl.browserAutomation },
+                        { name: '帳號連接功能', test: () => window.directAccountControl && typeof window.directAccountControl.connectAccount === 'function' },
+                        { name: '直接發送功能', test: () => window.directAccountControl && typeof window.directAccountControl.sendDirectMessage === 'function' }
+                    ];
+                    
+                    let passed = 0;
+                    const results = [];
+                    
+                    for (const test of tests) {
+                        try {
+                            const result = await test.test();
+                            if (result) passed++;
+                            results.push({ name: test.name, status: result ? 'passed' : 'failed' });
+                        } catch (error) {
+                            results.push({ name: test.name, status: 'error' });
+                        }
+                    }
+                    
+                    const successRate = ((passed / tests.length) * 100).toFixed(1);
+                    
+                    testResults.innerHTML = `
+                        <div class="test-status success">直接帳號控制測試完成！成功率: ${successRate}%</div>
+                        <div class="test-details">
+                            ${results.map(r => `
+                                <div class="test-detail-item">
+                                    <span class="test-detail-name">${r.name}</span>
+                                    <span class="test-detail-status ${r.status}">${r.status === 'passed' ? '✅' : '❌'}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML = `<div class="test-status error">直接帳號控制測試失敗: ${error.message}</div>`;
+                }
+            }
+            
+            // 開啟帳號管理器
+            function openAccountManager() {
+                window.open('secure-account-manager.html', '_blank', 'width=900,height=700');
+            }
+            
+            // 測試直接發送
+            async function testDirectSending() {
+                if (!window.directAccountControl) {
+                    alert('直接帳號控制模組未載入');
+                    return;
+                }
+                
+                if (!window.directAccountControl.hasConnectedAccounts()) {
+                    alert('請先連接至少一個帳號');
+                    return;
+                }
+                
+                const testMessage = `🧪 測試訊息\n\n時間: ${new Date().toLocaleString()}\n\n這是一條來自AI推銷助手的測試訊息。`;
+                
+                try {
+                    const connectedAccounts = window.directAccountControl.getConnectedAccounts();
+                    const results = [];
+                    
+                    for (const platform of connectedAccounts) {
+                        const result = await window.directAccountControl.sendDirectMessage(
+                            platform,
+                            'test_recipient',
+                            testMessage
+                        );
+                        results.push({ platform, ...result });
+                    }
+                    
+                    const successCount = results.filter(r => r.success).length;
+                    alert(`測試完成！\n成功: ${successCount}/${results.length} 個平台`);
+                    
+                } catch (error) {
+                    alert(`測試失敗: ${error.message}`);
+                }
+            }
+            
+            // 檢查帳號狀態
+            function checkAccountStatus() {
+                if (!window.directAccountControl) {
+                    alert('直接帳號控制模組未載入');
+                    return;
+                }
+                
+                const connectedAccounts = window.directAccountControl.getConnectedAccounts();
+                const statusDisplay = document.getElementById('account-status-display');
+                
+                if (statusDisplay) {
+                    const platforms = ['twitter', 'linkedin'];
+                    platforms.forEach(platform => {
+                        const statusItem = statusDisplay.querySelector(`[data-platform="${platform}"]`);
+                        if (statusItem) {
+                            const isConnected = connectedAccounts.includes(platform);
+                            const statusIndicator = statusItem.querySelector('.status-indicator');
+                            statusIndicator.textContent = isConnected ? '已連接' : '未連接';
+                            statusIndicator.className = `status-indicator ${isConnected ? 'connected' : 'disconnected'}`;
+                        }
+                    });
+                }
+                
+                alert(`帳號狀態:\n${connectedAccounts.length > 0 ? connectedAccounts.join('\n') : '沒有已連接的帳號'}`);
+            }
+            
+            // 桌面應用程式功能
+            function openSettings() {
+                window.location.href = 'app-settings.html';
+            }
+            
+            function exportData() {
+                if (window.appUtils && window.appUtils.dataManager) {
+                    window.appUtils.dataManager.exportData();
+                } else {
+                    alert('桌面應用程式功能不可用');
+                }
+            }
+            
+            function importData() {
+                if (window.appUtils && window.appUtils.dataManager) {
+                    window.appUtils.dataManager.importData();
+                } else {
+                    alert('桌面應用程式功能不可用');
+                }
+            }
+            
+            // 檢查是否為桌面應用程式
+            function checkAppMode() {
+                const isElectron = window.appUtils && window.appUtils.system && window.appUtils.system.isElectron;
+                const statusElement = document.getElementById('app-status');
+                
+                if (statusElement) {
+                    if (isElectron) {
+                        statusElement.textContent = '🟢 桌面應用程式';
+                        statusElement.className = 'app-status electron';
+                    } else {
+                        statusElement.textContent = '🌐 網頁模式';
+                        statusElement.className = 'app-status web';
+                    }
+                }
+            }
+            
+            // 初始化桌面應用程式功能
+            function initializeApp() {
+                checkAppMode();
+                
+                // 如果是在桌面應用程式中，顯示通知
+                if (window.appUtils && window.appUtils.system && window.appUtils.system.isElectron) {
+                    if (window.appUtils.notification) {
+                        window.appUtils.notification.show(
+                            '歡迎使用',
+                            'AI 推銷助手桌面應用程式已啟動',
+                            'success'
+                        );
+                    }
+                }
+            
+            // 切換到真實登入模式
+            function switchToRealLogin() {
+                if (confirm('確定要切換到真實登入模式嗎？\n\n這將使用真實的社群媒體API進行登入和發送訊息。\n請確保您已經配置了相應的API金鑰。')) {
+                    // 更新登入按鈕事件
+                    updateLoginButtonsToReal();
+                    alert('已切換到真實登入模式！\n\n請先配置API金鑰，然後嘗試登入。');
+                }
+            }
+            
+            // 更新登入按鈕為真實登入
+            function updateLoginButtonsToReal() {
+                const platforms = ['twitter', 'linkedin', 'instagram', 'facebook'];
+                
+                platforms.forEach(platform => {
+                    const loginBtn = document.querySelector(`[onclick="loginPlatform('${platform}')"]`);
+                    if (loginBtn) {
+                        loginBtn.onclick = async () => {
+                            const username = document.getElementById(`${platform}-username`) || 
+                                          document.getElementById(`${platform}-email`);
+                            const password = document.getElementById(`${platform}-password`);
+                            
+                            if (!username || !password) {
+                                alert('請填寫用戶名和密碼');
+                                return;
+                            }
+                            
+                            try {
+                                await window.realSocialMediaAPI.realLogin(platform, username.value, password.value);
+                                // 更新UI狀態
+                                if (window.accountLoginManager) {
+                                    window.accountLoginManager.updateLoginStatus(platform, 'logged-in');
+                                    window.accountLoginManager.updatePlatformUI(platform);
+                                }
+                            } catch (error) {
+                                alert(`登入失敗: ${error.message}`);
+                            }
+                        };
+                    }
+                });
+            }
+            
+            // 開啟API設定頁面
+            function openAPISettings() {
+                window.open('api-settings.html', 'api_settings', 'width=900,height=700,scrollbars=yes,resizable=yes');
+            }
+            
+            // 開啟Google API設定頁面
+            function openGoogleAPISettings() {
+                window.open('google-api-settings.html', 'google_api_settings', 'width=900,height=800,scrollbars=yes,resizable=yes');
+            }
+            
+            // 開啟CRM管理介面
+            function openCRMInterface() {
+                window.open('crm-interface.html', 'crm_interface', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            }
+            
+            // 開啟 AI 設定
+            function openAISettings() {
+                window.open('ai-settings.html', 'ai_settings', 'width=600,height=500,scrollbars=yes,resizable=yes');
+            }
+            
+            // 開啟客戶發現介面
+            function openProspectDiscovery() {
+                window.open('prospect-discovery-interface.html', 'prospect_discovery', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            }
+            
+            // 開啟推廣工作流程
+            function openPromotionWorkflow() {
+                window.open('ai-promotion-workflow.html', 'promotion_workflow', 'width=900,height=700,scrollbars=yes,resizable=yes');
+            }
+            
+            // 從社交媒體搜尋潛在客戶
+            async function searchSocialProspects() {
+                const keywords = document.getElementById('prospect-search-keywords')?.value || '';
+                const platform = document.getElementById('prospect-platform')?.value || 'all';
+                const categoryVal = document.getElementById('prospect-category')?.value || '';
+                
+                const hiddenGroups = ['local_business', 'niche_community', 'group_buyers', 'micro_influencers', 'startup_founders', 'franchise_owners', 'reseller_network', 'interest_based'];
+                const isHiddenGroup = hiddenGroups.includes(categoryVal);
+                const category = isHiddenGroup ? '' : categoryVal;
+                const customerGroup = isHiddenGroup ? categoryVal : '';
+                
+                if (!window.socialMediaProspectCrawler) {
+                    alert('社交媒體發現模組未載入');
+                    return;
+                }
+                
+                const btn = document.querySelector('.social-discovery-bar button');
+                if (btn) btn.disabled = true;
+                
+                try {
+                    const results = await window.socialMediaProspectCrawler.searchProspects({
+                        keywords, platform, category, customerGroup, limit: 15
+                    });
+                    if (window.messagingSystem) window.messagingSystem.renderLeadersList();
+                    alert(`發現 ${results.length} 位潛在客戶！已加入目標列表。`);
+                } catch (e) {
+                    alert('搜尋失敗: ' + e.message);
+                }
+                if (btn) btn.disabled = false;
+            }
+            
+            // 切換登入方法
+            function switchLoginMethod(platform, method) {
+                const manualBtn = document.getElementById(`${platform}-manual-btn`);
+                const googleBtn = document.getElementById(`${platform}-google-btn`);
+                const manualInputs = document.getElementById(`${platform}-manual-inputs`);
+                const googleInputs = document.getElementById(`${platform}-google-inputs`);
+                
+                if (method === 'manual') {
+                    manualBtn.classList.add('active');
+                    googleBtn.classList.remove('active');
+                    manualInputs.style.display = 'block';
+                    googleInputs.style.display = 'none';
+                } else {
+                    manualBtn.classList.remove('active');
+                    googleBtn.classList.add('active');
+                    manualInputs.style.display = 'none';
+                    googleInputs.style.display = 'block';
+                }
+            }
+            
+            // Google登入功能
+            async function loginWithGoogle(platform) {
+                try {
+                    console.log(`開始${platform}的Google登入...`);
+                    
+                    // 檢查簡化版Google登入模組是否可用
+                    if (!window.simpleGoogleLogin) {
+                        alert('Google登入模組尚未載入。\n\n請重新整理頁面後再試。');
+                        return;
+                    }
+                    
+                    // 使用簡化版Google登入
+                    await window.simpleGoogleLogin.loginWithGoogleAccount(platform);
+                    
+                    // 同步到帳號登入管理器
+                    if (window.accountLoginManager) {
+                        window.accountLoginManager.updateLoginStatus(platform, 'logged-in');
+                    }
+                    
+                } catch (error) {
+                    console.error('Google登入錯誤:', error);
+                    // 錯誤處理已在simpleGoogleLogin中完成
+                }
+            }
+            
+            // 登出功能
+            function logoutPlatform(platform) {
+                // 使用簡化版Google登入模組登出
+                if (window.simpleGoogleLogin && window.simpleGoogleLogin.isLoggedIn(platform)) {
+                    window.simpleGoogleLogin.logout(platform);
+                }
+                
+                // 同步到帳號登入管理器
+                if (window.accountLoginManager) {
+                    window.accountLoginManager.handleLogout(platform);
+                }
+            }
+            
+            // 測試所有連接
+            function testAllConnections() {
+                // 優先使用簡化版Google登入模組
+                if (window.simpleGoogleLogin) {
+                    window.simpleGoogleLogin.testAllConnections();
+                } else if (window.accountLoginManager) {
+                    window.accountLoginManager.testAllConnections();
+                } else {
+                    alert('測試連接功能');
+                }
+            }
+
+            // 清除所有登入
+            function clearAllLogins() {
+                // 優先使用簡化版Google登入模組
+                if (window.simpleGoogleLogin) {
+                    window.simpleGoogleLogin.clearAllLogins();
+                } else if (window.accountLoginManager) {
+                    window.accountLoginManager.clearAllLogins();
+                } else {
+                    alert('清除登入功能');
+                }
+            }
+            
+            // 初始化Google OAuth
+            async function initiateGoogleOAuth(platform) {
+                return new Promise((resolve) => {
+                    // 模擬Google OAuth流程
+                    setTimeout(() => {
+                        // 這裡應該整合真實的Google OAuth API
+                        // 目前先返回模擬成功結果
+                        resolve({
+                            success: true,
+                            accessToken: 'mock_google_token_' + platform,
+                            userInfo: {
+                                email: 'user@gmail.com',
+                                name: 'Google用戶',
+                                platform: platform
+                            }
+                        });
+                    }, 2000);
+                });
+            }
+            
+            // 摺疊區塊切換
+            function toggleSection(sectionId) {
+                const content = document.getElementById(sectionId + '-content');
+                const btn = content?.closest('.collapsible-section')?.querySelector('.section-toggle');
+                const icon = btn?.querySelector('.toggle-icon');
+                if (!content || !btn) return;
+                const isCollapsed = content.classList.contains('collapsed');
+                content.classList.toggle('collapsed', !isCollapsed);
+                btn.setAttribute('aria-expanded', isCollapsed);
+                if (icon) icon.textContent = isCollapsed ? '▼' : '▶';
+            }
+            
+            // 統一的初始化函數
+            function initializeAll() {
+                try {
+                    initializeMessagingSystem();
+                    initializeApp();
+                    console.log('✅ 所有系統初始化完成');
+                } catch (error) {
+                    console.error('❌ 初始化錯誤:', error);
+                }
+            }
+        });
+            
+            // 頁面載入完成後執行初始化
+            document.addEventListener('DOMContentLoaded', function() {
+                // 等待所有腳本載入完成
+                setTimeout(initializeAll, 500);
+        });
+    </script>
+</body>
+</html> 

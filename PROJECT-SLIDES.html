@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>科技高層自動訊息發送與AI推銷系統｜簡報</title>
+	<style>
+		@page { size: A4; margin: 14mm; }
+		* { box-sizing: border-box; }
+		body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', Arial, sans-serif; color: #111; margin: 0; }
+		.container { max-width: 1080px; margin: 0 auto; padding: 24px; }
+		.slide { page-break-after: always; padding: 32px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 24px; }
+		.slide h1, .slide h2 { margin: 0 0 12px; }
+		.slide h1 { font-size: 28px; color: #222; }
+		.slide h2 { font-size: 22px; color: #333; }
+		.badge { display: inline-block; background: #eef2ff; color: #3730a3; padding: 2px 8px; border-radius: 999px; font-weight: 600; font-size: 12px; }
+		ul { margin: 8px 0 0 18px; }
+		li { margin: 6px 0; }
+		.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+		.kpi { background: #f9fafb; border: 1px solid #eee; border-radius: 10px; padding: 12px; }
+		.kpi h3 { margin: 0 0 6px; font-size: 14px; color: #555; }
+		.kpi p { margin: 0; font-size: 22px; font-weight: 700; color: #111; }
+		.code { background: #0b1020; color: #e5e7eb; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+		.footer { text-align: right; color: #666; font-size: 12px; margin-top: 6px; }
+		@media print { .slide { box-shadow: none; } }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<section class="slide">
+			<span class="badge">專案簡報</span>
+			<h1>科技高層自動訊息發送與AI推銷系統</h1>
+			<ul>
+				<li>目的：以AI自動化外聯、最佳化訊息、提升回覆與轉換</li>
+				<li>範疇：潛客發現、批量外聯、跟進、儀表板、AI助手</li>
+				<li>技術：HTML/CSS/JS、localStorage（可延展後端/雲端）</li>
+			</ul>
+			<div class="footer">v1.0</div>
+		</section>
+
+		<section class="slide">
+			<h2>系統架構與模組</h2>
+			<ul>
+				<li>OAuth/社群：real-google-oauth.js、real-social-media-api.js</li>
+				<li>AI聊天：advanced-ai-chat-engine.js、smart-chat-interface.html</li>
+				<li>AI推銷：ai-sales-bot.js、ai-sales-bot-interface.html</li>
+				<li>潛客發現：intelligent-prospect-discovery.js、prospect-discovery-interface.html</li>
+				<li>最佳化：smart-sales-optimization.js、A/B測試</li>
+				<li>儀表板：real-time-analytics-dashboard.html</li>
+			</ul>
+		</section>
+
+		<section class="slide">
+			<h2>核心流程</h2>
+			<ol>
+				<li>設定 Google Client ID 與平台登入</li>
+				<li>智能客戶發現與評分排序</li>
+				<li>加入推銷名單並批量外聯</li>
+				<li>自動化跟進（節流與延遲）</li>
+				<li>儀表板監控與最佳化（主旨/內容/時機/A/B）</li>
+			</ol>
+		</section>
+
+		<section class="slide">
+			<h2>關鍵能力</h2>
+			<ul>
+				<li>Google OAuth 帳號選擇器體驗</li>
+				<li>AI情感/意圖分析與自動回覆</li>
+				<li>投資人/CEO 模板與個性化產生</li>
+				<li>潛客多來源搜尋與多維度評分</li>
+				<li>主旨/內容/時機 智能最佳化</li>
+				<li>實時儀表板與警報</li>
+			</ul>
+		</section>
+
+		<section class="slide">
+			<h2>安全與資料</h2>
+			<ul>
+				<li>localStorage 儲存設定、名單與成效（不上傳伺服器）</li>
+				<li>建議以後端代理保護金鑰、處理OAuth回調與速率限制</li>
+				<li>遵守平台API條款與反垃圾政策</li>
+			</ul>
+		</section>
+
+		<section class="slide">
+			<h2>下一步與上線路線</h2>
+			<ul>
+				<li>建立 Node/Serverless 後端：OAuth回調、API代理、Webhook</li>
+				<li>任務佇列與退避重試：穩定批量外聯</li>
+				<li>真實社群API串接與權限申請（LinkedIn/X/Meta）</li>
+				<li>Chart.js 圖表、BI看板、ROI報告</li>
+			</ul>
+		</section>
+
+		<section class="slide">
+			<h2>附錄：主要檔案索引</h2>
+			<div class="code">index.html, index-real-google.html, style.css
+real-google-oauth.js, google-api-settings.html, real-social-media-api.js
+account-login-manager.js, advanced-ai-chat-engine.js, smart-chat-interface.html
+ai-sales-bot.js, ai-sales-bot-interface.html
+intelligent-prospect-discovery.js, prospect-discovery-interface.html
+smart-sales-optimization.js, real-time-analytics-dashboard.html
+crm-database.js, ab-testing.js, auto-followup.js, unified-inbox.js</div>
+			<div class="footer">列印方式：瀏覽器 → 列印 → 另存為 PDF（含背景圖形）</div>
+		</section>
+	</div>
+</body>
+</html>
+
+
+
+
+

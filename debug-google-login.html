@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google登入調試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-google {
+            background: #ffffff;
+            color: #333;
+            border: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .btn-google:hover {
+            background: #f8f9fa;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .google-logo {
+            width: 18px;
+            height: 18px;
+        }
+        .test-section {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Google登入調試頁面</h1>
+    
+    <div class="debug-container">
+        <h2>1. 模組載入檢查</h2>
+        <div id="module-check">
+            <div>Simple Google Login模組: <span id="simple-login-status" class="status info">檢查中...</span></div>
+            <div>Account Login Manager: <span id="account-manager-status" class="status info">檢查中...</span></div>
+        </div>
+        <button class="btn" onclick="checkModules()">🔄 重新檢查</button>
+    </div>
+    
+    <div class="debug-container">
+        <h2>2. 直接測試Google登入</h2>
+        <div class="test-section">
+            <h3>測試Twitter Google登入</h3>
+            <button class="btn-google" onclick="directTestGoogleLogin('twitter')">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                直接測試Twitter Google登入
+            </button>
+            <div id="twitter-test-result" class="status info">等待測試...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>測試LinkedIn Google登入</h3>
+            <button class="btn-google" onclick="directTestGoogleLogin('linkedin')">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                直接測試LinkedIn Google登入
+            </button>
+            <div id="linkedin-test-result" class="status info">等待測試...</div>
+        </div>
+    </div>
+    
+    <div class="debug-container">
+        <h2>3. 函數存在檢查</h2>
+        <div id="function-check">
+            <div>loginWithGoogle函數: <span id="login-function-status" class="status info">檢查中...</span></div>
+            <div>simpleGoogleLogin物件: <span id="simple-login-obj-status" class="status info">檢查中...</span></div>
+            <div>loginWithGoogleAccount方法: <span id="login-method-status" class="status info">檢查中...</span></div>
+        </div>
+        <button class="btn" onclick="checkFunctions()">🔍 檢查函數</button>
+    </div>
+    
+    <div class="debug-container">
+        <h2>4. 調試日誌</h2>
+        <div id="debug-log" class="log">等待調試資訊...</div>
+        <button class="btn" onclick="clearLog()">🗑️ 清除日誌</button>
+    </div>
+
+    <!-- 載入腳本 -->
+    <script src="simple-google-login.js"></script>
+    <script src="account-login-manager.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('debug-log').textContent = '日誌已清除...\n';
+        }
+        
+        function updateStatus(elementId, status, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${status}`;
+        }
+        
+        function checkModules() {
+            log('開始檢查模組載入狀態...');
+            
+            // 檢查Simple Google Login模組
+            if (window.simpleGoogleLogin) {
+                updateStatus('simple-login-status', 'success', '已載入');
+                log('✅ Simple Google Login模組已載入');
+            } else {
+                updateStatus('simple-login-status', 'error', '未載入');
+                log('❌ Simple Google Login模組未載入');
+            }
+            
+            // 檢查Account Login Manager
+            if (window.accountLoginManager) {
+                updateStatus('account-manager-status', 'success', '已載入');
+                log('✅ Account Login Manager已載入');
+            } else {
+                updateStatus('account-manager-status', 'error', '未載入');
+                log('❌ Account Login Manager未載入');
+            }
+        }
+        
+        function checkFunctions() {
+            log('開始檢查函數存在性...');
+            
+            // 檢查loginWithGoogle函數
+            if (typeof window.loginWithGoogle === 'function') {
+                updateStatus('login-function-status', 'success', '存在');
+                log('✅ loginWithGoogle函數存在');
+            } else {
+                updateStatus('login-function-status', 'error', '不存在');
+                log('❌ loginWithGoogle函數不存在');
+            }
+            
+            // 檢查simpleGoogleLogin物件
+            if (window.simpleGoogleLogin) {
+                updateStatus('simple-login-obj-status', 'success', '存在');
+                log('✅ simpleGoogleLogin物件存在');
+                
+                // 檢查loginWithGoogleAccount方法
+                if (typeof window.simpleGoogleLogin.loginWithGoogleAccount === 'function') {
+                    updateStatus('login-method-status', 'success', '存在');
+                    log('✅ loginWithGoogleAccount方法存在');
+                } else {
+                    updateStatus('login-method-status', 'error', '不存在');
+                    log('❌ loginWithGoogleAccount方法不存在');
+                }
+            } else {
+                updateStatus('simple-login-obj-status', 'error', '不存在');
+                updateStatus('login-method-status', 'error', '不存在');
+                log('❌ simpleGoogleLogin物件不存在');
+            }
+        }
+        
+        async function directTestGoogleLogin(platform) {
+            log(`開始直接測試${platform}的Google登入...`);
+            
+            try {
+                // 檢查模組是否存在
+                if (!window.simpleGoogleLogin) {
+                    throw new Error('Simple Google Login模組未載入');
+                }
+                
+                // 檢查方法是否存在
+                if (typeof window.simpleGoogleLogin.loginWithGoogleAccount !== 'function') {
+                    throw new Error('loginWithGoogleAccount方法不存在');
+                }
+                
+                log(`調用${platform}的loginWithGoogleAccount方法...`);
+                
+                // 直接調用方法
+                const result = await window.simpleGoogleLogin.loginWithGoogleAccount(platform);
+                
+                log(`✅ ${platform}登入測試成功！`, 'success');
+                updateStatus(`${platform}-test-result`, 'success', '登入成功');
+                
+                if (result && result.account) {
+                    log(`帳號資訊: ${JSON.stringify(result.account, null, 2)}`);
+                }
+                
+            } catch (error) {
+                log(`❌ ${platform}登入測試失敗: ${error.message}`, 'error');
+                updateStatus(`${platform}-test-result`, 'error', `失敗: ${error.message}`);
+                console.error('詳細錯誤:', error);
+            }
+        }
+        
+        // 錯誤處理
+        window.addEventListener('error', function(e) {
+            log(`JavaScript錯誤: ${e.message} (${e.filename}:${e.lineno})`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`Promise錯誤: ${e.reason}`, 'error');
+        });
+        
+        // 頁面載入完成後自動檢查
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🔧 Google登入調試頁面已載入');
+            setTimeout(() => {
+                checkModules();
+                checkFunctions();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
+
+
+

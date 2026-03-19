@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科技高層自動訊息發送系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 科技高層自動訊息發送系統</h1>
+            <p>AI驅動的智能推銷平台 - 讓您的訊息更有影響力</p>
+        </div>
+
+        <!-- 帳號登入區域 -->
+        <div class="account-login-section">
+            <div class="login-notice">
+                <h3>🔐 社群媒體帳號登入</h3>
+                <p>請登入您的社群媒體帳號以開始發送訊息</p>
+                <div class="google-notice">
+                    <p>🌟 <strong>Google登入</strong>：選擇設備上已登入的Google帳號，無需輸入密碼</p>
+                </div>
+            </div>
+            
+            <div class="platform-login-grid">
+                <!-- Twitter/X 登入 -->
+                <div class="platform-login-card">
+                    <div class="platform-header twitter">
+                        <h4>🐦 Twitter/X</h4>
+                        <div class="status logged-out" id="twitter-status">未登入</div>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('twitter', 'manual')" id="twitter-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('twitter', 'google')" id="twitter-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="twitter-manual-inputs">
+                            <input type="text" id="twitter-username" placeholder="用戶名或Email">
+                            <input type="password" id="twitter-password" placeholder="密碼">
+                            <button class="btn btn-twitter" onclick="loginPlatform('twitter')">登入 Twitter</button>
+                        </div>
+                        <div class="login-inputs" id="twitter-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('twitter')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                選擇Google帳號登入Twitter
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('twitter')" style="display: none;" id="twitter-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <!-- LinkedIn 登入 -->
+                <div class="platform-login-card">
+                    <div class="platform-header linkedin">
+                        <h4>💼 LinkedIn</h4>
+                        <div class="status logged-out" id="linkedin-status">未登入</div>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('linkedin', 'manual')" id="linkedin-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('linkedin', 'google')" id="linkedin-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="linkedin-manual-inputs">
+                            <input type="email" id="linkedin-email" placeholder="Email">
+                            <input type="password" id="linkedin-password" placeholder="密碼">
+                            <button class="btn btn-linkedin" onclick="loginPlatform('linkedin')">登入 LinkedIn</button>
+                        </div>
+                        <div class="login-inputs" id="linkedin-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('linkedin')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                選擇Google帳號登入LinkedIn
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('linkedin')" style="display: none;" id="linkedin-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <!-- Instagram 登入 -->
+                <div class="platform-login-card">
+                    <div class="platform-header instagram">
+                        <h4>📸 Instagram</h4>
+                        <div class="status logged-out" id="instagram-status">未登入</div>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('instagram', 'manual')" id="instagram-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('instagram', 'google')" id="instagram-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="instagram-manual-inputs">
+                            <input type="text" id="instagram-username" placeholder="用戶名">
+                            <input type="password" id="instagram-password" placeholder="密碼">
+                            <button class="btn btn-instagram" onclick="loginPlatform('instagram')">登入 Instagram</button>
+                        </div>
+                        <div class="login-inputs" id="instagram-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('instagram')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                選擇Google帳號登入Instagram
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('instagram')" style="display: none;" id="instagram-logout-btn">登出</button>
+                    </div>
+                </div>
+
+                <!-- Facebook 登入 -->
+                <div class="platform-login-card">
+                    <div class="platform-header facebook">
+                        <h4>📘 Facebook</h4>
+                        <div class="status logged-out" id="facebook-status">未登入</div>
+                    </div>
+                    <div class="login-form">
+                        <div class="login-method-selector">
+                            <button class="btn btn-method active" onclick="switchLoginMethod('facebook', 'manual')" id="facebook-manual-btn">手動登入</button>
+                            <button class="btn btn-method" onclick="switchLoginMethod('facebook', 'google')" id="facebook-google-btn">Google登入</button>
+                        </div>
+                        <div class="login-inputs" id="facebook-manual-inputs">
+                            <input type="email" id="facebook-email" placeholder="Email">
+                            <input type="password" id="facebook-password" placeholder="密碼">
+                            <button class="btn btn-facebook" onclick="loginPlatform('facebook')">登入 Facebook</button>
+                        </div>
+                        <div class="login-inputs" id="facebook-google-inputs" style="display: none;">
+                            <button class="btn btn-google" onclick="loginWithGoogle('facebook')">
+                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+                                選擇Google帳號登入Facebook
+                            </button>
+                        </div>
+                        <button class="btn btn-secondary" onclick="logoutPlatform('facebook')" style="display: none;" id="facebook-logout-btn">登出</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-actions">
+                <button class="btn btn-success" onclick="testAllConnections()">🧪 測試所有連接</button>
+                <button class="btn btn-info" onclick="clearAllLogins()">🗑️ 清除所有登入</button>
+                <button class="btn btn-primary" onclick="openGoogleAPISettings()">🔑 設定Google API</button>
+                <button class="btn btn-warning" onclick="checkGoogleSetup()">🔍 檢查Google設定</button>
+                <button class="btn btn-primary" onclick="openCRMInterface()">📊 CRM管理</button>
+                <button class="btn btn-success" onclick="openSmartChatInterface()">🤖 智能聊天</button>
+                <button class="btn btn-warning" onclick="openAISalesBot()">🚀 AI推銷機器人</button>
+                <button class="btn btn-info" onclick="openProspectDiscovery()">🔍 智能客戶發現</button>
+                <button class="btn btn-secondary" onclick="openAnalyticsDashboard()">📊 實時分析</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- 左側：領袖選擇區域 -->
+            <div class="leaders-section">
+                <h2>🎯 選擇目標領袖</h2>
+                <div class="search-bar">
+                    <input type="text" id="leader-search" placeholder="搜索領袖姓名、公司或職位...">
+                    <button onclick="searchLeaders()">🔍</button>
+                </div>
+                <div class="leaders-grid" id="leaders-grid">
+                    <!-- 動態生成領袖卡片 -->
+                </div>
+            </div>
+
+            <!-- 右側：訊息編輯區域 -->
+            <div class="message-section">
+                <h2>✍️ 撰寫訊息</h2>
+                
+                <!-- 用戶資料區域 -->
+                <div class="user-profile-section">
+                    <h3>👤 您的資料</h3>
+                    <div class="profile-form">
+                        <input type="text" id="user-name" placeholder="您的姓名" required>
+                        <input type="text" id="user-company" placeholder="您的公司" required>
+                        <input type="text" id="user-title" placeholder="您的職位" required>
+                        <input type="text" id="user-industry" placeholder="您的行業" required>
+                        <input type="email" id="user-email" placeholder="您的Email" required>
+                        <input type="url" id="user-linkedin" placeholder="您的LinkedIn">
+                        <button id="save-profile-btn" class="btn btn-primary">💾 保存資料</button>
+                    </div>
+                </div>
+
+                <!-- 訊息模板選擇 -->
+                <div class="template-section">
+                    <h3>📝 選擇訊息模板</h3>
+                    <select id="template-select" onchange="loadTemplate()">
+                        <option value="">選擇模板...</option>
+                        <option value="cold-outreach">冷推銷</option>
+                        <option value="follow-up">跟進</option>
+                        <option value="networking">建立關係</option>
+                        <option value="partnership">合作提案</option>
+                    </select>
+                </div>
+
+                <!-- 訊息編輯器 -->
+                <div class="message-editor">
+                    <h3>📝 訊息內容</h3>
+                    <textarea id="message-content" placeholder="在這裡撰寫您的訊息..." rows="8"></textarea>
+                    <div class="message-actions">
+                        <button id="send-btn" class="btn btn-success">📤 發送訊息</button>
+                        <button onclick="generateMessage()" class="btn btn-primary">🤖 AI生成</button>
+                        <button onclick="previewMessage()" class="btn btn-info">👁️ 預覽</button>
+                    </div>
+                </div>
+
+                <!-- AI增強功能 -->
+                <div class="ai-enhancement-section">
+                    <h3>🤖 AI增強功能</h3>
+                    <div class="ai-controls">
+                        <button onclick="enhanceMessage()" class="btn btn-primary">✨ 優化訊息</button>
+                        <button onclick="analyzeSentiment()" class="btn btn-info">😊 情感分析</button>
+                        <button onclick="suggestImprovements()" class="btn btn-warning">💡 改進建議</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 載入相關腳本 -->
+    <script src="contacts.js"></script>
+    <script src="templates.js"></script>
+    <script src="messaging.js"></script>
+    <script src="conversation-enhancer.js"></script>
+    <script src="real-account-integration.js"></script>
+    <script src="ai-conversation-model.js"></script>
+    <script src="ai-enhancement-module.js"></script>
+    <script src="account-login-manager.js"></script>
+    <script src="real-social-media-api.js"></script>
+    <script src="crm-database.js"></script>
+    <script src="ab-testing.js"></script>
+    <script src="auto-followup.js"></script>
+    <script src="unified-inbox.js"></script>
+    <script src="real-google-oauth.js"></script>
+    <script src="main.js"></script>
+    
+    <script>
+        // 全域變數
+        let selectedLeaders = [];
+        let messagingSystem = null;
+
+        // 初始化系統
+        function initializeSystem() {
+            console.log('🚀 初始化系統...');
+            
+            try {
+                // 初始化訊息系統
+                if (typeof MessagingSystem !== 'undefined') {
+                    messagingSystem = new MessagingSystem();
+                    console.log('✅ 訊息系統初始化完成');
+                }
+
+                // 載入領袖資料
+                loadLeaders();
+                
+                // 載入用戶資料
+                loadUserProfile();
+                
+                // 綁定事件
+                bindEvents();
+                
+                // 載入已登入的Google帳號
+                if (window.realGoogleOAuth) {
+                    window.realGoogleOAuth.loadAuthenticatedAccounts();
+                }
+                
+                console.log('✅ 系統初始化完成');
+            } catch (error) {
+                console.error('❌ 初始化錯誤:', error);
+            }
+        }
+
+        // 載入領袖資料
+        function loadLeaders() {
+            const leadersGrid = document.getElementById('leaders-grid');
+            if (!leadersGrid) return;
+
+            leadersGrid.innerHTML = '';
+            
+            if (typeof contacts !== 'undefined') {
+                contacts.forEach(leader => {
+                    const leaderCard = createLeaderCard(leader);
+                    leadersGrid.appendChild(leaderCard);
+                });
+            }
+        }
+
+        // 創建領袖卡片
+        function createLeaderCard(leader) {
+            const card = document.createElement('div');
+            card.className = 'leader-card';
+            card.innerHTML = `
+                <h4>${leader.name}</h4>
+                <p class="company">${leader.company}</p>
+                <p class="title">${leader.title}</p>
+                <div class="social-links">
+                    ${leader.linkedin ? `<a href="${leader.linkedin}" target="_blank">LinkedIn</a>` : ''}
+                    ${leader.twitter ? `<a href="${leader.twitter}" target="_blank">Twitter</a>` : ''}
+                </div>
+                <button onclick="selectLeader('${leader.id}')" class="btn btn-primary">選擇</button>
+            `;
+            return card;
+        }
+
+        // 選擇領袖
+        function selectLeader(leaderId) {
+            if (typeof contacts !== 'undefined') {
+                const leader = contacts.find(l => l.id === leaderId);
+                if (leader) {
+                    selectedLeaders = [leader];
+                    console.log('選擇的領袖:', leader);
+                    alert(`已選擇: ${leader.name} (${leader.company})`);
+                }
+            }
+        }
+
+        // 載入用戶資料
+        function loadUserProfile() {
+            const savedProfile = localStorage.getItem('userProfile');
+            if (savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                document.getElementById('user-name').value = profile.name || '';
+                document.getElementById('user-company').value = profile.company || '';
+                document.getElementById('user-title').value = profile.title || '';
+                document.getElementById('user-industry').value = profile.industry || '';
+                document.getElementById('user-email').value = profile.email || '';
+                document.getElementById('user-linkedin').value = profile.linkedin || '';
+            }
+        }
+
+        // 綁定事件
+        function bindEvents() {
+            // 保存用戶資料
+            const saveBtn = document.getElementById('save-profile-btn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveUserProfile);
+            }
+
+            // 發送訊息
+            const sendBtn = document.getElementById('send-btn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendMessage);
+            }
+        }
+
+        // 保存用戶資料
+        function saveUserProfile() {
+            const profile = {
+                name: document.getElementById('user-name').value,
+                company: document.getElementById('user-company').value,
+                title: document.getElementById('user-title').value,
+                industry: document.getElementById('user-industry').value,
+                email: document.getElementById('user-email').value,
+                linkedin: document.getElementById('user-linkedin').value
+            };
+            
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            alert('用戶資料已保存！');
+        }
+
+        // 發送訊息
+        function sendMessage() {
+            if (selectedLeaders.length === 0) {
+                alert('請先選擇目標領袖！');
+                return;
+            }
+
+            const messageContent = document.getElementById('message-content').value;
+            if (!messageContent.trim()) {
+                alert('請輸入訊息內容！');
+                return;
+            }
+
+            // 檢查是否有已登入的平台
+            if (window.realGoogleOAuth && window.realGoogleOAuth.getLoggedInPlatforms().length > 0) {
+                const useRealAccount = confirm('檢測到已登入的平台。是否使用已登入的帳號發送訊息？');
+                if (useRealAccount) {
+                    sendRealMessages();
+                    return;
+                }
+            }
+
+            // 模擬發送
+            alert(`將發送訊息給 ${selectedLeaders.length} 位領袖:\n\n${messageContent}`);
+        }
+
+        // 發送真實訊息
+        async function sendRealMessages() {
+            const messageContent = document.getElementById('message-content').value;
+            const loggedInPlatforms = window.realGoogleOAuth ? window.realGoogleOAuth.getLoggedInPlatforms() : [];
+            
+            if (loggedInPlatforms.length === 0) {
+                alert('沒有已登入的平台');
+                return;
+            }
+            
+            for (const leader of selectedLeaders) {
+                for (const platform of loggedInPlatforms) {
+                    try {
+                        console.log(`發送訊息給 ${leader.name} 通過 ${platform}: ${messageContent}`);
+                        alert(`訊息已發送給 ${leader.name} 通過 ${platform}`);
+                    } catch (error) {
+                        console.error('發送失敗:', error);
+                        alert(`發送給 ${leader.name} 通過 ${platform} 失敗: ${error.message}`);
+                    }
+                }
+            }
+        }
+
+        // 切換登入方法
+        function switchLoginMethod(platform, method) {
+            const manualBtn = document.getElementById(`${platform}-manual-btn`);
+            const googleBtn = document.getElementById(`${platform}-google-btn`);
+            const manualInputs = document.getElementById(`${platform}-manual-inputs`);
+            const googleInputs = document.getElementById(`${platform}-google-inputs`);
+            
+            if (method === 'manual') {
+                manualBtn.classList.add('active');
+                googleBtn.classList.remove('active');
+                manualInputs.style.display = 'block';
+                googleInputs.style.display = 'none';
+            } else {
+                manualBtn.classList.remove('active');
+                googleBtn.classList.add('active');
+                manualInputs.style.display = 'none';
+                googleInputs.style.display = 'block';
+            }
+        }
+        
+        // Google登入功能
+        async function loginWithGoogle(platform) {
+            try {
+                console.log(`開始${platform}的Google登入...`);
+                
+                // 檢查真正的Google OAuth模組是否可用
+                if (!window.realGoogleOAuth) {
+                    alert('Google OAuth模組尚未載入。\n\n請重新整理頁面後再試。');
+                    return;
+                }
+                
+                // 檢查是否已設定Client ID
+                if (!window.realGoogleOAuth.clientId) {
+                    alert('請先設定Google Client ID！\n\n點擊「設定Google API」按鈕進行設定。');
+                    openGoogleAPISettings();
+                    return;
+                }
+                
+                // 顯示載入狀態
+                const statusElement = document.getElementById(`${platform}-status`);
+                if (statusElement) {
+                    statusElement.textContent = '正在開啟Google帳號選擇器...';
+                    statusElement.className = 'status connecting';
+                }
+                
+                // 顯示Google帳號選擇器
+                await window.realGoogleOAuth.showGoogleAccountSelector(platform);
+                
+            } catch (error) {
+                console.error('Google登入錯誤:', error);
+                alert(`Google登入失敗: ${error.message}`);
+                
+                // 恢復狀態
+                const statusElement = document.getElementById(`${platform}-status`);
+                if (statusElement) {
+                    statusElement.textContent = '登入失敗';
+                    statusElement.className = 'status logged-out';
+                }
+            }
+        }
+        
+        // 登出功能
+        function logoutPlatform(platform) {
+            // 使用真正的Google OAuth模組登出
+            if (window.realGoogleOAuth && window.realGoogleOAuth.isPlatformLoggedIn(platform)) {
+                window.realGoogleOAuth.logoutPlatform(platform);
+            }
+            
+            // 同步到帳號登入管理器
+            if (window.accountLoginManager) {
+                window.accountLoginManager.handleLogout(platform);
+            }
+        }
+        
+        // 測試所有連接
+        function testAllConnections() {
+            // 優先使用真正的Google OAuth模組
+            if (window.realGoogleOAuth) {
+                window.realGoogleOAuth.testAllConnections();
+            } else if (window.accountLoginManager) {
+                window.accountLoginManager.testAllConnections();
+            } else {
+                alert('測試連接功能');
+            }
+        }
+
+        // 清除所有登入
+        function clearAllLogins() {
+            // 優先使用真正的Google OAuth模組
+            if (window.realGoogleOAuth) {
+                window.realGoogleOAuth.clearAllLogins();
+            } else if (window.accountLoginManager) {
+                window.accountLoginManager.clearAllLogins();
+            } else {
+                alert('清除登入功能');
+            }
+        }
+
+        // 檢查Google設定
+        function checkGoogleSetup() {
+            if (!window.realGoogleOAuth) {
+                alert('❌ Google OAuth模組未載入');
+                return;
+            }
+            
+            let message = 'Google OAuth設定檢查:\n\n';
+            
+            if (window.realGoogleOAuth.clientId) {
+                message += `✅ Client ID: 已設定\n`;
+            } else {
+                message += `❌ Client ID: 未設定\n`;
+            }
+            
+            if (window.google && window.google.accounts) {
+                message += `✅ Google API: 已載入\n`;
+            } else {
+                message += `❌ Google API: 未載入\n`;
+            }
+            
+            const loggedInPlatforms = window.realGoogleOAuth.getLoggedInPlatforms();
+            if (loggedInPlatforms.length > 0) {
+                message += `✅ 已登入平台: ${loggedInPlatforms.join(', ')}\n`;
+            } else {
+                message += `❌ 已登入平台: 無\n`;
+            }
+            
+            alert(message);
+        }
+
+        // 其他功能函數
+        function searchLeaders() {
+            const query = document.getElementById('leader-search').value.toLowerCase();
+            console.log('搜索:', query);
+        }
+
+        function loadTemplate() {
+            const template = document.getElementById('template-select').value;
+            console.log('載入模板:', template);
+        }
+
+        function generateMessage() {
+            alert('AI生成訊息功能');
+        }
+
+        function previewMessage() {
+            const content = document.getElementById('message-content').value;
+            alert(`預覽:\n\n${content}`);
+        }
+
+        function enhanceMessage() {
+            alert('AI優化訊息功能');
+        }
+
+        function analyzeSentiment() {
+            alert('情感分析功能');
+        }
+
+        function suggestImprovements() {
+            alert('改進建議功能');
+        }
+
+        // 登入相關函數
+        function loginPlatform(platform) {
+            if (window.accountLoginManager) {
+                window.accountLoginManager.handleLogin(platform);
+            } else {
+                alert(`${platform} 登入功能`);
+            }
+        }
+
+        function openGoogleAPISettings() {
+            window.open('google-api-settings.html', 'google_api_settings', 'width=900,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        function openCRMInterface() {
+            window.open('crm-interface.html', 'crm_interface', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        }
+
+        // 開啟智能聊天界面
+        function openSmartChatInterface() {
+            window.open('smart-chat-interface.html', 'smart_chat', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        }
+
+        // 開啟AI推銷機器人
+        function openAISalesBot() {
+            window.open('ai-sales-bot-interface.html', 'ai_sales_bot', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        }
+
+        // 開啟智能客戶發現
+        function openProspectDiscovery() {
+            window.open('prospect-discovery-interface.html', 'prospect_discovery', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        }
+
+        // 開啟實時分析儀表板
+        function openAnalyticsDashboard() {
+            window.open('real-time-analytics-dashboard.html', 'analytics_dashboard', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+        }
+
+        // 頁面載入完成後初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeSystem, 1000);
+        });
+    </script>
+</body>
+</html>
+

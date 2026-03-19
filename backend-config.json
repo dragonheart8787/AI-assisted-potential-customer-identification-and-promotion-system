@@ -1,0 +1,11 @@
+{
+  "smtp": {
+    "host": "",
+    "port": 587,
+    "secure": false,
+    "user": "",
+    "pass": ""
+  },
+  "googlePlacesApiKey": "",
+  "oauthRedirectBase": "http://localhost:3856"
+}
