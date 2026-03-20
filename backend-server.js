@@ -412,6 +412,7 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({
       hasSmtp: !!(config.smtp && config.smtp.host && config.smtp.user),
       hasNodemailer: !!nodemailer,
+      hasGooglePlacesApiKey: !!(config.googlePlacesApiKey && String(config.googlePlacesApiKey).trim()),
       oauthRedirectBase: config.oauthRedirectBase || `http://localhost:${PORT}`
     }));
     return;

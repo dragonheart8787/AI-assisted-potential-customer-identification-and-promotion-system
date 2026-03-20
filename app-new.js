@@ -14,6 +14,16 @@
         loadProspects();
         loadComposeTargets();
         loadProfile();
+        if (localStorage.getItem('demo_mode') === '1') {
+            const t = document.getElementById('page-title');
+            if (t && !t.querySelector('.demo-tag')) {
+                const s = document.createElement('span');
+                s.className = 'demo-tag';
+                s.style.cssText = 'margin-left:10px;font-size:0.65em;background:#7c3aed;color:#fff;padding:4px 10px;border-radius:999px;vertical-align:middle';
+                s.textContent = 'Demo';
+                t.appendChild(s);
+            }
+        }
     }
 
     function bindNav() {
@@ -33,7 +43,17 @@
             if (pageEl) pageEl.classList.toggle('active', p === pageId);
             if (navEl) navEl.classList.toggle('active', p === pageId);
         });
-        document.getElementById('page-title').textContent = pageTitles[pageId] || pageId;
+        const titleEl = document.getElementById('page-title');
+        if (titleEl) {
+            titleEl.textContent = pageTitles[pageId] || pageId;
+            if (localStorage.getItem('demo_mode') === '1') {
+                const s = document.createElement('span');
+                s.className = 'demo-tag';
+                s.style.cssText = 'margin-left:10px;font-size:0.65em;background:#7c3aed;color:#fff;padding:4px 10px;border-radius:999px;vertical-align:middle';
+                s.textContent = 'Demo';
+                titleEl.appendChild(s);
+            }
+        }
         if (pageId === 'prospects') loadProspects();
         if (pageId === 'compose') loadComposeTargets();
         if (pageId === 'analytics') loadAnalytics();
@@ -87,6 +107,32 @@
             if (window.exportUtils) window.exportUtils.exportLogsCSV();
             else toast('匯出模組未載入', 'error');
         });
+        document.getElementById('btn-demo-on')?.addEventListener('click', async () => {
+            if (!window.demoMode) { toast('Demo 模組未載入', 'error'); return; }
+            try {
+                const n = await window.demoMode.apply();
+                toast(`已載入 ${n} 筆範例客戶，即將重新整理`);
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                toast('啟用失敗：' + e.message + '（請確認後端已啟動）', 'error');
+            }
+        });
+        document.getElementById('btn-demo-off')?.addEventListener('click', () => {
+            if (!window.demoMode) return;
+            window.demoMode.restore();
+            toast('已還原並離開 Demo 模式');
+            setTimeout(() => location.reload(), 500);
+        });
+    }
+
+    async function fetchBackendConfig() {
+        try {
+            const origin = window.location?.origin || 'http://localhost:3856';
+            const res = await fetch(`${origin}/api/config`);
+            return await res.json();
+        } catch {
+            return {};
+        }
     }
 
     function toast(msg, type = 'info') {
@@ -273,6 +319,12 @@
             toast('Google Places 模組未載入', 'error');
             return;
         }
+        const cfg = await fetchBackendConfig();
+        if (!cfg.hasGooglePlacesApiKey) {
+            resultsEl.innerHTML = '<p class="muted-text" style="color:#f59e0b">尚未設定 Google Places API 金鑰。請編輯 <strong>backend-config.json</strong> 的 <code>googlePlacesApiKey</code>，並在 Google Cloud 啟用 Places API。</p><p class="muted-text">簡報時可改用「設定 → 啟用 Demo 模式」載入範例名單。</p>';
+            toast('未設定 Google API 金鑰', 'error');
+            return;
+        }
         resultsEl.innerHTML = '<p class="muted-text">搜尋中...</p>';
         try {
             const prospects = await window.googlePlacesCrawler.search({ query, location, type });
@@ -317,9 +369,17 @@
                 });
             });
         } catch (e) {
-            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(e.message) + '</p>';
-            toast(e.message, 'error');
+            const msg = friendlyError(e.message);
+            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(msg) + '</p>';
+            toast(msg, 'error');
         }
+    }
+
+    function friendlyError(msg) {
+        const m = String(msg || '');
+        if (/certificate|issuer|SSL|TLS/i.test(m)) return 'SSL 憑證驗證失敗（請重啟後端；開發環境已放寬代理）。若仍失敗請檢查網路。';
+        if (/CORS|Failed to fetch|NetworkError/i.test(m)) return '無法連線後端：請確認已執行 node backend-server.js，且網址為 http://localhost:3856';
+        return m || '發生未知錯誤';
     }
 
     async function searchSocialPlaces() {
@@ -375,8 +435,9 @@
                 });
             });
         } catch (e) {
-            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(e.message) + '</p>';
-            toast(e.message, 'error');
+            const msg = friendlyError(e.message);
+            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(msg) + '</p><p class="muted-text">Facebook 搜尋需先完成 OAuth 登入。簡報可改用 Demo 模式。</p>';
+            toast(msg, 'error');
         }
     }
 
@@ -396,7 +457,7 @@
             const result = await window.jobBoardCrawler.search(query, { maxResults: 20 });
             const jobs = result.jobs || [];
             if (jobs.length === 0) {
-                resultsEl.innerHTML = '<p class="muted-text">未找到結果' + (result.error ? '：' + result.error : '') + '</p>';
+                resultsEl.innerHTML = '<p class="muted-text">未找到結果' + (result.error ? '：' + escapeHtml(result.error) : '') + '</p><p class="muted-text">104/1111 頁面結構可能變更，或代理無法取得內容。可改用「手動新增」或「設定 → Demo 模式」。</p>';
                 return;
             }
             const prospects = window.jobBoardCrawler.toProspects(jobs, query);
@@ -435,8 +496,9 @@
                 });
             });
         } catch (e) {
-            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(e.message) + '</p>';
-            toast(e.message, 'error');
+            const msg = friendlyError(e.message);
+            resultsEl.innerHTML = '<p class="muted-text" style="color:#e74c3c">' + escapeHtml(msg) + '</p>';
+            toast(msg, 'error');
         }
     }
 
@@ -528,7 +590,12 @@
             try {
                 const analysis = await window.websiteAnalyzer.analyze(target.website);
                 websiteIssues = analysis.issues || [];
-            } catch (_) {}
+                if (analysis.error && !websiteIssues.length) {
+                    toast('網站分析未完成：' + friendlyError(analysis.error), 'info');
+                }
+            } catch (err) {
+                toast('網站分析失敗，將略過網站問題引用：' + friendlyError(err.message), 'info');
+            }
         } else if (target?.websiteAnalysis?.issues) {
             websiteIssues = target.websiteAnalysis.issues;
         }
@@ -719,8 +786,9 @@
             });
             toast('報告已產生');
         } catch (e) {
-            output.textContent = '錯誤: ' + e.message;
-            toast('產生失敗', 'error');
+            const msg = friendlyError(e.message);
+            output.innerHTML = '<p style="color:#e74c3c">' + escapeHtml(msg) + '</p><p class="muted-text" style="margin-top:12px">若目標網站封鎖代理，可改用「設定」中的固定範本：<a href="demo/sample_reports/website-audit-summary.html" target="_blank">網站健檢</a>、<a href="demo/sample_reports/security-summary.html" target="_blank">資安摘要</a>。</p>';
+            toast('報告產生失敗', 'error');
         }
     }
 

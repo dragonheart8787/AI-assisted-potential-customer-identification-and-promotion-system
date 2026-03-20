@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>評分機制說明 - 推廣中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; margin: 0; padding: 24px; background: #0f0f12; color: #e4e4e7; line-height: 1.55; max-width: 920px; margin-left: auto; margin-right: auto; }
+        h1 { font-size: 1.45rem; margin-bottom: 8px; }
+        .sub { color: #71717a; margin-bottom: 28px; font-size: 0.95rem; }
+        h2 { font-size: 1.05rem; color: #a1a1aa; margin: 28px 0 12px; border-bottom: 1px solid #27272a; padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #27272a; }
+        th { color: #71717a; font-weight: 600; }
+        .pts { color: #22c55e; font-weight: 600; white-space: nowrap; }
+        .note { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 14px 16px; font-size: 0.88rem; color: #a1a1aa; margin-top: 16px; }
+        code { background: #27272a; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <h1>評分機制說明</h1>
+    <p class="sub">對應程式：<code>website-analyzer.js</code>、<code>ai-assistant.js</code>（classifyCustomer）。分數皆為 0–100，越高代表該面向「需求越強」或「優先級越高」。</p>
+
+    <h2>一、website_need_score（網站撰寫／改版需求）</h2>
+    <p style="color:#a1a1aa;font-size:0.9rem">依首頁 HTML 與載入時間加權累加，上限 100。</p>
+    <table>
+        <thead><tr><th>條件</th><th>加分</th><th>偵測方式</th></tr></thead>
+        <tbody>
+            <tr><td>缺少 CTA（聯絡、預約、詢價等關鍵字 + 連結/按鈕）</td><td class="pts">+20</td><td>正則 + DOM 線索</td></tr>
+            <tr><td>缺少表單</td><td class="pts">+15</td><td><code>&lt;form&gt;</code> + submit</td></tr>
+            <tr><td>缺少 viewport（行動版）</td><td class="pts">+15</td><td>meta viewport</td></tr>
+            <tr><td>版權年份過舊（&gt;2 年）</td><td class="pts">+10</td><td>footer 年份</td></tr>
+            <tr><td>缺少 meta title</td><td class="pts">+10</td><td>SEO</td></tr>
+            <tr><td>缺少 meta description</td><td class="pts">+10</td><td>SEO</td></tr>
+            <tr><td>缺少 H1</td><td class="pts">+5</td><td>SEO 結構</td></tr>
+            <tr><td>缺少作品/服務/關於等頁面線索</td><td class="pts">+10</td><td>連結文字關鍵字</td></tr>
+            <tr><td>載入 &gt; 3 秒</td><td class="pts">+10</td><td>計時</td></tr>
+        </tbody>
+    </table>
+
+    <h2>二、security_need_score（資安強化需求）</h2>
+    <p style="color:#a1a1aa;font-size:0.9rem">越高代表越需要資安健檢或設定補強。</p>
+    <table>
+        <thead><tr><th>條件</th><th>加分</th><th>說明</th></tr></thead>
+        <tbody>
+            <tr><td>未使用 HTTPS</td><td class="pts">+30</td><td>URL 協定</td></tr>
+            <tr><td>缺少 HSTS</td><td class="pts">+15</td><td>Response header</td></tr>
+            <tr><td>缺少 X-Content-Type-Options</td><td class="pts">+10</td><td>標頭</td></tr>
+            <tr><td>缺少 X-Frame-Options</td><td class="pts">+10</td><td>標頭</td></tr>
+            <tr><td>無 security.txt</td><td class="pts">+10</td><td><code>/.well-known/security.txt</code></td></tr>
+            <tr><td>外露技術資訊</td><td class="pts">+10</td><td>Server、WP 版本字串等</td></tr>
+            <tr><td>WordPress 且無 CSP</td><td class="pts">+15</td><td>技術堆疊 + 標頭</td></tr>
+        </tbody>
+    </table>
+    <p class="note">HTML 內亦會檢查 robots、sitemap、privacy 等<strong>文字線索</strong>（見 <code>analyzeSecurity</code>），主要加權仍以上表為主。</p>
+
+    <h2>三、lead_score（客戶優先級／AI 分類）</h2>
+    <p style="color:#a1a1aa;font-size:0.9rem">基準分 50，再依職稱、網站分析、互動、標籤調整，最後 clamp 至 0–100。</p>
+    <table>
+        <thead><tr><th>面向</th><th>規則摘要</th><th>典型加分/扣分</th></tr></thead>
+        <tbody>
+            <tr><td><strong>職稱／決策者</strong></td><td>CEO、Founder、Chief → 高階；VP、Director → 中高階</td><td>+25 / +15</td></tr>
+            <tr><td><strong>網站分析</strong></td><td>issues ≥3；security 訊號；seo 訊號</td><td>+15 / +10 / +5</td></tr>
+            <tr><td><strong>互動次數</strong></td><td>&gt;5 次高互動；&gt;2 次略加分</td><td>+15 / +5</td></tr>
+            <tr><td><strong>標籤</strong></td><td>高價值、熱門潛在客戶；有興趣；拒絕、冷名單</td><td>+20、+10 / -30</td></tr>
+            <tr><td><strong>聯絡完整度（概念）</strong></td><td>實作上可搭配 CRM：email、電話、官網齊全者後續可加權；目前以標籤與互動間接反映</td><td>—</td></tr>
+        </tbody>
+    </table>
+    <p class="note">分類結果：<code>high_value</code>（≥80）、<code>interested</code>（≥60）、<code>standard</code>（≥40）、<code>cold</code>（&lt;40）。並產出 <code>need_type</code>、<code>urgency</code>、<code>outreach_angle</code> 供推廣話術使用。</p>
+
+    <h2>四、與 leadSignals 的關係</h2>
+    <p style="color:#a1a1aa;font-size:0.9rem"><code>website_need_score</code>、<code>security_need_score</code> 計算後會寫入分析結果，並驅動 <code>extractLeadSignals</code>（例如網站需求 ≥50、資安需求 ≥50 時產生對應訊號），供 CRM 與報告引用。</p>
+</body>
+</html>

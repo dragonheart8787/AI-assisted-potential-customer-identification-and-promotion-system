@@ -1,0 +1,15 @@
+[
+  { "type": "email_sent", "trackingId": "em_demo_1", "ts": "2025-03-10T09:00:00.000Z" },
+  { "type": "email_sent", "trackingId": "em_demo_2", "ts": "2025-03-10T10:00:00.000Z" },
+  { "type": "email_sent", "trackingId": "em_demo_3", "ts": "2025-03-10T11:00:00.000Z" },
+  { "type": "email_open", "trackingId": "em_demo_1", "ts": "2025-03-10T14:00:00.000Z" },
+  { "type": "email_open", "trackingId": "em_demo_2", "ts": "2025-03-10T15:00:00.000Z" },
+  { "type": "link_click", "trackingId": "em_demo_1", "destination": "https://example.com/report", "ts": "2025-03-10T16:00:00.000Z" },
+  { "type": "email_sent", "trackingId": "em_demo_4", "ts": "2025-03-11T09:00:00.000Z" },
+  { "type": "email_open", "trackingId": "em_demo_3", "ts": "2025-03-11T10:00:00.000Z" },
+  { "type": "email_open", "trackingId": "em_demo_4", "ts": "2025-03-11T11:00:00.000Z" },
+  { "type": "link_click", "trackingId": "em_demo_2", "ts": "2025-03-11T12:00:00.000Z" },
+  { "type": "followup_scheduled", "customerId": "demo_2", "ts": "2025-03-11T08:00:00.000Z" },
+  { "type": "followup_scheduled", "customerId": "demo_3", "ts": "2025-03-11T08:05:00.000Z" },
+  { "type": "followup_sent", "customerId": "demo_2", "ts": "2025-03-12T09:00:00.000Z" }
+]

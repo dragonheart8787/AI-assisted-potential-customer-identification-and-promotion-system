@@ -193,6 +193,12 @@
 
 ---
 
+## 十二之一、Demo 模式（學習歷程穩定展示）
+
+未正式上線時：**設定 → 啟用 Demo 模式**，會載入 `demo/sample_crm_records.json` 與 `demo/sample_kpi_events.json`，KPI 儀表板可截圖。固定報告範本見 `demo/sample_reports/`。詳見 `demo/README-DEMO.md`。
+
+---
+
 ## 十三、證據資料清單
 
 | 類型 | 路徑/說明 |

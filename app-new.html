@@ -320,6 +320,24 @@
                                 <button type="button" class="secondary-btn" id="btn-export-logs">匯出操作日誌</button>
                             </div>
                         </div>
+                        <div class="form-group" style="margin-top:16px">
+                            <label>Demo 模式（簡報／學習歷程）</label>
+                            <p class="muted-text" style="font-size:0.85rem;margin:0 0 8px">載入固定範例名單，不依賴 API。啟用後會備份目前 CRM。</p>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <button type="button" class="primary-btn" id="btn-demo-on">啟用 Demo 模式</button>
+                                <button type="button" class="secondary-btn" id="btn-demo-off">離開 Demo 模式</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>說明與範本</label>
+                            <div class="link-list">
+                                <a href="scoring-explained.html" class="link-item" target="_blank">評分機制說明</a>
+                                <a href="demo/sample_reports/website-audit-summary.html" class="link-item" target="_blank">範本：網站健檢摘要</a>
+                                <a href="demo/sample_reports/security-summary.html" class="link-item" target="_blank">範本：資安摘要</a>
+                                <a href="demo/sample_reports/one-page-proposal.html" class="link-item" target="_blank">範本：一頁提案</a>
+                                <a href="demo/README-DEMO.md" class="link-item" target="_blank">Demo 說明 (README)</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -443,6 +461,7 @@
         </div>
     </div>
 
+    <script src="demo-mode.js"></script>
     <script src="operation-logger.js"></script>
     <script src="export-utils.js"></script>
     <script src="data-deduplication.js"></script>
