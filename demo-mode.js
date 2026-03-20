@@ -1,6 +1,7 @@
 /**
- * Demo 模式 - 載入固定範例資料，供簡報/學習歷程穩定展示
+ * Demo 模式 - 載入固定範例資料，供簡報／學習歷程穩定展示（展示主模式）
  * localStorage: demo_mode = '1' 時啟用
+ * app-new 會在「首次空名單」時自動 apply()，無需 API／OAuth 即可展示。
  */
 const DemoMode = {
     KEY: 'demo_mode',

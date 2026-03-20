@@ -69,11 +69,24 @@ const KPIDashboard = {
         });
         const industryCounts = {};
         const needCounts = {};
+        const websiteBuckets = { '低 (0–33)': 0, '中 (34–66)': 0, '高 (67–100)': 0 };
+        const securityBuckets = { '低 (0–33)': 0, '中 (34–66)': 0, '高 (67–100)': 0 };
+        function bucket(v) {
+            if (v == null || Number.isNaN(Number(v))) return null;
+            const n = Number(v);
+            if (n <= 33) return '低 (0–33)';
+            if (n <= 66) return '中 (34–66)';
+            return '高 (67–100)';
+        }
         customers.forEach(c => {
             const ind = c.industry || '未分類';
             industryCounts[ind] = (industryCounts[ind] || 0) + 1;
             const n = c.needType || '未標記';
             needCounts[n] = (needCounts[n] || 0) + 1;
+            const wb = bucket(c.website_need_score);
+            if (wb) websiteBuckets[wb]++;
+            const sb = bucket(c.security_need_score);
+            if (sb) securityBuckets[sb]++;
         });
         return {
             total: customers.length,
@@ -87,7 +100,9 @@ const KPIDashboard = {
             closeRate: quoted.length ? (closed.length / quoted.length * 100).toFixed(1) : 0,
             pipelineCounts,
             industryCounts,
-            needCounts
+            needCounts,
+            websiteBuckets,
+            securityBuckets
         };
     },
 
@@ -140,16 +155,11 @@ const KPIDashboard = {
                 { label: '高分 Lead (≥70)', val: crm?.highScore ?? 0, cls: 'warn' },
                 { label: '寄信數', val: emailSent, cls: '' },
                 { label: '開信數', val: emailOpened, cls: '' },
-                { label: '點擊數', val: linkClicked, cls: '' },
+                { label: '點擊連結數', val: linkClicked, cls: '' },
                 { label: '開信率', val: openRate + '%', cls: 'warn' },
                 { label: '點擊率', val: clickRate + '%', cls: 'low' },
                 { label: '跟進排程', val: fromEvents.followupScheduled || 0, cls: '' },
-                { label: '跟進已發', val: fromEvents.followupSent || 0, cls: '' },
-                { label: '已聯繫', val: crm?.contacted ?? 0, cls: '' },
-                { label: '已回覆', val: crm?.responded ?? 0, cls: '' },
-                { label: '已報價', val: crm?.quoted ?? 0, cls: '' },
-                { label: '成交', val: crm?.closed ?? 0, cls: 'val' },
-                { label: '回覆率', val: (crm?.replyRate || 0) + '%', cls: 'warn' }
+                { label: '跟進已發', val: fromEvents.followupSent || 0, cls: '' }
             ];
             cards.innerHTML = items.map(i => `
                 <div class="card">
@@ -165,8 +175,13 @@ const KPIDashboard = {
             Object.entries(crm.pipelineCounts).forEach(([k, v]) => { mapped[k] = v; });
             this.renderBars('pipeline-bars', mapped, labels);
         }
+        if (crm?.websiteBuckets) {
+            this.renderBars('website-score-bars', crm.websiteBuckets, { '低 (0–33)': '低 (0–33)', '中 (34–66)': '中 (34–66)', '高 (67–100)': '高 (67–100)' });
+        }
+        if (crm?.securityBuckets) {
+            this.renderBars('security-score-bars', crm.securityBuckets);
+        }
         if (crm?.industryCounts) this.renderBars('industry-bars', crm.industryCounts);
-        if (crm?.needCounts) this.renderBars('needtype-chart', crm.needCounts);
 
         const byDay = {};
         events.forEach(e => {
@@ -183,25 +198,6 @@ const KPIDashboard = {
             tbody.innerHTML = rows.map(([d, v]) => `<tr><td>${d}</td><td>${v.sent}</td><td>${v.open}</td><td>${v.click}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">尚無資料（可啟用 Demo 模式）</td></tr>';
         }
 
-        const funnel = document.getElementById('crm-funnel');
-        if (funnel) {
-            if (crm) {
-                funnel.innerHTML = [
-                    { label: '總名單', val: crm.total },
-                    { label: '已聯繫', val: crm.contacted },
-                    { label: '已回覆', val: crm.responded },
-                    { label: '已報價', val: crm.quoted },
-                    { label: '成交', val: crm.closed }
-                ].map(i => `
-                    <div class="card">
-                        <h3>${i.label}</h3>
-                        <div class="val">${i.val}</div>
-                    </div>
-                `).join('');
-            } else {
-                funnel.innerHTML = '<div class="card"><p class="muted">無法載入 CRM（請確認 crm-database.js）</p></div>';
-            }
-        }
     }
 };
 

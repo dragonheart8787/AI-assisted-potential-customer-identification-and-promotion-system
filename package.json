@@ -1,7 +1,7 @@
 {
-  "name": "ai-marketing-assistant",
+  "name": "ai-assisted-potential-customer-identification-and-promotion",
   "version": "1.0.0",
-  "description": "AI 推銷助手桌面應用程式",
+  "description": "AI 輔助潛在客戶探勘與推廣系統（學習歷程原型）",
   "main": "main.js",
   "scripts": {
     "backend": "node backend-server.js",

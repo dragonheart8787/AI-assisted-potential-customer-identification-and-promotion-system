@@ -452,6 +452,59 @@ body {
     margin-left: 4px;
 }
 
+.prospect-tile-title-block {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 三項分數＋可解釋原因（website_need / security / lead） */
+.prospect-scores-explained {
+    margin: 10px 0 4px;
+    padding: 10px 12px;
+    background: var(--bg-deep, #12151c);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.score-breakdown-block {
+    margin-bottom: 10px;
+}
+.score-breakdown-block:last-child {
+    margin-bottom: 0;
+}
+
+.score-row-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.score-label {
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    word-break: break-all;
+}
+
+.score-num {
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.score-reasons {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--text-muted);
+}
+.score-reasons li {
+    margin: 2px 0;
+}
+
 .prospect-add-btn {
     margin-top: 12px;
     padding: 6px 12px;

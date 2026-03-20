@@ -5,8 +5,6 @@ const { pathToFileURL } = require('url');
 
 let mainWindow;
 let isDev = process.argv.includes('--dev');
-const useNewUI = process.argv.includes('--new-ui');
-
 function createWindow() {
   const iconPath = path.join(__dirname, 'assets', 'icon.png');
   const hasIcon = fs.existsSync(iconPath);
@@ -23,12 +21,12 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js')
     },
     icon: hasIcon ? iconPath : undefined,
-    title: useNewUI ? '推廣中心' : 'AI 推銷助手',
+    title: '推廣中心',
     show: false,
     autoHideMenuBar: true
   });
 
-  const htmlFile = useNewUI ? 'app-new.html' : 'index.html';
+  const htmlFile = 'app-new.html';
   const htmlPath = path.join(__dirname, htmlFile);
   mainWindow.loadFile(htmlPath).catch(err => {
     console.error('loadFile failed:', err);
@@ -64,31 +62,31 @@ function createMenu() {
       label: '檔案',
       submenu: [
         {
-          label: '開啟主系統',
+          label: '開啟推廣中心',
           accelerator: 'CmdOrCtrl+1',
           click: () => {
-            mainWindow.loadFile('index.html');
+            mainWindow.loadFile('app-new.html');
           }
         },
         {
-          label: '開啟 AI 聊天',
+          label: '開啟 AI 聊天（封存頁）',
           accelerator: 'CmdOrCtrl+2',
           click: () => {
-            mainWindow.loadFile('ai-chat-test.html');
+            mainWindow.loadFile('archive/ai-chat-test.html');
           }
         },
         {
-          label: '開啟帳號管理',
+          label: '開啟帳號管理（封存頁）',
           accelerator: 'CmdOrCtrl+3',
           click: () => {
-            mainWindow.loadFile('secure-account-manager.html');
+            mainWindow.loadFile('archive/secure-account-manager.html');
           }
         },
         {
           label: '開啟系統測試',
           accelerator: 'CmdOrCtrl+4',
           click: () => {
-            mainWindow.loadFile('start-test.html');
+            mainWindow.loadFile('test-app-new.html');
           }
         },
         { type: 'separator' },

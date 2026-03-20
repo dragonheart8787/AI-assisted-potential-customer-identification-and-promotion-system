@@ -187,34 +187,66 @@ class WebsiteAnalyzer {
 
     /** 網站撰寫需求分數 0–100：越高表示越需要網站重做/優化 */
     computeWebsiteNeedScore(result) {
+        return this.explainWebsiteNeedScore(result).score;
+    }
+
+    /**
+     * 可解釋的網站需求分數：同時回傳分數與判斷依據（供 UI／Demo 展示）
+     */
+    explainWebsiteNeedScore(result) {
+        const reasons = [];
         let score = 0;
         const c = result.content || {};
         const seo = result.seo || {};
-        if (!c.hasCta) score += 20;
-        if (!c.hasForm) score += 15;
-        if (!c.hasViewport) score += 15;
-        if (c.isOutdated) score += 10;
-        if (!seo.title) score += 10;
-        if (!seo.description) score += 10;
-        if (!seo.hasH1) score += 5;
-        if (!c.hasPortfolioOrService) score += 10;
-        if (result.speed > 3000) score += 10;
-        return Math.min(100, score);
+        if (!c.hasCta) { score += 20; reasons.push('缺 CTA／無明顯轉換入口'); }
+        if (!c.hasForm) { score += 15; reasons.push('無表單或聯絡表單不明顯'); }
+        if (!c.hasViewport) { score += 15; reasons.push('缺少 viewport（行動版體驗風險）'); }
+        if (c.isOutdated) { score += 10; reasons.push('版權年份過舊，內容可能未更新'); }
+        if (!seo.title) { score += 10; reasons.push('缺少頁面 title'); }
+        if (!seo.description) { score += 10; reasons.push('SEO meta description 不完整'); }
+        if (!seo.hasH1) { score += 5; reasons.push('缺少 H1 標題'); }
+        if (!c.hasPortfolioOrService) { score += 10; reasons.push('缺少作品／服務／關於等信任區塊'); }
+        if (result.speed > 3000) { score += 10; reasons.push('首屏載入偏慢（>3 秒）'); }
+        return { score: Math.min(100, score), reasons };
     }
 
     /** 資安需求分數 0–100：越高表示越需要資安強化 */
     computeSecurityNeedScore(result) {
+        return this.explainSecurityNeedScore(result).score;
+    }
+
+    /**
+     * 可解釋的資安需求分數
+     */
+    explainSecurityNeedScore(result) {
+        const reasons = [];
         let score = 0;
         const sec = result.security || {};
         const h = result.securityHeaders || {};
-        if (!result.hasHttps) score += 30;
-        if (!h['strict-transport-security']) score += 15;
-        if (!h['x-content-type-options']) score += 10;
-        if (!h['x-frame-options']) score += 10;
-        if (!sec.hasSecurityTxt) score += 10;
-        if (sec.hasExposedTech) score += 10;
-        if (result.techStack?.includes('WordPress') && !h['content-security-policy']) score += 15;
-        return Math.min(100, score);
+        if (!result.hasHttps) { score += 30; reasons.push('未使用 HTTPS'); }
+        if (!h['strict-transport-security']) { score += 15; reasons.push('缺少 HSTS（Strict-Transport-Security）'); }
+        if (!h['x-content-type-options']) { score += 10; reasons.push('缺少 X-Content-Type-Options'); }
+        if (!h['x-frame-options']) { score += 10; reasons.push('缺少 X-Frame-Options／點擊劫持防護'); }
+        if (!sec.hasSecurityTxt) { score += 10; reasons.push('無 security.txt（安全聯絡管道）'); }
+        if (sec.hasExposedTech) { score += 10; reasons.push('回應洩漏伺服器／技術版本資訊'); }
+        if (result.techStack?.includes('WordPress') && !h['content-security-policy']) {
+            score += 15;
+            reasons.push('WordPress 站點建議補強 CSP');
+        }
+        return { score: Math.min(100, score), reasons };
+    }
+
+    /**
+     * 依分析結果寫入客戶物件上的分數與原因欄位
+     */
+    applyScoresToCustomer(customer, analysis) {
+        if (!customer || !analysis) return;
+        const w = this.explainWebsiteNeedScore(analysis);
+        const s = this.explainSecurityNeedScore(analysis);
+        customer.website_need_score = w.score;
+        customer.security_need_score = s.score;
+        customer.website_need_reasons = w.reasons;
+        customer.security_need_reasons = s.reasons;
     }
 
     extractLeadSignals(result) {

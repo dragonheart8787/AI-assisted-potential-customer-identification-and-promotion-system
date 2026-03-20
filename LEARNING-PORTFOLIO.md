@@ -103,14 +103,25 @@
 
 ---
 
-## 六、評分機制
+## 六、評分機制（判斷依據，非僅命名）
 
-| 分數 | 說明 | 用途 |
-|------|------|------|
-| website_need_score | 網站撰寫需求 0–100 | 判斷是否需要網站重做 |
-| security_need_score | 資安需求 0–100 | 判斷資安強化機會 |
-| lead_score | AI 客戶分類分數 | 決策者、互動、標籤綜合 |
-| 綜合優先順序 | 依分數篩選 | 決定誰值得優先聯繫 |
+三個分數皆為 **0–100**，數值越高代表該面向「越需要被服務」或「越值得優先聯繫」。下方為**教授可對照的判斷依據簡表**；加權細節與程式對應見 **`scoring-explained.html`**（或 `website-analyzer.js` 的 `computeWebsiteNeedScore` / `computeSecurityNeedScore`、`ai-assistant.js` 的 `classifyCustomer`）。
+
+### 6.1 分數與判斷依據（總表）
+
+| 分數 | 判斷依據（系統實際檢查什麼） |
+|------|------------------------------|
+| **website_need_score** | **CTA**（聯絡／預約／詢價等關鍵字＋連結或按鈕）、**聯絡表單**（`form`＋送出）、**SEO**（`title`、`meta description`、H1）、**網站速度**（首頁載入是否 &gt; 3 秒）、**手機版適配**（`meta viewport`）、另含版權年份過舊、作品／服務頁線索等加權。 |
+| **security_need_score** | **HTTPS**、**security.txt**（`/.well-known/security.txt`）、**基本安全標頭**（HSTS、X-Content-Type-Options、X-Frame-Options、CSP）、**robots／sitemap／隱私聲明**（首頁 HTML 文字線索）、**外露技術資訊**（Server、CMS 版本字串等）、WordPress 無 CSP 等加權。 |
+| **lead_score** | **決策者線索**（職稱含 CEO／Founder／Chief、VP／Director 等）、**需求標籤**（CRM `tags`：高價值、有興趣、拒絕、冷名單等加扣分）、**互動紀錄**（`interactionCount` 門檻加分）、**網站分析訊號**（若有 `websiteAnalysis`：issues 數量、security／seo 類 leadSignals）。**聯絡完整度**（email／電話／官網齊全）可作為後續擴充欄位；目前規則以職稱、標籤、互動、網站訊號為主。 |
+
+### 6.2 與程式的對應
+
+| 分數 | 主要實作位置 |
+|------|----------------|
+| website_need_score | `website-analyzer.js` → `computeWebsiteNeedScore` |
+| security_need_score | `website-analyzer.js` → `computeSecurityNeedScore`、`analyzeSecurity` |
+| lead_score | `ai-assistant.js` → `classifyCustomer`（基準分 50 再加減，最後 clamp 0–100） |
 
 ---
 
@@ -175,7 +186,46 @@
 
 ---
 
-## 十一、反思
+## 十一、成果展示（證據入口）
+
+> 啟動後端後網址皆為 `http://localhost:3856/檔名`。以下為**老師／評審應從哪個檔案看成果**的對照。
+
+### 11.1 核心畫面與模組
+
+| 成果項目 | 檔案或入口 | 說明 |
+|----------|------------|------|
+| **主畫面（儀表板、名單、撰寫訊息、成效、設定）** | **`app-new.html`** | 專題主要操作介面；內嵌發現客戶、報告產生、Demo 模式開關。 |
+| **KPI 儀表板** | **`kpi-dashboard.html`** | 名單數、高分 Lead、Pipeline／產業分布、開信／點擊／跟進；建議截圖。 |
+| **CRM 管理（Pipeline、客戶表）** | **`crm-interface.html`** | 獨立 CRM 頁；與主畫面「目標客戶」資料同源（localStorage）。 |
+| **AI 推廣工作流程** | **`ai-promotion-workflow.html`** | 批次分類、聯絡流程展示。 |
+| **系統架構與 API 一覽** | **`system-overview.html`** | 模組、API、測試方式。 |
+| **評分判斷依據（總表＋加權細節）** | **`scoring-explained.html`** | 對應第六節「判斷依據」。 |
+| **自動化測試（瀏覽器）** | **`test-app-new.html`** | 模組載入與整合測試。 |
+| **報告產出** | **`report-generator.js`**（由 **`app-new.html`** 成效分析區操作） | 健檢／SEO／資安報告與匯出。 |
+| **匯出客戶／日誌** | **`export-utils.js`**（**設定**頁按鈕） | CSV、報告 HTML、列印 PDF。 |
+| **Demo 穩定展示** | **設定 → 啟用 Demo 模式**；資料見 **`demo/`** | `sample_crm_records.json`、`sample_kpi_events.json`、**`demo/sample_reports/*.html`** 固定範本。 |
+| **其他前端頁** | `ai-settings.html`、`ai-knowledge-base.html`、`index.html`（轉址至 app-new）等 | 設定、知識庫；**唯一主展示為 app-new.html**。 |
+
+### 11.2 建議截圖檔名（交件時一目了然）
+
+| 建議檔名 | 內容 |
+|----------|------|
+| `01-main-app-new.png` | 主畫面 `app-new.html`（儀表板或目標客戶） |
+| `02-kpi-dashboard.png` | `kpi-dashboard.html` 全頁或主要指標區 |
+| `03-crm-pipeline.png` | `crm-interface.html` 或主畫面客戶列表 |
+| `04-report-or-export.png` | 成效分析產生報告或匯出按鈕 |
+| `05-test-app-new-pass.png` | `test-app-new.html` 測試通過畫面 |
+| `06-run-tests-terminal.png` | 終端機 `node run-tests.js` 通過輸出 |
+| `07-scoring-explained.png` | `scoring-explained.html` 總表區 |
+| `08-demo-mode-on.png` | 設定頁 Demo 已啟用 + 名單有範例資料 |
+
+### 11.3 書面／簡報一句話導覽
+
+「請先看 **`app-new.html`** 主流程；數據看 **`kpi-dashboard.html`**；客戶管線看 **`crm-interface.html`**；評分邏輯看 **`scoring-explained.html`**；自動測試看 **`test-app-new.html`** 與 **`run-tests.js`**。」
+
+---
+
+## 十二、反思
 
 1. **資料品質比功能數量重要**：一開始以為做完功能就夠，後來發現去重、驗證、評分才是讓名單有用的關鍵。
 2. **整合才有商業價值**：真正困難的不只是寫程式，而是如何把模組整合成有商業價值的系統，從名單到報告形成閉環。
@@ -184,7 +234,7 @@
 
 ---
 
-## 十二、未來可延伸
+## 十三、未來可延伸
 
 - LinkedIn、更多招募頁整合
 - 開信/點擊追蹤與 A/B 測試
@@ -193,31 +243,33 @@
 
 ---
 
-## 十二之一、Demo 模式（學習歷程穩定展示）
+## 十四、Demo 模式（學習歷程穩定展示）
 
-未正式上線時：**設定 → 啟用 Demo 模式**，會載入 `demo/sample_crm_records.json` 與 `demo/sample_kpi_events.json`，KPI 儀表板可截圖。固定報告範本見 `demo/sample_reports/`。詳見 `demo/README-DEMO.md`。
+未正式上線時：首次開啟空名單會**自動載入 Demo 範例**；亦可於 **設定 → 啟用 Demo 模式** 手動載入 `demo/sample_crm_records.json` 與 `demo/sample_kpi_events.json`，KPI 儀表板可截圖。固定報告範本見 `demo/sample_reports/`。詳見 `demo/README-DEMO.md`。
 
 ---
 
-## 十三、證據資料清單
+## 十五、證據資料清單
 
 | 類型 | 路徑/說明 |
 |------|-----------|
-| 系統截圖 | app-new.html、kpi-dashboard.html |
+| 系統截圖 | 檔名建議見**第十一節**；畫面見 app-new、kpi-dashboard、crm-interface |
 | 測試結果 | run-tests.js 輸出、test-app-new.html |
 | 效能數據 | CAPABILITY-PERFORMANCE-REPORT.md |
 | 架構說明 | system-overview.html |
 | 報告輸出 | report-generator 各類型報告 |
 | 名單分析 | 發現客戶各來源結果 |
-| Demo 資料 | demo/sample_leads.json、demo/DEMO-展示流程.md |
+| Demo 資料 | `demo/sample_crm_records.json`、`demo/DEMO-展示流程.md` |
 | 匯出功能 | 設定頁 → 匯出客戶 CSV、匯出操作日誌 |
 | 操作日誌 | operation-logger.js，報告生成、新增客戶時記錄 |
 
 ---
 
-## 十四、材料準備檢查表
+## 十六、材料準備檢查表
 
 - [ ] 專題名稱、動機、目標
+- [ ] **第十一節成果展示**：對照表 + 建議截圖檔名已備妥
+- [ ] **第六節評分**：判斷依據總表（或 scoring-explained.html 截圖）
 - [ ] 系統架構圖（system-overview.html 截圖）
 - [ ] 功能清單與模組介紹
 - [ ] 製作流程與困難

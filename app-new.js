@@ -7,23 +7,65 @@
     const pageTitles = { dashboard: '儀表板', prospects: '目標客戶', compose: '撰寫訊息', workflow: '工作流程', analytics: '成效分析', accounts: '帳號登入', settings: '設定' };
     let selectedProspectIds = new Set();
 
+    const SHOWCASE_KEY = 'promo_showcase_auto_demo_v1';
+
+    function refreshDemoBadge() {
+        const t = document.getElementById('page-title');
+        if (!t) return;
+        t.querySelectorAll('.demo-tag').forEach(n => n.remove());
+        if (localStorage.getItem('demo_mode') === '1') {
+            const s = document.createElement('span');
+            s.className = 'demo-tag';
+            s.style.cssText = 'margin-left:10px;font-size:0.65em;background:#7c3aed;color:#fff;padding:4px 10px;border-radius:999px;vertical-align:middle';
+            s.textContent = 'Demo';
+            t.appendChild(s);
+        }
+    }
+
+    async function ensureShowcaseDemo() {
+        if (localStorage.getItem(SHOWCASE_KEY)) return;
+        if (localStorage.getItem('demo_mode') === '1') {
+            localStorage.setItem(SHOWCASE_KEY, '1');
+            return;
+        }
+        let count = 0;
+        try {
+            const raw = localStorage.getItem('crm_customers');
+            if (raw) count = (JSON.parse(raw) || []).length;
+        } catch (_) {}
+        if (count > 0) {
+            localStorage.setItem(SHOWCASE_KEY, '1');
+            return;
+        }
+        if (!window.demoMode) {
+            localStorage.setItem(SHOWCASE_KEY, '1');
+            return;
+        }
+        try {
+            const n = await window.demoMode.apply();
+            localStorage.setItem(SHOWCASE_KEY, '1');
+            if (window.crmDatabase && typeof window.crmDatabase.loadData === 'function') {
+                window.crmDatabase.loadData();
+            }
+            toast(`展示模式：已載入 ${n} 筆範例名單（無需 API 金鑰／OAuth）`);
+        } catch (e) {
+            localStorage.setItem(SHOWCASE_KEY, '1');
+            toast('若未見範例資料，請先執行 run-demo.bat 啟動本機伺服器後重整', 'error');
+        }
+    }
+
     function init() {
         bindNav();
         bindButtons();
-        loadDashboard();
-        loadProspects();
-        loadComposeTargets();
         loadProfile();
-        if (localStorage.getItem('demo_mode') === '1') {
-            const t = document.getElementById('page-title');
-            if (t && !t.querySelector('.demo-tag')) {
-                const s = document.createElement('span');
-                s.className = 'demo-tag';
-                s.style.cssText = 'margin-left:10px;font-size:0.65em;background:#7c3aed;color:#fff;padding:4px 10px;border-radius:999px;vertical-align:middle';
-                s.textContent = 'Demo';
-                t.appendChild(s);
-            }
-        }
+        (async () => {
+            await ensureShowcaseDemo();
+            loadDashboard();
+            loadProspects();
+            loadComposeTargets();
+            refreshDemoBadge();
+        })();
+        refreshDemoBadge();
     }
 
     function bindNav() {
@@ -46,13 +88,7 @@
         const titleEl = document.getElementById('page-title');
         if (titleEl) {
             titleEl.textContent = pageTitles[pageId] || pageId;
-            if (localStorage.getItem('demo_mode') === '1') {
-                const s = document.createElement('span');
-                s.className = 'demo-tag';
-                s.style.cssText = 'margin-left:10px;font-size:0.65em;background:#7c3aed;color:#fff;padding:4px 10px;border-radius:999px;vertical-align:middle';
-                s.textContent = 'Demo';
-                titleEl.appendChild(s);
-            }
+            refreshDemoBadge();
         }
         if (pageId === 'prospects') loadProspects();
         if (pageId === 'compose') loadComposeTargets();
@@ -72,7 +108,7 @@
         document.getElementById('btn-send')?.addEventListener('click', sendMessage);
         document.getElementById('btn-ai-generate')?.addEventListener('click', aiGenerateMessage);
         document.getElementById('btn-refresh')?.addEventListener('click', () => { loadDashboard(); loadProspects(); loadComposeTargets(); toast('已重新整理'); });
-        document.getElementById('btn-test')?.addEventListener('click', () => window.open('quick-test.html'));
+        document.getElementById('btn-test')?.addEventListener('click', () => window.open('archive/quick-test.html'));
         document.getElementById('btn-test-full')?.addEventListener('click', () => window.open('test-app-new.html'));
         document.getElementById('btn-open-crm')?.addEventListener('click', () => window.open('crm-interface.html'));
         document.getElementById('btn-open-ai')?.addEventListener('click', () => window.open('ai-settings.html'));
@@ -111,6 +147,9 @@
             if (!window.demoMode) { toast('Demo 模組未載入', 'error'); return; }
             try {
                 const n = await window.demoMode.apply();
+                if (window.crmDatabase && typeof window.crmDatabase.loadData === 'function') {
+                    window.crmDatabase.loadData();
+                }
                 toast(`已載入 ${n} 筆範例客戶，即將重新整理`);
                 setTimeout(() => location.reload(), 800);
             } catch (e) {
@@ -188,6 +227,52 @@
         return d.innerHTML;
     }
 
+    function deriveLeadReasonsLight(p) {
+        const r = [];
+        if (p.email) r.push('聯絡資訊完整（Email）');
+        if (p.phone) r.push('具備電話聯絡管道');
+        if (p.needType && p.needType !== '待分析') r.push(`需求類型：${p.needType}`);
+        if (p.tags && p.tags.length) r.push('標籤：' + p.tags.slice(0, 3).join('、'));
+        if (p.industry) r.push(`產業／客群：${p.industry}`);
+        const t = (p.title || '').toLowerCase();
+        if (/ceo|founder|chief|老闆|負責人|總經理|技術長|cto/i.test(t)) r.push('職稱顯示決策或影響力角色');
+        return r.length ? r : ['綜合 CRM 欄位與互動紀錄評估'];
+    }
+
+    function buildProspectScoreSection(p) {
+        let ws = p.website_need_score;
+        let ss = p.security_need_score;
+        const ls = p.leadScore;
+        let wr = Array.isArray(p.website_need_reasons) ? p.website_need_reasons : [];
+        let sr = Array.isArray(p.security_need_reasons) ? p.security_need_reasons : [];
+        let lr = Array.isArray(p.lead_score_reasons) ? p.lead_score_reasons : [];
+        if (p.websiteAnalysis && window.websiteAnalyzer) {
+            try {
+                const ew = window.websiteAnalyzer.explainWebsiteNeedScore(p.websiteAnalysis);
+                const es = window.websiteAnalyzer.explainSecurityNeedScore(p.websiteAnalysis);
+                if (ws == null) ws = ew.score;
+                if (ss == null) ss = es.score;
+                if (!wr.length) wr = ew.reasons;
+                if (!sr.length) sr = es.reasons;
+            } catch (_) {}
+        }
+        if (!lr.length && ls != null) lr = deriveLeadReasonsLight(p);
+        const block = (label, score, reasons) => {
+            if (score == null && !(reasons && reasons.length)) return '';
+            const sc = score != null ? String(score) : '—';
+            const ul = (reasons && reasons.length)
+                ? `<ul class="score-reasons">${reasons.slice(0, 6).map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>`
+                : '';
+            return `<div class="score-breakdown-block"><div class="score-row-mini"><span class="score-label">${escapeHtml(label)}</span><span class="score-num">${escapeHtml(sc)}</span></div>${ul}</div>`;
+        };
+        const parts = [
+            block('website_need_score', ws, wr),
+            block('security_need_score', ss, sr),
+            block('lead_score', ls, lr)
+        ].filter(Boolean);
+        return parts.length ? `<div class="prospect-scores-explained">${parts.join('')}</div>` : '';
+    }
+
     function loadProspects() {
         const grid = document.getElementById('prospect-grid');
         if (!grid) return;
@@ -208,14 +293,14 @@
             <div class="prospect-tile ${selectedProspectIds.has(p.id) ? 'selected' : ''}" data-id="${escapeHtml(p.id)}">
                 <div class="prospect-tile-header">
                     <div class="prospect-avatar">${p.avatar || '◇'}</div>
-                    <div>
+                    <div class="prospect-tile-title-block">
                         <div class="prospect-name">${escapeHtml(p.name)}</div>
                         <div class="prospect-meta">${escapeHtml(p.company)} · ${escapeHtml(p.title || '負責人')}</div>
-                        ${p.leadScore != null ? `<span class="prospect-score">${p.leadScore}分</span>` : ''}
                     </div>
                 </div>
+                ${buildProspectScoreSection(p)}
                 <div class="prospect-actions">
-                    ${p.website && p.source === 'crm' ? `<button type="button" class="prospect-add-btn small" data-id="${escapeHtml(p.id)}" data-action="analyze">分析網站</button>` : ''}
+                    ${p.website ? `<button type="button" class="prospect-add-btn small" data-id="${escapeHtml(p.id)}" data-action="analyze">分析網站</button>` : ''}
                     <button type="button" class="prospect-add-btn" data-id="${escapeHtml(p.id)}">加入撰寫</button>
                 </div>
             </div>
@@ -243,12 +328,21 @@
                             if (customer) {
                                 customer.websiteAnalysis = analysis;
                                 customer.updatedAt = new Date().toISOString();
+                                if (window.websiteAnalyzer.applyScoresToCustomer) {
+                                    window.websiteAnalyzer.applyScoresToCustomer(customer, analysis);
+                                }
                                 window.crmDatabase.updateCustomer(customer);
                                 const classification = window.aiAssistant ? await window.aiAssistant.classifyCustomer(customer) : null;
                                 if (classification) {
                                     customer.leadScore = classification.lead_score ?? classification.score;
                                     customer.needType = classification.need_type;
                                     customer.urgency = classification.urgency;
+                                    customer.lead_score_reasons = Array.isArray(classification.reasoning) && classification.reasoning.length
+                                        ? classification.reasoning
+                                        : deriveLeadReasonsLight({ ...customer, ...prospect });
+                                    window.crmDatabase.updateCustomer(customer);
+                                } else if (customer.leadScore == null) {
+                                    customer.lead_score_reasons = deriveLeadReasonsLight({ ...customer, ...prospect });
                                     window.crmDatabase.updateCustomer(customer);
                                 }
                                 loadProspects();

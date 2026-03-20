@@ -126,6 +126,6 @@ async function run() {
 fetch(`${BASE}/api/config`).then(() => run()).catch(e => {
   console.log('錯誤: 無法連接到後端 (localhost:' + PORT + ')');
   console.log('請先執行: node backend-server.js');
-  console.log('或: 開啟新介面.bat');
+  console.log('或: run-demo.bat');
   process.exit(1);
 });

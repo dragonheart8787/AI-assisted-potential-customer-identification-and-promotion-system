@@ -17,13 +17,38 @@
         .pts { color: #22c55e; font-weight: 600; white-space: nowrap; }
         .note { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 14px 16px; font-size: 0.88rem; color: #a1a1aa; margin-top: 16px; }
         code { background: #27272a; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+        .hero { background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; padding: 18px 20px; margin-bottom: 28px; }
+        .hero h2 { margin: 0 0 12px; font-size: 1rem; color: #fafafa; border: none; padding: 0; }
+        .hero table { margin: 0; font-size: 0.86rem; }
+        .hero th { width: 22%; vertical-align: top; color: #a78bfa; }
     </style>
 </head>
 <body>
     <h1>評分機制說明</h1>
-    <p class="sub">對應程式：<code>website-analyzer.js</code>、<code>ai-assistant.js</code>（classifyCustomer）。分數皆為 0–100，越高代表該面向「需求越強」或「優先級越高」。</p>
+    <p class="sub">對應程式：<code>website-analyzer.js</code>、<code>ai-assistant.js</code>（classifyCustomer）。分數皆為 0–100；下列**總表**為判斷依據，下方為加權細節。</p>
 
-    <h2>一、website_need_score（網站撰寫／改版需求）</h2>
+    <div class="hero">
+        <h2>總表：分數 × 判斷依據（給審閱者對照，非僅命名）</h2>
+        <table>
+            <thead><tr><th>分數</th><th>判斷依據</th></tr></thead>
+            <tbody>
+                <tr>
+                    <th>website<br>need_score</th>
+                    <td><strong>CTA</strong>（聯絡／預約／詢價等＋連結或按鈕）、<strong>聯絡表單</strong>、<strong>SEO title／description</strong>（含 H1）、<strong>網站速度</strong>（首頁 &gt;3 秒加分）、<strong>手機版適配</strong>（viewport）；另：版權年份過舊、作品／服務頁線索。</td>
+                </tr>
+                <tr>
+                    <th>security<br>need_score</th>
+                    <td><strong>HTTPS</strong>、<strong>security.txt</strong>、<strong>基本安全標頭</strong>（HSTS、X-Content-Type-Options、X-Frame-Options、CSP）、<strong>robots／sitemap／隱私聲明</strong>（HTML 線索）、外露技術資訊、WordPress 無 CSP 等。</td>
+                </tr>
+                <tr>
+                    <th>lead_score</th>
+                    <td><strong>決策者線索</strong>（職稱）、<strong>需求標籤</strong>（CRM tags）、<strong>互動紀錄</strong>（次數）、<strong>網站分析訊號</strong>（若有）；<strong>聯絡完整度</strong>可擴充，目前規則以職稱／標籤／互動／網站訊號為主。</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>一、website_need_score（網站撰寫／改版需求）— 加權細節</h2>
     <p style="color:#a1a1aa;font-size:0.9rem">依首頁 HTML 與載入時間加權累加，上限 100。</p>
     <table>
         <thead><tr><th>條件</th><th>加分</th><th>偵測方式</th></tr></thead>
@@ -40,7 +65,7 @@
         </tbody>
     </table>
 
-    <h2>二、security_need_score（資安強化需求）</h2>
+    <h2>二、security_need_score（資安強化需求）— 加權細節</h2>
     <p style="color:#a1a1aa;font-size:0.9rem">越高代表越需要資安健檢或設定補強。</p>
     <table>
         <thead><tr><th>條件</th><th>加分</th><th>說明</th></tr></thead>
@@ -56,7 +81,7 @@
     </table>
     <p class="note">HTML 內亦會檢查 robots、sitemap、privacy 等<strong>文字線索</strong>（見 <code>analyzeSecurity</code>），主要加權仍以上表為主。</p>
 
-    <h2>三、lead_score（客戶優先級／AI 分類）</h2>
+    <h2>三、lead_score（客戶優先級／AI 分類）— 加權細節</h2>
     <p style="color:#a1a1aa;font-size:0.9rem">基準分 50，再依職稱、網站分析、互動、標籤調整，最後 clamp 至 0–100。</p>
     <table>
         <thead><tr><th>面向</th><th>規則摘要</th><th>典型加分/扣分</th></tr></thead>
