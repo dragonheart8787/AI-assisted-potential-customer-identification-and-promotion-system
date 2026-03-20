@@ -86,7 +86,7 @@ function createMenu() {
           label: '開啟系統測試',
           accelerator: 'CmdOrCtrl+4',
           click: () => {
-            mainWindow.loadFile('test-app-new.html');
+            mainWindow.loadFile(path.join(__dirname, 'pages', 'test-app-new.html'));
           }
         },
         { type: 'separator' },

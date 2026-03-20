@@ -4,7 +4,7 @@
 
 ## 前置
 
-1. 執行 `node backend-server.js` 或 `開啟新介面.bat`
+1. 執行 `node backend-server.js` 或 **`run-demo.bat`**
 2. 瀏覽器開啟 `http://localhost:3856/app-new.html`
 
 ---
@@ -13,7 +13,7 @@
 
 ### 1. 系統架構（1 分鐘）
 
-開啟 `http://localhost:3856/system-overview.html`
+開啟 `http://localhost:3856/pages/system-overview.html`
 
 - 展示架構圖、模組清單、API、評分機制
 - 說明：名單 → 去重 → 分析 → AI → CRM → 報告
@@ -47,8 +47,8 @@
 
 ### 6. 測試與 KPI（2 分鐘）
 
-- 開啟 `http://localhost:3856/test-app-new.html` → 執行全部測試
-- 開啟 `http://localhost:3856/kpi-dashboard.html` → 展示 KPI
+- 開啟 `http://localhost:3856/pages/test-app-new.html` → 執行全部測試
+- 開啟 `http://localhost:3856/pages/kpi-dashboard.html` → 展示 KPI
 - 命令列執行 `node run-tests.js` 展示後端測試
 
 ---
@@ -62,9 +62,9 @@
 | 目標客戶列表 | 目標客戶頁 |
 | 報告輸出 | 健檢報告、3 分鐘摘要 |
 | AI 生成 | 撰寫訊息 + AI 生成結果 |
-| 系統架構 | system-overview.html |
-| 測試通過 | test-app-new.html、run-tests.js |
-| KPI 儀表板 | kpi-dashboard.html |
+| 系統架構 | pages/system-overview.html |
+| 測試通過 | pages/test-app-new.html、run-tests.js |
+| KPI 儀表板 | pages/kpi-dashboard.html |
 
 ---
 

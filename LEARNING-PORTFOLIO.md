@@ -105,7 +105,7 @@
 
 ## 六、評分機制（判斷依據，非僅命名）
 
-三個分數皆為 **0–100**，數值越高代表該面向「越需要被服務」或「越值得優先聯繫」。下方為**教授可對照的判斷依據簡表**；加權細節與程式對應見 **`scoring-explained.html`**（或 `website-analyzer.js` 的 `computeWebsiteNeedScore` / `computeSecurityNeedScore`、`ai-assistant.js` 的 `classifyCustomer`）。
+三個分數皆為 **0–100**，數值越高代表該面向「越需要被服務」或「越值得優先聯繫」。下方為**教授可對照的判斷依據簡表**；加權細節與程式對應見 **`pages/scoring-explained.html`**（或 `website-analyzer.js` 的 `computeWebsiteNeedScore` / `computeSecurityNeedScore`、`ai-assistant.js` 的 `classifyCustomer`）。
 
 ### 6.1 分數與判斷依據（總表）
 
@@ -132,8 +132,8 @@
 | 方式 | 指令/路徑 |
 |------|------------|
 | 後端 API | `node run-tests.js` |
-| 瀏覽器完整 | `http://localhost:3856/test-app-new.html` |
-| KPI 儀表板 | `http://localhost:3856/kpi-dashboard.html` |
+| 瀏覽器完整 | `http://localhost:3856/pages/test-app-new.html` |
+| KPI 儀表板 | `http://localhost:3856/pages/kpi-dashboard.html` |
 
 ### 7.2 效能數據
 
@@ -195,33 +195,33 @@
 | 成果項目 | 檔案或入口 | 說明 |
 |----------|------------|------|
 | **主畫面（儀表板、名單、撰寫訊息、成效、設定）** | **`app-new.html`** | 專題主要操作介面；內嵌發現客戶、報告產生、Demo 模式開關。 |
-| **KPI 儀表板** | **`kpi-dashboard.html`** | 名單數、高分 Lead、Pipeline／產業分布、開信／點擊／跟進；建議截圖。 |
-| **CRM 管理（Pipeline、客戶表）** | **`crm-interface.html`** | 獨立 CRM 頁；與主畫面「目標客戶」資料同源（localStorage）。 |
-| **AI 推廣工作流程** | **`ai-promotion-workflow.html`** | 批次分類、聯絡流程展示。 |
-| **系統架構與 API 一覽** | **`system-overview.html`** | 模組、API、測試方式。 |
-| **評分判斷依據（總表＋加權細節）** | **`scoring-explained.html`** | 對應第六節「判斷依據」。 |
-| **自動化測試（瀏覽器）** | **`test-app-new.html`** | 模組載入與整合測試。 |
+| **KPI 儀表板** | **`pages/kpi-dashboard.html`** | 名單數、高分 Lead、Pipeline／產業分布、開信／點擊／跟進；建議截圖。 |
+| **CRM 管理（Pipeline、客戶表）** | **`pages/crm-interface.html`** | 獨立 CRM 頁；與主畫面「目標客戶」資料同源（localStorage）。 |
+| **AI 推廣工作流程** | **`pages/ai-promotion-workflow.html`** | 批次分類、聯絡流程展示。 |
+| **系統架構與 API 一覽** | **`pages/system-overview.html`** | 模組、API、測試方式。 |
+| **評分判斷依據（總表＋加權細節）** | **`pages/scoring-explained.html`** | 對應第六節「判斷依據」。 |
+| **自動化測試（瀏覽器）** | **`pages/test-app-new.html`** | 模組載入與整合測試。 |
 | **報告產出** | **`report-generator.js`**（由 **`app-new.html`** 成效分析區操作） | 健檢／SEO／資安報告與匯出。 |
 | **匯出客戶／日誌** | **`export-utils.js`**（**設定**頁按鈕） | CSV、報告 HTML、列印 PDF。 |
 | **Demo 穩定展示** | **設定 → 啟用 Demo 模式**；資料見 **`demo/`** | `sample_crm_records.json`、`sample_kpi_events.json`、**`demo/sample_reports/*.html`** 固定範本。 |
-| **其他前端頁** | `ai-settings.html`、`ai-knowledge-base.html`、`index.html`（轉址至 app-new）等 | 設定、知識庫；**唯一主展示為 app-new.html**。 |
+| **其他前端頁** | `pages/ai-settings.html`、`pages/ai-knowledge-base.html`、`index.html`（轉址至 app-new）等 | 設定、知識庫；**唯一主展示為 app-new.html**。 |
 
 ### 11.2 建議截圖檔名（交件時一目了然）
 
 | 建議檔名 | 內容 |
 |----------|------|
 | `01-main-app-new.png` | 主畫面 `app-new.html`（儀表板或目標客戶） |
-| `02-kpi-dashboard.png` | `kpi-dashboard.html` 全頁或主要指標區 |
-| `03-crm-pipeline.png` | `crm-interface.html` 或主畫面客戶列表 |
+| `02-kpi-dashboard.png` | `pages/kpi-dashboard.html` 全頁或主要指標區 |
+| `03-crm-pipeline.png` | `pages/crm-interface.html` 或主畫面客戶列表 |
 | `04-report-or-export.png` | 成效分析產生報告或匯出按鈕 |
-| `05-test-app-new-pass.png` | `test-app-new.html` 測試通過畫面 |
+| `05-test-app-new-pass.png` | `pages/test-app-new.html` 測試通過畫面 |
 | `06-run-tests-terminal.png` | 終端機 `node run-tests.js` 通過輸出 |
-| `07-scoring-explained.png` | `scoring-explained.html` 總表區 |
+| `07-scoring-explained.png` | `pages/scoring-explained.html` 總表區 |
 | `08-demo-mode-on.png` | 設定頁 Demo 已啟用 + 名單有範例資料 |
 
 ### 11.3 書面／簡報一句話導覽
 
-「請先看 **`app-new.html`** 主流程；數據看 **`kpi-dashboard.html`**；客戶管線看 **`crm-interface.html`**；評分邏輯看 **`scoring-explained.html`**；自動測試看 **`test-app-new.html`** 與 **`run-tests.js`**。」
+「請先看 **`app-new.html`** 主流程；數據看 **`pages/kpi-dashboard.html`**；客戶管線看 **`pages/crm-interface.html`**；評分邏輯看 **`pages/scoring-explained.html`**；自動測試看 **`pages/test-app-new.html`** 與 **`run-tests.js`**。」
 
 ---
 
@@ -253,10 +253,10 @@
 
 | 類型 | 路徑/說明 |
 |------|-----------|
-| 系統截圖 | 檔名建議見**第十一節**；畫面見 app-new、kpi-dashboard、crm-interface |
-| 測試結果 | run-tests.js 輸出、test-app-new.html |
+| 系統截圖 | 檔名建議見**第十一節**；畫面見 app-new、pages/kpi-dashboard、pages/crm-interface |
+| 測試結果 | run-tests.js 輸出、pages/test-app-new.html |
 | 效能數據 | CAPABILITY-PERFORMANCE-REPORT.md |
-| 架構說明 | system-overview.html |
+| 架構說明 | pages/system-overview.html |
 | 報告輸出 | report-generator 各類型報告 |
 | 名單分析 | 發現客戶各來源結果 |
 | Demo 資料 | `demo/sample_crm_records.json`、`demo/DEMO-展示流程.md` |
@@ -269,8 +269,8 @@
 
 - [ ] 專題名稱、動機、目標
 - [ ] **第十一節成果展示**：對照表 + 建議截圖檔名已備妥
-- [ ] **第六節評分**：判斷依據總表（或 scoring-explained.html 截圖）
-- [ ] 系統架構圖（system-overview.html 截圖）
+- [ ] **第六節評分**：判斷依據總表（或 pages/scoring-explained.html 截圖）
+- [ ] 系統架構圖（pages/system-overview.html 截圖）
 - [ ] 功能清單與模組介紹
 - [ ] 製作流程與困難
 - [ ] 測試與效能證據

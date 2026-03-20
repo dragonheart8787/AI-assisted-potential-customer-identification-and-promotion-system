@@ -108,16 +108,16 @@
         document.getElementById('btn-send')?.addEventListener('click', sendMessage);
         document.getElementById('btn-ai-generate')?.addEventListener('click', aiGenerateMessage);
         document.getElementById('btn-refresh')?.addEventListener('click', () => { loadDashboard(); loadProspects(); loadComposeTargets(); toast('已重新整理'); });
-        document.getElementById('btn-test')?.addEventListener('click', () => window.open('archive/quick-test.html'));
-        document.getElementById('btn-test-full')?.addEventListener('click', () => window.open('test-app-new.html'));
-        document.getElementById('btn-open-crm')?.addEventListener('click', () => window.open('crm-interface.html'));
-        document.getElementById('btn-open-ai')?.addEventListener('click', () => window.open('ai-settings.html'));
-        document.getElementById('link-crm')?.addEventListener('click', (e) => { e.preventDefault(); window.open('crm-interface.html'); });
-        document.getElementById('link-ai')?.addEventListener('click', (e) => { e.preventDefault(); window.open('ai-settings.html'); });
-        document.getElementById('link-workflow')?.addEventListener('click', (e) => { e.preventDefault(); window.open('ai-promotion-workflow.html'); });
+        document.getElementById('btn-test')?.addEventListener('click', () => window.open('debug/quick-test.html'));
+        document.getElementById('btn-test-full')?.addEventListener('click', () => window.open('pages/test-app-new.html'));
+        document.getElementById('btn-open-crm')?.addEventListener('click', () => window.open('pages/crm-interface.html'));
+        document.getElementById('btn-open-ai')?.addEventListener('click', () => window.open('pages/ai-settings.html'));
+        document.getElementById('link-crm')?.addEventListener('click', (e) => { e.preventDefault(); window.open('pages/crm-interface.html'); });
+        document.getElementById('link-ai')?.addEventListener('click', (e) => { e.preventDefault(); window.open('pages/ai-settings.html'); });
+        document.getElementById('link-workflow')?.addEventListener('click', (e) => { e.preventDefault(); window.open('pages/ai-promotion-workflow.html'); });
         document.getElementById('link-ai-kb')?.addEventListener('click', (e) => { e.preventDefault(); openKnowledgeBase(); });
-        document.getElementById('btn-api-settings')?.addEventListener('click', () => window.open('ai-settings.html'));
-        document.getElementById('btn-open-crm-from-accounts')?.addEventListener('click', () => window.open('crm-interface.html'));
+        document.getElementById('btn-api-settings')?.addEventListener('click', () => window.open('pages/ai-settings.html'));
+        document.getElementById('btn-open-crm-from-accounts')?.addEventListener('click', () => window.open('pages/crm-interface.html'));
         // 發現彈窗 tab 切換
         document.querySelectorAll('.discover-tabs .tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -887,7 +887,7 @@
     }
 
     function openKnowledgeBase() {
-        window.open('ai-knowledge-base.html');
+        window.open('pages/ai-knowledge-base.html');
     }
 
     function addManualProspect() {

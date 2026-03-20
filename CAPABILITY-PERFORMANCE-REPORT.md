@@ -1,7 +1,7 @@
 # 推廣中心 - 能力與效能分析報告
 
 **測試日期**：2025-03-19  
-**測試方式**：`node run-tests.js`（後端）、`test-app-new.html`（瀏覽器）
+**測試方式**：`node run-tests.js`（後端）、`pages/test-app-new.html`（瀏覽器）
 
 ---
 
@@ -71,7 +71,7 @@ node run-tests.js
 
 ### 瀏覽器（完整）
 1. 啟動 `開啟新介面.bat`
-2. 開啟 `http://localhost:3856/test-app-new.html`
+2. 開啟 `http://localhost:3856/pages/test-app-new.html`
 3. 點擊「執行全部測試」
 
 ---

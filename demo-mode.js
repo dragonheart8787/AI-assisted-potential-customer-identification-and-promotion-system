@@ -7,12 +7,21 @@ const DemoMode = {
     KEY: 'demo_mode',
     BACKUP_KEY: 'crm_customers_pre_demo',
 
+    /** 自 pages/ 子路徑開啟時改為 ../demo/ */
+    _demoFile(name) {
+        try {
+            const p = window.location.pathname || '';
+            if (p.includes('/pages/')) return '../demo/' + name;
+        } catch (_) {}
+        return 'demo/' + name;
+    },
+
     isActive() {
         return localStorage.getItem(this.KEY) === '1';
     },
 
     async apply() {
-        const res = await fetch('demo/sample_crm_records.json');
+        const res = await fetch(this._demoFile('sample_crm_records.json'));
         if (!res.ok) throw new Error('無法載入 demo/sample_crm_records.json');
         const customers = await res.json();
         const backup = localStorage.getItem('crm_customers');
@@ -39,7 +48,7 @@ const DemoMode = {
     /** KPI 用：Demo 事件（不寫後端檔案） */
     async getSampleKpiEvents() {
         try {
-            const res = await fetch('demo/sample_kpi_events.json');
+            const res = await fetch(this._demoFile('sample_kpi_events.json'));
             if (!res.ok) return [];
             return await res.json();
         } catch {

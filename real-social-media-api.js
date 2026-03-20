@@ -608,7 +608,7 @@ class RealSocialMediaAPI {
 
     // 開啟API設定頁面
     openAPISettings() {
-        const settingsWindow = window.open('api-settings.html', 'api_settings', 
+        const settingsWindow = window.open('pages/api-settings.html', 'api_settings', 
             'width=800,height=600,scrollbars=yes,resizable=yes');
     }
 }

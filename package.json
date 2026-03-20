@@ -39,9 +39,16 @@
       "renderer/**/*",
       "assets/**/*",
       "*.html",
+      "pages/**/*.html",
+      "debug/**/*.html",
+      "archive/**/*.html",
       "*.css",
       "*.js",
-      "*.md"
+      "pages/**/*.css",
+      "*.md",
+      "pages/**/*.md",
+      "debug/**/*.md",
+      "archive/**/*.md"
     ],
     "win": {
       "target": [
