@@ -1,61 +1,99 @@
-# AI 輔助潛在客戶探勘與推廣系統原型
+# AI 輔助潛在客戶探勘與推廣系統（原型）
 
-> Repo：`AI-assisted-potential-customer-identification-and-promotion-system`（學習歷程／原型展示，非 production。）
+您好，感謝您閱讀本專案說明。
 
-**開頭一句話：AI 輔助潛在客戶探勘與推廣系統原型** — 從公開與自有名單蒐集潛在客戶，經清洗與合規後，以網站分析與 AI 評分／生成內容，並在 CRM、跟進、KPI 與報告中呈現。
+本儲存庫為 **AI-assisted-potential-customer-identification-and-promotion-system** 之**學習歷程／原型展示**實作，目標是示範如何從公開與自有資料辨識潛在客戶、進行合規處理、搭配網站訊號評分，並以 AI 輔助分類與訊息草稿，最後在 CRM、跟進紀錄、KPI 與報告中呈現。**本專案並非上線用之 production 系統**，而是以可重現、可展示為優先。
 
-## 功能描述（主線）
+---
+
+## 一、專案簡介（一句話）
+
+**AI 輔助潛在客戶探勘與推廣系統原型** — 協助使用者蒐集與整理名單、分析網站需求與資安訊號、以 AI 產出分類與推廣文案，並透過 CRM 與儀表板追蹤成效。
+
+---
+
+## 二、核心能力概覽
+
+為方便您快速掌握範圍，以下將主線能力分項說明：
 
 | 面向 | 說明 |
 |------|------|
-| **潛在客戶蒐集** | 手動／CSV、Google Maps／社群／招募頁（視 API 與登入設定）、CRM 統一檢視。 |
-| **資料清洗與合規** | 去重與驗證、發送頻率／黑名單／紀錄（`data-deduplication.js`、`compliance-manager.js`）。 |
-| **網站分析與需求評分** | 公開頁面分析；`website_need_score`、`security_need_score` 與介面上的**可解釋原因**。 |
-| **AI 分類與訊息生成** | 客戶分類、`lead_score`、推廣訊息草稿（`ai-assistant.js` 等；可選接外部模型）。 |
-| **CRM／follow-up／KPI／report** | Pipeline、自動跟進、**`pages/kpi-dashboard.html`**（唯一正式 KPI 頁）、報告產生與 `demo/sample_reports/` 範本。 |
+| **潛在客戶蒐集** | 支援手動／CSV、地圖與社群搜尋（視 API 與登入設定）、招募頁線索等，並匯入同一套 CRM 檢視。 |
+| **資料清洗與合規** | 透過去重、Email 驗證、發送頻率與紀錄等機制，降低重複名單與不當觸達風險。 |
+| **網站分析與需求評分** | 對公開網頁做合法、低侵擾分析，產出 **website_need_score**、**security_need_score**，並在介面上附**可解釋之判斷理由**（非僅數字）。 |
+| **AI 分類與訊息生成** | 依客戶欄位與（選用）網站分析結果進行分類、估算 **lead_score**，並可產出推廣訊息草稿；可選擇純本機規則或外接模型。 |
+| **CRM／跟進／KPI／報告** | Pipeline、跟進規則、**正式 KPI 頁**（位於 `pages/kpi-dashboard.html`）、以及網站健檢／SEO／資安等報告範本（含 `demo/sample_reports/`）。 |
 
-## 單一展示入口（不要猜哪一頁才是正式版）
+---
 
-| 角色 | 路徑 |
-|------|------|
-| **唯一主入口** | **`app-new.html`**（功能主畫面）。**`index.html`** 僅負責轉址到 `app-new.html`。 |
-| **子頁／工具頁**（由主介面側欄或設定內連結開啟） | 集中在 **`pages/`**：CRM、KPI、AI 設定、API 設定、工作流程、知識庫、評分說明、架構說明、瀏覽器測試頁。 |
-| **OAuth 回調（勿刪）** | 根目錄 **`oauth-callback.html`**（若設定真實社群 OAuth，redirect URI 須與後台一致）。 |
+## 三、目錄與「單一入口」說明
 
-> 舊版首頁、debug 測試頁在 **`debug/`**；更舊的實驗 UI 在 **`archive/`**。評審請**只看 `app-new.html` 主線**。
-
-## 如何啟動
-
-1. 安裝 [Node.js](https://nodejs.org/)。
-2. 雙擊 **`run-demo.bat`**（或執行 `node backend-server.js`）。
-3. 瀏覽器開啟 **http://localhost:3856/app-new.html**（網址列 `/` 亦會導向同一頁）。
-
-勿只用 `file://` 開 HTML，否則 Demo JSON 可能無法載入。
-
-## Demo 模式
-
-- 首次開啟且 CRM 為空時，會自動載入 `demo/sample_crm_records.json`。
-- 設定頁可手動「啟用／離開 Demo 模式」。再次觸發自動載入可清除鍵 `promo_showcase_auto_demo_v1`。
-
-## 測試
-
-- 後端啟動後，雙擊 **`run-tests.bat`**（即 `node run-tests.js`）。
-- 瀏覽器整合測試：**`pages/test-app-new.html`**。
-
-## 文件與目錄
+為讓評審或初次瀏覽者**不必猜測哪一頁才是正式版**，檔案配置如下：
 
 | 位置 | 用途 |
 |------|------|
-| `LEARNING-PORTFOLIO.md` | 學習歷程 |
-| `CAPABILITY-PERFORMANCE-REPORT.md` | 能力與效能 |
-| `SYSTEM-ARCHITECTURE-DIAGRAMS.md` | 架構圖文 |
-| `docs/` | 舊指南、論文稿、批次說明等參考 |
-| `reports/` | 長篇測試／分析報告 |
-| `archive/` | 封存 UI 與 **`archive/batches/`** 舊啟動批次檔 |
-| `debug/` | **僅開發除錯**，非展示主線 |
-| `pages/` | **正式子頁**（由 app-new 進入） |
+| **`app-new.html`** | **唯一主展示介面**（儀表板、名單、撰寫、成效、設定等）。 |
+| **`index.html`** | 僅負責轉址至 `app-new.html`，不作為獨立產品頁。 |
+| **`oauth-callback.html`** | OAuth 回調用固定路徑；若您設定真實社群登入，請與開發者後台的 redirect URI 一致。 |
+| **`pages/`** | 由主介面連結開啟之**正式子頁**（CRM、KPI、設定、工作流程、知識庫、評分說明、架構說明、瀏覽器測試頁等）。 |
+| **`demo/`** | 展示用範例資料與固定報告範本，方便無 API 時仍能截圖簡報。 |
+| **`debug/`** | 除錯與舊版實驗頁，**不屬於主線展示**。 |
+| **`archive/`** | 封存之舊 UI、舊樣式表等；**請勿當作正式入口**。 |
+| **`docs/`**、**`reports/`** | 長篇指南、論文式稿件、測試彙整等參考文件。 |
+| **`data/`** | 執行時產生之 KPI 事件檔等（例如 `data/kpi-events.json`），避免堆在根目錄。 |
 
-## 技術備註
+更細的約定請參考 **`docs/ROOT-FILE-POLICY.md`**。若您從舊分支合併後，根目錄又出現大量 `.md` 或過渡用 `.html`，可執行 **`scripts/sweep-stray-root-docs.ps1`**（會將非白名單之 Markdown 移至 `docs/swept-from-root/`，執行前建議先 commit）。
 
-- 後端預設埠號 **3856**（`backend-server.js`）。
-- 選用桌面版：`npm start`（Electron 載入 `app-new.html`）。
+---
+
+## 四、環境需求與啟動方式
+
+1. 請先安裝 **[Node.js](https://nodejs.org/)**（建議 LTS 版本）。  
+2. 於專案根目錄雙擊 **`run-demo.bat`**，或於終端機執行：  
+   `node backend-server.js`  
+3. 以瀏覽器開啟：**http://localhost:3856/app-new.html**（網址列根路徑 `/` 亦會導向同一頁）。
+
+**溫馨提醒：** 若僅以檔案總管雙擊開啟 HTML（`file://` 協定），部分範例 JSON 可能無法載入；**建議一律透過上述本機伺服器瀏覽**，展示較穩定。
+
+---
+
+## 五、Demo 模式（建議展示時使用）
+
+- 當 CRM 尚無資料時，系統可**自動載入** `demo/sample_crm_records.json`，讓您無需 API 金鑰或 OAuth 也能展示名單與三項分數。  
+- 您亦可於 **設定** 中手動 **啟用／離開 Demo 模式**。  
+- KPI 相關範例事件見 `demo/sample_kpi_events.json`（與後端事件合併顯示於 KPI 頁）。
+
+---
+
+## 六、測試與驗證
+
+| 方式 | 說明 |
+|------|------|
+| **後端腳本** | 啟動伺服器後，雙擊 **`run-tests.bat`** 或執行 `node run-tests.js`。 |
+| **瀏覽器整合** | 開啟 **`pages/test-app-new.html`** 執行模組載入與整合檢查。 |
+
+---
+
+## 七、延伸閱讀（與本 README 分工）
+
+本 README 刻意保持精簡；若您需要更完整的學習歷程敘述、效能數據或架構圖文，請參考：
+
+- **`LEARNING-PORTFOLIO.md`** — 學習歷程與反思  
+- **`CAPABILITY-PERFORMANCE-REPORT.md`** — 能力與效能報告  
+- **`SYSTEM-ARCHITECTURE-DIAGRAMS.md`** — 架構圖與說明  
+- **`docs/`** — 安裝／批次／舊稿等參考文件  
+- **`reports/`** — 長篇測試與分析報告  
+
+---
+
+## 八、選用：桌面版（Electron）
+
+若需以桌面視窗執行與瀏覽器相同之介面，可於安裝依賴後執行 `npm start`。打包設定見 `package.json` 之 `build` 區塊。
+
+---
+
+## 九、聯絡與致謝
+
+本專案作為教學與原型用途，架構與介面仍可能隨學習過程調整。若您在使用或展示時發現文件與實際路徑不符，建議以本 README 與 **`docs/ROOT-FILE-POLICY.md`** 為準，或依專案內註解與腳本路徑交叉確認。
+
+再次感謝您的耐心閱讀，祝展示與審閱順利。

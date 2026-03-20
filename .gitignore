@@ -1,4 +1,5 @@
 node_modules/
+data/kpi-events.json
 kpi-events.json
 *.log
 .DS_Store

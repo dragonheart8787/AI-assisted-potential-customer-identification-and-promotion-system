@@ -37,8 +37,23 @@ function loadConfig() {
 
 const config = loadConfig();
 
-// 事件儲存（開信、點擊、發信等 KPI 用）
-const EVENTS_FILE = path.join(__dirname, 'kpi-events.json');
+// 事件儲存（開信、點擊、發信等 KPI 用）— 置於 data/ 以保持根目錄簡潔
+const DATA_DIR = path.join(__dirname, 'data');
+const EVENTS_FILE = path.join(DATA_DIR, 'kpi-events.json');
+const LEGACY_EVENTS_FILE = path.join(__dirname, 'kpi-events.json');
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+function migrateLegacyEventsFile() {
+  try {
+    if (!fs.existsSync(EVENTS_FILE) && fs.existsSync(LEGACY_EVENTS_FILE)) {
+      ensureDataDir();
+      fs.renameSync(LEGACY_EVENTS_FILE, EVENTS_FILE);
+    }
+  } catch (e) {}
+}
+migrateLegacyEventsFile();
+
 function loadEvents() {
   try {
     if (fs.existsSync(EVENTS_FILE)) {
@@ -48,6 +63,7 @@ function loadEvents() {
   return [];
 }
 function saveEvent(ev) {
+  ensureDataDir();
   const events = loadEvents();
   events.push({ ...ev, ts: ev.ts || new Date().toISOString() });
   fs.writeFileSync(EVENTS_FILE, JSON.stringify(events.slice(-5000)), 'utf8');
