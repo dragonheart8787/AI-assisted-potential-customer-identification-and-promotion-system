@@ -1,0 +1,13 @@
+services:
+  promo-backend:
+    build: .
+    ports:
+      - "3856:3856"
+    environment:
+      NO_OPEN_BROWSER: "1"
+    volumes:
+      - promo-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  promo-data:

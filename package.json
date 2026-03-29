@@ -3,8 +3,15 @@
   "version": "1.0.0",
   "description": "AI 輔助潛在客戶探勘與推廣系統（學習歷程原型）",
   "main": "main.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
+    "demo": "node backend-server.js",
     "backend": "node backend-server.js",
+    "test:unit": "node --test test/unit/api-validate.test.cjs test/unit/static-path.test.cjs test/unit/dedup.test.cjs",
+    "test:integration": "node scripts/run-integration-tests.js",
+    "test": "npm run test:unit && npm run test:integration",
     "start": "electron .",
     "build": "electron-builder",
     "dist": "electron-builder --publish=never",
@@ -36,6 +43,7 @@
     "files": [
       "main.js",
       "preload.js",
+      "lib/**/*.js",
       "renderer/**/*",
       "assets/**/*",
       "*.html",

@@ -48,12 +48,18 @@
 
 ## 四、環境需求與啟動方式
 
-1. 請先安裝 **[Node.js](https://nodejs.org/)**（建議 LTS 版本）。  
-2. 於專案根目錄雙擊 **`run-demo.bat`**，或於終端機執行：  
-   `node backend-server.js`  
-3. 以瀏覽器開啟：**http://localhost:3856/app-new.html**（網址列根路徑 `/` 亦會導向同一頁）。
+1. 請先安裝 **[Node.js](https://nodejs.org/)**（**18 以上**，建議 LTS）。  
+2. 於專案根目錄安裝依賴：`npm install`（若僅跑後端展示，亦可 `npm install --omit=dev`）。  
+3. 啟動後端（擇一即可）：  
+   - 雙擊 **`run-demo.bat`**（Windows），或  
+   - `npm run demo`／`npm run backend`／`node backend-server.js`  
+4. 以瀏覽器開啟：**http://localhost:3856/app-new.html**（根路徑 `/` 亦會導向同一頁）。
 
-**溫馨提醒：** 若僅以檔案總管雙擊開啟 HTML（`file://` 協定），部分範例 JSON 可能無法載入；**建議一律透過上述本機伺服器瀏覽**，展示較穩定。
+**後端設定（選用）：** 請複製 **`backend-config.example.json`** 為 **`backend-config.json`**，再填入 SMTP、Google Places 等。本儲存庫已將 **`backend-config.json` 列入 `.gitignore`**，避免誤提交密鑰；若您曾於舊版將該檔推上遠端，建議旋轉相關金鑰／密碼。
+
+**不自動開瀏覽器：** 在 Linux、macOS、CI 或 Docker 環境，請設定環境變數 **`NO_OPEN_BROWSER=1`**（本專案之整合測試與 Docker 映像已預設此行為）。Windows 本機若亦不想自動開啟，同樣可設定此變數。
+
+**溫馨提醒：** 若僅以檔案總管雙擊開啟 HTML（`file://`），部分範例 JSON 可能無法載入；**建議一律透過本機伺服器瀏覽**。
 
 ---
 
@@ -69,12 +75,29 @@
 
 | 方式 | 說明 |
 |------|------|
-| **後端腳本** | 啟動伺服器後，雙擊 **`run-tests.bat`** 或執行 `node run-tests.js`。 |
-| **瀏覽器整合** | 開啟 **`pages/test-app-new.html`** 執行模組載入與整合檢查。 |
+| **一鍵完整測試** | `npm test`：先跑 **單元測試**，再**背景啟動後端**並執行 `run-tests.js`（無需手動開兩個終端）。 |
+| **僅單元測試** | `npm run test:unit`（`lib/api-validate`、`lib/static-path`、`data-deduplication` 等，使用 Node 內建 `node --test`）。 |
+| **僅整合測試** | `npm run test:integration`（需可綁定埠 3856；與 `npm test` 內含步驟相同）。 |
+| **Windows 批次** | 雙擊 **`run-tests.bat`**（請先已手動啟動後端）或依賴 **`npm test`**。 |
+| **瀏覽器** | 開啟 **`pages/test-app-new.html`** 做前端模組載入與整合檢查。 |
+
+**持續整合：** 推送至 GitHub 後，**`.github/workflows/ci.yml`** 會於 Ubuntu 上執行 `npm run test:unit` 與 `npm run test:integration`，協助確認後端與 API 測試仍通過。
 
 ---
 
-## 七、延伸閱讀（與本 README 分工）
+## 七、Docker（選用）
+
+若希望以容器啟動後端（利於展示環境一致）：
+
+```bash
+docker compose up --build
+```
+
+瀏覽器開啟 **http://localhost:3856/app-new.html**。KPI 事件檔透過 compose 掛載於 volume **`promo-data`**（對應容器內 `/app/data`）。
+
+---
+
+## 八、延伸閱讀（與本 README 分工）
 
 本 README 刻意保持精簡；若您需要更完整的學習歷程敘述、效能數據或架構圖文，請參考：
 
@@ -86,13 +109,13 @@
 
 ---
 
-## 八、選用：桌面版（Electron）
+## 九、選用：桌面版（Electron）
 
 若需以桌面視窗執行與瀏覽器相同之介面，可於安裝依賴後執行 `npm start`。打包設定見 `package.json` 之 `build` 區塊。
 
 ---
 
-## 九、聯絡與致謝
+## 十、聯絡與致謝
 
 本專案作為教學與原型用途，架構與介面仍可能隨學習過程調整。若您在使用或展示時發現文件與實際路徑不符，建議以本 README 與 **`docs/ROOT-FILE-POLICY.md`** 為準，或依專案內註解與腳本路徑交叉確認。
 

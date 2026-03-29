@@ -6,6 +6,15 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+const { resolveStaticPath } = require('./lib/static-path.js');
+const {
+  MAX_JSON_BODY,
+  validateProxyUrlParam,
+  validateSendEmailPayload,
+  validateOAuthPayload,
+  validateEventPayload
+} = require('./lib/api-validate.js');
+const { printStartupInfo } = require('./lib/startup-info.js');
 
 const PORT = 3856;
 const MIME = {
@@ -87,9 +96,9 @@ async function fetchWithProxy(targetUrl) {
   });
 }
 
-async function handleProxy(url) {
+async function handleProxy(decodedUrl) {
   try {
-    const decoded = decodeURIComponent(url);
+    const decoded = decodedUrl;
     if (!decoded.startsWith('http://') && !decoded.startsWith('https://')) {
       return { error: 'Invalid URL' };
     }
@@ -191,7 +200,13 @@ const server = http.createServer(async (req, res) => {
 
   // API: CORS 代理
   if (pathname === '/api/proxy' && url.searchParams.has('url')) {
-    const result = await handleProxy(url.searchParams.get('url'));
+    const v = validateProxyUrlParam(url.searchParams.get('url'));
+    if (!v.ok) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: v.error }));
+      return;
+    }
+    const result = await handleProxy(v.url);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
     return;
@@ -200,10 +215,25 @@ const server = http.createServer(async (req, res) => {
   // API: 發送 Email
   if (pathname === '/api/send-email' && req.method === 'POST') {
     let body = '';
-    req.on('data', c => body += c);
+    let tooBig = false;
+    req.on('data', (c) => {
+      body += c;
+      if (body.length > MAX_JSON_BODY) tooBig = true;
+    });
     req.on('end', async () => {
+      if (tooBig) {
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: '請求體過大' }));
+        return;
+      }
       try {
         const parsed = JSON.parse(body || '{}');
+        const v = validateSendEmailPayload(parsed);
+        if (!v.ok) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: v.error }));
+          return;
+        }
         const result = await handleSendEmail(parsed);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
@@ -218,10 +248,26 @@ const server = http.createServer(async (req, res) => {
   // API: OAuth 取得 token（後端代為請求，避免 client_secret 暴露）
   if (pathname === '/api/oauth/token' && req.method === 'POST') {
     let body = '';
-    req.on('data', c => body += c);
+    let tooBig = false;
+    req.on('data', (c) => {
+      body += c;
+      if (body.length > MAX_JSON_BODY) tooBig = true;
+    });
     req.on('end', async () => {
+      if (tooBig) {
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: '請求體過大' }));
+        return;
+      }
       try {
-        const { platform, code, redirectUri, clientId, clientSecret, appId, appSecret } = JSON.parse(body || '{}');
+        const parsed = JSON.parse(body || '{}');
+        const v = validateOAuthPayload(parsed);
+        if (!v.ok) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: v.error }));
+          return;
+        }
+        const { platform, code, redirectUri, clientId, clientSecret, appId, appSecret } = parsed;
         const token = await handleOAuthToken(platform, code, redirectUri, clientId, clientSecret, appId, appSecret);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(token));
@@ -245,6 +291,11 @@ const server = http.createServer(async (req, res) => {
     const location = url.searchParams.get('location') || '';
     const type = url.searchParams.get('type') || '';
     const language = url.searchParams.get('language') || 'zh-TW';
+    if (query.length > 500 || location.length > 200 || type.length > 80 || language.length > 20) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: '查詢參數過長' }));
+      return;
+    }
     if (!query.trim()) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: '請提供 query 參數' }));
@@ -372,10 +423,25 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/events') {
     if (req.method === 'POST') {
       let body = '';
-      req.on('data', c => body += c);
+      let tooBig = false;
+      req.on('data', (c) => {
+        body += c;
+        if (body.length > MAX_JSON_BODY) tooBig = true;
+      });
       req.on('end', () => {
+        if (tooBig) {
+          res.writeHead(413, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: '請求體過大' }));
+          return;
+        }
         try {
           const ev = JSON.parse(body || '{}');
+          const v = validateEventPayload(ev);
+          if (!v.ok) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: v.error }));
+            return;
+          }
           saveEvent(ev);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ success: true }));
@@ -434,9 +500,13 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 靜態檔案
-  let reqPath = pathname === '/' ? '/app-new.html' : pathname;
-  const filePath = path.join(__dirname, reqPath.replace(/^\//, ''));
+  // 靜態檔案（阻擋 path traversal）
+  const filePath = resolveStaticPath(__dirname, pathname);
+  if (!filePath) {
+    res.writeHead(403);
+    res.end('Forbidden');
+    return;
+  }
   const ext = path.extname(filePath);
   const mime = MIME[ext] || 'application/octet-stream';
 
@@ -452,10 +522,24 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
+  const configPath = path.join(__dirname, 'backend-config.json');
+  printStartupInfo({
+    port: PORT,
+    __dirname,
+    configPath,
+    dataDir: DATA_DIR,
+    eventsFile: EVENTS_FILE,
+    nodemailer,
+    config
+  });
   console.log(`推廣中心後端已啟動: http://localhost:${PORT}`);
   console.log('  - CORS 代理: /api/proxy?url=...');
   console.log('  - 發送 Email: POST /api/send-email');
   console.log('  - OAuth token: POST /api/oauth/token');
-  const { exec } = require('child_process');
-  exec(`start http://localhost:${PORT}/app-new.html`, () => {});
+
+  const noOpen = process.env.NO_OPEN_BROWSER === '1' || process.env.CI === 'true';
+  if (!noOpen && process.platform === 'win32') {
+    const { exec } = require('child_process');
+    exec(`start http://localhost:${PORT}/app-new.html`, () => {});
+  }
 });
