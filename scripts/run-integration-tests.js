@@ -1,5 +1,5 @@
 /**
- * 背景啟動 backend-server.js，執行 run-tests.js，然後關閉伺服器
+ * 背景啟動 server/backend-server.js，執行 scripts/run-tests.js，然後關閉伺服器
  * 環境變數: NO_OPEN_BROWSER=1（由本腳本設定）
  */
 const { spawn } = require('child_process');
@@ -7,8 +7,8 @@ const path = require('path');
 const http = require('http');
 
 const root = path.join(__dirname, '..');
-const backendJs = path.join(root, 'backend-server.js');
-const runTestsJs = path.join(root, 'run-tests.js');
+const backendJs = path.join(root, 'server', 'backend-server.js');
+const runTestsJs = path.join(root, 'scripts', 'run-tests.js');
 const PORT = 3856;
 
 function waitForServer(retries = 40) {

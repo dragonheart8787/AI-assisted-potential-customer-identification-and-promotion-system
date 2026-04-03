@@ -5,6 +5,8 @@
 
 class CRMDatabase {
     constructor() {
+        /** 已登入且與後端 /api/crm 同步時為 true（不寫入 localStorage 名單） */
+        this.useServer = false;
         this.customers = [];
         this.tags = ['新名單', '已回覆', '有興趣', '拒絕', '高價值', '冷名單', '熱門潛在客戶'];
         this.pipelineStages = [
@@ -47,9 +49,103 @@ class CRMDatabase {
 
     // 保存資料
     saveData() {
+        if (this.useServer) return;
         localStorage.setItem('crm_customers', JSON.stringify(this.customers));
         localStorage.setItem('crm_interaction_history', JSON.stringify(this.interactionHistory));
         localStorage.setItem('crm_tags', JSON.stringify(this.tags));
+    }
+
+    /**
+     * 登入後改為伺服器 CRM（需同源後端與 Cookie）
+     */
+    async enterServerMode() {
+        const [cr, meta, ir] = await Promise.all([
+            fetch('/api/crm/customers', { credentials: 'include' }),
+            fetch('/api/crm/meta', { credentials: 'include' }),
+            fetch('/api/crm/interactions', { credentials: 'include' })
+        ]);
+        if (!cr.ok) throw new Error('無法載入伺服器客戶資料');
+        const cd = await cr.json();
+        const md = meta.ok ? await meta.json() : {};
+        const id = ir.ok ? await ir.json() : {};
+        this.customers = Array.isArray(cd.customers) ? cd.customers : [];
+        if (Array.isArray(md.tags) && md.tags.length) this.tags = md.tags;
+        this.interactionHistory = Array.isArray(id.interactions) ? id.interactions : [];
+        this.useServer = true;
+    }
+
+    /** 回到僅本機模式（重新讀取 localStorage） */
+    exitServerMode() {
+        this.useServer = false;
+        this.loadData();
+    }
+
+    _pushCustomerToServer(customer) {
+        fetch('/api/crm/customers', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customer)
+        }).then(async (r) => {
+            if (!r.ok) {
+                const idx = this.customers.findIndex((c) => c.id === customer.id);
+                if (idx !== -1) this.customers.splice(idx, 1);
+                const err = await r.json().catch(() => ({}));
+                if (typeof window.toast === 'function') window.toast(err.error || '同步客戶失敗', 'error');
+            }
+        }).catch(() => {
+            const idx = this.customers.findIndex((c) => c.id === customer.id);
+            if (idx !== -1) this.customers.splice(idx, 1);
+            if (typeof window.toast === 'function') window.toast('無法連線後端', 'error');
+        });
+    }
+
+    _putCustomerToServer(customer) {
+        fetch(`/api/crm/customers/${encodeURIComponent(customer.id)}`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customer)
+        }).then(async (r) => {
+            if (!r.ok && typeof window.toast === 'function') {
+                const err = await r.json().catch(() => ({}));
+                window.toast(err.error || '更新客戶失敗', 'error');
+            }
+        }).catch(() => {
+            if (typeof window.toast === 'function') window.toast('無法連線後端', 'error');
+        });
+    }
+
+    _deleteCustomerOnServer(customerId) {
+        fetch(`/api/crm/customers/${encodeURIComponent(customerId)}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        }).then(async (r) => {
+            if (!r.ok && typeof window.toast === 'function') {
+                const err = await r.json().catch(() => ({}));
+                window.toast(err.error || '刪除失敗', 'error');
+            }
+        }).catch(() => {
+            if (typeof window.toast === 'function') window.toast('無法連線後端', 'error');
+        });
+    }
+
+    _postInteractionToServer(interaction) {
+        fetch('/api/crm/interactions', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(interaction)
+        }).catch(() => {});
+    }
+
+    _syncTagsMeta() {
+        fetch('/api/crm/meta', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tags: this.tags })
+        }).catch(() => {});
     }
 
     // 設置事件監聽器
@@ -106,7 +202,11 @@ class CRMDatabase {
         };
 
         this.customers.push(customer);
-        this.saveData();
+        if (this.useServer) {
+            this._pushCustomerToServer(customer);
+        } else {
+            this.saveData();
+        }
         this.triggerEvent('customerAdded', customer);
         return customer;
     }
@@ -120,7 +220,11 @@ class CRMDatabase {
                 ...customerData,
                 updatedAt: new Date().toISOString()
             };
-            this.saveData();
+            if (this.useServer) {
+                this._putCustomerToServer(this.customers[index]);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerUpdated', this.customers[index]);
         }
     }
@@ -131,7 +235,11 @@ class CRMDatabase {
         if (index !== -1) {
             const customer = this.customers[index];
             this.customers.splice(index, 1);
-            this.saveData();
+            if (this.useServer) {
+                this._deleteCustomerOnServer(customerId);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerDeleted', customer);
         }
     }
@@ -196,7 +304,11 @@ class CRMDatabase {
             const oldStage = customer.stage;
             customer.stage = newStage;
             customer.updatedAt = new Date().toISOString();
-            this.saveData();
+            if (this.useServer) {
+                this._putCustomerToServer(customer);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerStageUpdated', { customer, oldStage, newStage });
         }
     }
@@ -207,7 +319,11 @@ class CRMDatabase {
         if (customer && !customer.tags.includes(tag)) {
             customer.tags.push(tag);
             customer.updatedAt = new Date().toISOString();
-            this.saveData();
+            if (this.useServer) {
+                this._putCustomerToServer(customer);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerTagAdded', { customer, tag });
         }
     }
@@ -218,7 +334,11 @@ class CRMDatabase {
         if (customer) {
             customer.tags = customer.tags.filter(t => t !== tag);
             customer.updatedAt = new Date().toISOString();
-            this.saveData();
+            if (this.useServer) {
+                this._putCustomerToServer(customer);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerTagRemoved', { customer, tag });
         }
     }
@@ -250,7 +370,12 @@ class CRMDatabase {
             customer.updatedAt = new Date().toISOString();
         }
 
-        this.saveData();
+        if (this.useServer) {
+            this._postInteractionToServer(interaction);
+            if (customer) this._putCustomerToServer(customer);
+        } else {
+            this.saveData();
+        }
         this.triggerEvent('interactionRecorded', interaction);
     }
 
@@ -328,7 +453,11 @@ class CRMDatabase {
         if (customer) {
             customer.nextFollowUp = dateStr;
             customer.updatedAt = new Date().toISOString();
-            this.saveData();
+            if (this.useServer) {
+                this._putCustomerToServer(customer);
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('customerUpdated', customer);
         }
     }
@@ -450,7 +579,11 @@ class CRMDatabase {
     addTag(tag) {
         if (!this.tags.includes(tag)) {
             this.tags.push(tag);
-            this.saveData();
+            if (this.useServer) {
+                this._syncTagsMeta();
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('tagAdded', tag);
         }
     }
@@ -460,7 +593,11 @@ class CRMDatabase {
         const index = this.tags.indexOf(tag);
         if (index !== -1) {
             this.tags.splice(index, 1);
-            this.saveData();
+            if (this.useServer) {
+                this._syncTagsMeta();
+            } else {
+                this.saveData();
+            }
             this.triggerEvent('tagRemoved', tag);
         }
     }

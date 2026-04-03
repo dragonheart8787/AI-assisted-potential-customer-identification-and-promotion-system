@@ -52,7 +52,7 @@
 2. 於專案根目錄安裝依賴：`npm install`（若僅跑後端展示，亦可 `npm install --omit=dev`）。  
 3. 啟動後端（擇一即可）：  
    - 雙擊 **`run-demo.bat`**（Windows），或  
-   - `npm run demo`／`npm run backend`／`node backend-server.js`  
+   - `npm run demo`／`npm run backend`／`node server/backend-server.js`  
 4. 以瀏覽器開啟：**http://localhost:3856/app-new.html**（根路徑 `/` 亦會導向同一頁）。
 
 **後端設定（選用）：** 請複製 **`backend-config.example.json`** 為 **`backend-config.json`**，再填入 SMTP、Google Places 等。本儲存庫已將 **`backend-config.json` 列入 `.gitignore`**，避免誤提交密鑰；若您曾於舊版將該檔推上遠端，建議旋轉相關金鑰／密碼。
@@ -60,6 +60,18 @@
 **不自動開瀏覽器：** 在 Linux、macOS、CI 或 Docker 環境，請設定環境變數 **`NO_OPEN_BROWSER=1`**（本專案之整合測試與 Docker 映像已預設此行為）。Windows 本機若亦不想自動開啟，同樣可設定此變數。
 
 **溫馨提醒：** 若僅以檔案總管雙擊開啟 HTML（`file://`），部分範例 JSON 可能無法載入；**建議一律透過本機伺服器瀏覽**。
+
+### 原型展示模式與自建上線模式
+
+| 模式 | CRM 儲存 | 說明 |
+|------|----------|------|
+| **原型（預設）** | 瀏覽器 `localStorage` | 不必註冊；適合學習歷程與 Demo。 |
+| **上線模式** | 伺服器 `data/app.db`（SQLite 檔，由 sql.js 寫入） | 開啟 **[pages/login.html](pages/login.html)** 註冊／登入後，主畫面會與 **`/api/crm/*`** 同步（設定頁可登出）。 |
+
+- 架構與環境變數：**[docs/PRODUCTION-ARCHITECTURE.md](docs/PRODUCTION-ARCHITECTURE.md)**  
+- 生產環境請設定 **`SESSION_SECRET`**（至少 16 字元）與 **`ALLOWED_ORIGINS`**（HTTPS 網域逗號分隔）。  
+- 可選：設定 **`BOOTSTRAP_ADMIN_EMAIL`**／**`BOOTSTRAP_ADMIN_PASSWORD`** 可在空資料庫時建立第一個帳號。  
+- 資料主體（最小實作）：登入後 **`GET /api/account/export`** 匯出 JSON；**`POST /api/account/delete`** 軟刪除帳號並清除該使用者 CRM 資料。
 
 ---
 
@@ -75,8 +87,8 @@
 
 | 方式 | 說明 |
 |------|------|
-| **一鍵完整測試** | `npm test`：先跑 **單元測試**，再**背景啟動後端**並執行 `run-tests.js`（無需手動開兩個終端）。 |
-| **僅單元測試** | `npm run test:unit`（`lib/api-validate`、`lib/static-path`、`data-deduplication` 等，使用 Node 內建 `node --test`）。 |
+| **一鍵完整測試** | `npm test`：先跑 **單元測試**，再**背景啟動後端**並執行 `scripts/run-tests.js`（無需手動開兩個終端）。 |
+| **僅單元測試** | `npm run test:unit`（`lib/api-validate`、`lib/static-path`、`js/data-deduplication` 等，使用 Node 內建 `node --test`）。 |
 | **僅整合測試** | `npm run test:integration`（需可綁定埠 3856；與 `npm test` 內含步驟相同）。 |
 | **Windows 批次** | 雙擊 **`run-tests.bat`**（請先已手動啟動後端）或依賴 **`npm test`**。 |
 | **瀏覽器** | 開啟 **`pages/test-app-new.html`** 做前端模組載入與整合檢查。 |
@@ -93,7 +105,7 @@
 docker compose up --build
 ```
 
-瀏覽器開啟 **http://localhost:3856/app-new.html**。KPI 事件檔透過 compose 掛載於 volume **`promo-data`**（對應容器內 `/app/data`）。
+瀏覽器開啟 **http://localhost:3856/app-new.html**。專案目錄下的 **`./data`** 會掛載至容器內 **`/app/data`**（含 `kpi-events.json`、`app.db` 等，勿將含密鑰之檔案提交至 Git）。
 
 ---
 

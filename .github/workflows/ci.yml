@@ -17,8 +17,8 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Install production deps only (後端測試)
-        run: npm install --omit=dev --ignore-scripts
+      - name: Install production deps (後端測試，含 sql.js)
+        run: npm install --omit=dev
 
       - name: Unit tests
         run: npm run test:unit

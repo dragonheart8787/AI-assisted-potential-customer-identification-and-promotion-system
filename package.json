@@ -7,9 +7,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "demo": "node backend-server.js",
-    "backend": "node backend-server.js",
-    "test:unit": "node --test test/unit/api-validate.test.cjs test/unit/static-path.test.cjs test/unit/dedup.test.cjs",
+    "demo": "node server/backend-server.js",
+    "backend": "node server/backend-server.js",
+    "test:unit": "node --test test/unit/api-validate.test.cjs test/unit/static-path.test.cjs test/unit/dedup.test.cjs test/unit/crm-api-validate.test.cjs",
     "test:integration": "node scripts/run-integration-tests.js",
     "test": "npm run test:unit && npm run test:integration",
     "start": "electron .",
@@ -28,6 +28,10 @@
   "author": "AI Marketing Assistant",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "sql.js": "^1.11.0",
+    "express": "^4.21.2",
     "nodemailer": "^6.9.0"
   },
   "devDependencies": {
@@ -44,6 +48,9 @@
       "main.js",
       "preload.js",
       "lib/**/*.js",
+      "js/**/*.js",
+      "server/**/*.js",
+      "server/migrations/*.sql",
       "renderer/**/*",
       "assets/**/*",
       "*.html",
@@ -53,8 +60,8 @@
       "archive/**/*.css",
       "data/**/*",
       "scripts/**/*",
+      "node_modules/sql.js/dist/**",
       "*.css",
-      "*.js",
       "pages/**/*.css",
       "*.md",
       "pages/**/*.md",

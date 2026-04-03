@@ -1,13 +1,13 @@
+# 推廣中心：單一後端容器（SQLite 檔掛載至 ./data）
 services:
-  promo-backend:
+  app:
     build: .
     ports:
       - "3856:3856"
     environment:
       NO_OPEN_BROWSER: "1"
+      NODE_ENV: production
+      SESSION_SECRET: ${SESSION_SECRET:-please-change-in-production-min-16-chars}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3856,http://127.0.0.1:3856}
     volumes:
-      - promo-data:/app/data
-    restart: unless-stopped
-
-volumes:
-  promo-data:
+      - ./data:/app/data

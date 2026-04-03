@@ -1,7 +1,5 @@
 node_modules
-dist
 .git
-.github
+dist
 *.log
 .DS_Store
-data/kpi-events.json

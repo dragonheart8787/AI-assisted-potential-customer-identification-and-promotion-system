@@ -594,10 +594,10 @@
         </div>
     </div>
 
-    <script src="../crm-database.js"></script>
-    <script src="../ab-testing.js"></script>
-    <script src="../auto-followup.js"></script>
-    <script src="../unified-inbox.js"></script>
+    <script src="../js/crm-database.js"></script>
+    <script src="../js/ab-testing.js"></script>
+    <script src="../js/auto-followup.js"></script>
+    <script src="../js/unified-inbox.js"></script>
     <script>
         // CRM介面管理
         class CRMInterface {
@@ -955,7 +955,13 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            window.crmInterface = new CRMInterface();
+            (async () => {
+                try {
+                    const r = await fetch('/api/auth/me', { credentials: 'include' });
+                    if (r.ok && window.crmDatabase) await window.crmDatabase.enterServerMode();
+                } catch (_) {}
+                window.crmInterface = new CRMInterface();
+            })();
         });
 
         // 表單提交處理

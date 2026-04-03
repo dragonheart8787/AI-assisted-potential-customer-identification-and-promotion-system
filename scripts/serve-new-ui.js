@@ -1,5 +1,6 @@
 /**
  * 本地伺服器 - 用於開啟新介面（避免路徑編碼問題）
+ * 執行: node scripts/serve-new-ui.js
  */
 const http = require('http');
 const fs = require('fs');
@@ -16,10 +17,11 @@ const MIME = {
   '.png': 'image/png',
 };
 
+const root = path.join(__dirname, '..');
 const server = http.createServer((req, res) => {
   let reqPath = req.url.split('?')[0];
   if (reqPath === '/') reqPath = '/app-new.html';
-  const filePath = path.join(__dirname, reqPath.replace(/^\//, ''));
+  const filePath = path.join(root, reqPath.replace(/^\//, ''));
   
   const ext = path.extname(filePath);
   const mime = MIME[ext] || 'application/octet-stream';

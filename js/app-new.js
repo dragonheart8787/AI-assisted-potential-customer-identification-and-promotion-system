@@ -54,16 +54,49 @@
         }
     }
 
+    async function tryEnterServerCrm() {
+        try {
+            const r = await fetch('/api/auth/me', { credentials: 'include' });
+            if (r.ok && window.crmDatabase) {
+                await window.crmDatabase.enterServerMode();
+                return true;
+            }
+        } catch (_) { /* file:// 或後端未啟 */ }
+        return false;
+    }
+
+    function refreshPromoAuthUi() {
+        const st = document.getElementById('promo-auth-status');
+        const btn = document.getElementById('btn-promo-logout');
+        if (!st || !btn) return;
+        if (window.crmDatabase && window.crmDatabase.useServer) {
+            fetch('/api/auth/me', { credentials: 'include' })
+                .then((r) => (r.ok ? r.json() : null))
+                .then((j) => {
+                    if (j && j.user) {
+                        st.textContent = '上線模式：已登入 ' + j.user.email + '（CRM 存在伺服器）';
+                        btn.style.display = 'inline-block';
+                    }
+                })
+                .catch(() => {});
+        } else {
+            st.textContent = '未登入上線模式：CRM 僅存在此瀏覽器（localStorage）。';
+            btn.style.display = 'none';
+        }
+    }
+
     function init() {
         bindNav();
         bindButtons();
         loadProfile();
         (async () => {
+            await tryEnterServerCrm();
             await ensureShowcaseDemo();
             loadDashboard();
             loadProspects();
             loadComposeTargets();
             refreshDemoBadge();
+            refreshPromoAuthUi();
         })();
         refreshDemoBadge();
     }
@@ -116,6 +149,15 @@
         document.getElementById('link-ai')?.addEventListener('click', (e) => { e.preventDefault(); window.open('pages/ai-settings.html'); });
         document.getElementById('link-workflow')?.addEventListener('click', (e) => { e.preventDefault(); window.open('pages/ai-promotion-workflow.html'); });
         document.getElementById('link-ai-kb')?.addEventListener('click', (e) => { e.preventDefault(); openKnowledgeBase(); });
+        document.getElementById('btn-promo-logout')?.addEventListener('click', () => {
+            fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+                .then(() => {
+                    if (window.crmDatabase) window.crmDatabase.exitServerMode();
+                    toast('已登出上線模式');
+                    window.location.reload();
+                })
+                .catch(() => toast('登出失敗', 'error'));
+        });
         document.getElementById('btn-api-settings')?.addEventListener('click', () => window.open('pages/ai-settings.html'));
         document.getElementById('btn-open-crm-from-accounts')?.addEventListener('click', () => window.open('pages/crm-interface.html'));
         // 發現彈窗 tab 切換
@@ -472,7 +514,7 @@
     function friendlyError(msg) {
         const m = String(msg || '');
         if (/certificate|issuer|SSL|TLS/i.test(m)) return 'SSL 憑證驗證失敗（請重啟後端；開發環境已放寬代理）。若仍失敗請檢查網路。';
-        if (/CORS|Failed to fetch|NetworkError/i.test(m)) return '無法連線後端：請確認已執行 node backend-server.js，且網址為 http://localhost:3856';
+        if (/CORS|Failed to fetch|NetworkError/i.test(m)) return '無法連線後端：請確認已執行 node server/backend-server.js，且網址為 http://localhost:3856';
         return m || '發生未知錯誤';
     }
 

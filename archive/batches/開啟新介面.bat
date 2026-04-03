@@ -1,5 +1,5 @@
 @echo off
-cd /d "%~dp0"
+cd /d "%~dp0..\.."
 
 echo.
 echo ========================================
@@ -16,7 +16,7 @@ if %errorlevel% neq 0 (
 
 echo [INFO] Starting backend server (port 3856)...
 echo.
-node backend-server.js
+node server\backend-server.js
 
 echo.
 echo Press any key to exit...

@@ -13,8 +13,8 @@ global.localStorage = {
 };
 global.window = global;
 
-delete require.cache[require.resolve('../../data-deduplication.js')];
-require('../../data-deduplication.js');
+delete require.cache[require.resolve('../../js/data-deduplication.js')];
+require('../../js/data-deduplication.js');
 
 const d = global.dataDeduplication;
 assert.ok(d, 'dataDeduplication 應已掛載');

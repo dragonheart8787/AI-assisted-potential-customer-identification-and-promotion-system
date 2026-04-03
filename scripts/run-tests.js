@@ -1,6 +1,6 @@
 /**
  * 能力與效能測試腳本（Node.js 執行）
- * 執行: node run-tests.js
+ * 執行: node scripts/run-tests.js
  */
 const http = require('http');
 const fs = require('fs');
@@ -47,6 +47,7 @@ async function run() {
     const config = JSON.parse(configRes.body || '{}');
     log('API config', configRes.status === 200, '', Date.now() - t0);
     log('hasNodemailer', !!config.hasNodemailer);
+    log('serverCrmEnabled', config.serverCrmEnabled === true);
   } catch (e) {
     log('API config', false, e.message);
   }
@@ -107,8 +108,9 @@ async function run() {
     'google-places-crawler.js', 'social-places-crawler.js', 'ai-assistant.js',
     'job-board-crawler.js', 'auto-followup.js'
   ];
+  const jsDir = path.join(__dirname, '..', 'js');
   modules.forEach(m => {
-    const p = path.join(__dirname, m);
+    const p = path.join(jsDir, m);
     log(m, fs.existsSync(p));
   });
 
@@ -125,7 +127,7 @@ async function run() {
 // 檢查伺服器是否運行
 fetch(`${BASE}/api/config`).then(() => run()).catch(e => {
   console.log('錯誤: 無法連接到後端 (localhost:' + PORT + ')');
-  console.log('請先執行: node backend-server.js');
+  console.log('請先執行: node server/backend-server.js');
   console.log('或: run-demo.bat');
   process.exit(1);
 });

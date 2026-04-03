@@ -25,7 +25,7 @@
 
 ## 執行庫與設定
 
-- 後端：`backend-server.js`、`package.json`、`run-demo.bat`、`run-tests.bat`、`run-tests.js` 等維持在根目錄（與 `app-new.html` 同層的 `.js` 為模組依賴）。
+- 後端：`server/backend-server.js`（內嵌 Express）、`server/express-app.js`、`server/migrations/`、`data/app.db`（上線模式，勿提交）；前端模組：`js/*.js`；Electron 入口：`main.js`、`preload.js`；`package.json`、`docker-compose.yml`、`run-demo.bat`、`run-tests.bat`、`scripts/*.js` 等依現有結構放置。
 - KPI 事件檔：執行後寫入 **`data/kpi-events.json`**（勿手動堆在根目錄）。
 
 ## 若合併舊分支後根目錄又出現雜檔

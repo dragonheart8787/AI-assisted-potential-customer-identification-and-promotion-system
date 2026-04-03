@@ -1,5 +1,8 @@
 node_modules/
 data/kpi-events.json
+data/app.db
+data/app.db-shm
+data/app.db-wal
 kpi-events.json
 backend-config.json
 *.log

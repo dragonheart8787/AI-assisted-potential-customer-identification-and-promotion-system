@@ -202,7 +202,11 @@ const KPIDashboard = {
 };
 
 if (typeof document !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const r = await fetch('/api/auth/me', { credentials: 'include' });
+            if (r.ok && window.crmDatabase) await window.crmDatabase.enterServerMode();
+        } catch (_) { /* file:// 或離線 */ }
         KPIDashboard.render();
         document.getElementById('btn-refresh')?.addEventListener('click', () => KPIDashboard.render());
     });

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推廣中心 — 上線模式登入</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: #0f0f12; color: #e4e4e7; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 28px; max-width: 400px; width: 100%; }
+        h1 { font-size: 1.25rem; margin: 0 0 8px; }
+        p { color: #a1a1aa; font-size: 0.9rem; margin: 0 0 20px; }
+        label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: #a1a1aa; }
+        input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #3f3f46; background: #27272a; color: #fafafa; margin-bottom: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        .primary { background: #7c3aed; color: #fff; }
+        .secondary { background: #3f3f46; color: #e4e4e7; }
+        #msg { margin-top: 14px; font-size: 0.85rem; min-height: 1.2em; }
+        .err { color: #f87171; }
+        .ok { color: #4ade80; }
+        a { color: #a78bfa; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>上線模式登入</h1>
+        <p>登入後 CRM 名單將同步至伺服器（<code>data/app.db</code>）。請先執行 <code>npm run demo</code>。原型展示可不登入，資料僅存瀏覽器。</p>
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="username" placeholder="you@example.com">
+        <label for="password">密碼（至少 8 字元）</label>
+        <input type="password" id="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="button" class="primary" id="btn-login">登入</button>
+        <button type="button" class="secondary" id="btn-register">註冊新帳號</button>
+        <p id="msg"></p>
+        <p style="margin-top:16px;margin-bottom:0"><a href="../app-new.html">← 返回推廣中心</a></p>
+    </div>
+    <script>
+        const msg = document.getElementById('msg');
+        function show(t, ok) {
+            msg.textContent = t;
+            msg.className = ok ? 'ok' : 'err';
+        }
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            try {
+                const r = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) { show(j.error || '登入失敗', false); return; }
+                show('登入成功，將前往主畫面…', true);
+                setTimeout(() => { location.href = '../app-new.html'; }, 600);
+            } catch (e) {
+                show('無法連線後端（請確認已 npm run demo）', false);
+            }
+        });
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            try {
+                const r = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) { show(j.error || '註冊失敗', false); return; }
+                show('註冊成功，已自動登入…', true);
+                setTimeout(() => { location.href = '../app-new.html'; }, 600);
+            } catch (e) {
+                show('無法連線後端', false);
+            }
+        });
+    </script>
+</body>
+</html>
