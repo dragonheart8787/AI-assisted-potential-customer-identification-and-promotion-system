@@ -49,6 +49,14 @@ const EVENTS_FILE = path.join(DATA_DIR, 'kpi-events.json');
     });
 
     const server = http.createServer(app);
+    server.on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE') {
+        console.error(`[推廣中心] 埠 ${PORT} 已被佔用（可能已有另一個後端在跑）。請關閉該視窗，或在 PowerShell 執行：netstat -ano | findstr :${PORT} 再 taskkill /PID <PID> /F`);
+      } else {
+        console.error('[推廣中心] 伺服器錯誤:', err);
+      }
+      process.exit(1);
+    });
     server.listen(PORT, () => {
       const configPath = path.join(ROOT, 'backend-config.json');
       printStartupInfo({

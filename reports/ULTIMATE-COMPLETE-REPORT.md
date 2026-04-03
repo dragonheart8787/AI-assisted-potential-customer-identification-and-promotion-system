@@ -598,7 +598,7 @@ python -m http.server 8000
 - TEST-REPORT.md (4KB)
 
 **架構設計**:
-- SYSTEM-ARCHITECTURE-DIAGRAMS.md (57KB)
+- docs/SYSTEM-ARCHITECTURE-DIAGRAMS.md (57KB)
 
 **使用指南**:
 - README.md (15KB)

@@ -11,6 +11,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 import os
 
+# 專案根目錄（本檔位於 docs/）
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def set_cell_background(cell, color):
     """設置表格單元格背景色"""
     from docx.oxml import OxmlElement
@@ -78,13 +81,14 @@ def create_table(doc, headers, rows):
     
     return table
 
-def read_markdown_file(filename):
-    """讀取Markdown文件內容"""
+def read_markdown_file(rel_path):
+    """讀取專案根目錄相對路徑之 Markdown（例如 docs/foo.md、reports/bar.md）。"""
+    path = os.path.join(_PROJECT_ROOT, rel_path.replace('/', os.sep))
     try:
-        with open(filename, 'r', encoding='utf-8') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
     except Exception as e:
-        return f"無法讀取檔案 {filename}: {str(e)}"
+        return f"無法讀取檔案 {path}: {str(e)}"
 
 def main():
     # 創建文檔
@@ -389,7 +393,7 @@ def main():
         italic=True, color=RGBColor(127, 140, 141))
     
     # 讀取學術論文內容（摘錄前1000字）
-    academic_content = read_markdown_file('DETAILED-ACADEMIC-PAPER.md')
+    academic_content = read_markdown_file('docs/DETAILED-ACADEMIC-PAPER.md')
     if len(academic_content) > 2000:
         academic_content = academic_content[:2000] + '\n\n...[內容過長，此處省略，完整內容請參閱原始檔案]...'
     
@@ -405,7 +409,7 @@ def main():
         italic=True, color=RGBColor(127, 140, 141))
     
     # 讀取測試報告內容
-    test_content = read_markdown_file('COMPREHENSIVE-TESTING-SUITE.md')
+    test_content = read_markdown_file('reports/COMPREHENSIVE-TESTING-SUITE.md')
     if len(test_content) > 2000:
         test_content = test_content[:2000] + '\n\n...[內容過長，此處省略，完整內容請參閱原始檔案]...'
     
@@ -417,11 +421,11 @@ def main():
     add_heading_with_style(doc, '附錄C：系統架構設計文檔摘錄', level=1)
     
     add_formatted_paragraph(doc,
-        '以下是系統架構設計的主要內容。完整版本請參閱 SYSTEM-ARCHITECTURE-DIAGRAMS.md 檔案。',
+        '以下是系統架構設計的主要內容。完整版本請參閱 docs/SYSTEM-ARCHITECTURE-DIAGRAMS.md 檔案。',
         italic=True, color=RGBColor(127, 140, 141))
     
     # 讀取架構文檔
-    arch_content = read_markdown_file('SYSTEM-ARCHITECTURE-DIAGRAMS.md')
+    arch_content = read_markdown_file('docs/SYSTEM-ARCHITECTURE-DIAGRAMS.md')
     if len(arch_content) > 2000:
         arch_content = arch_content[:2000] + '\n\n...[內容過長，此處省略，完整內容請參閱原始檔案]...'
     
@@ -437,7 +441,7 @@ def main():
         italic=True, color=RGBColor(127, 140, 141))
     
     # 讀取分析報告
-    analysis_content = read_markdown_file('ULTRA-DETAILED-ANALYSIS-REPORT.md')
+    analysis_content = read_markdown_file('reports/ULTRA-DETAILED-ANALYSIS-REPORT.md')
     if len(analysis_content) > 2000:
         analysis_content = analysis_content[:2000] + '\n\n...[內容過長，此處省略，完整內容請參閱原始檔案]...'
     
@@ -450,16 +454,17 @@ def main():
     
     guide_files = [
         ('README.md', '專案總體介紹和快速開始'),
-        ('ACCOUNT-LOGIN-GUIDE.md', '帳號登入系統使用說明'),
-        ('REAL-LOGIN-GUIDE.md', '真實API登入指南'),
-        ('AI-CHAT-GUIDE.md', 'AI聊天功能使用指南'),
-        ('BATCH-GUIDE.md', '批量操作指南'),
-        ('MEMORY-MANAGEMENT-GUIDE.md', '記憶體管理指南')
+        ('docs/ACCOUNT-LOGIN-GUIDE.md', '帳號登入系統使用說明'),
+        ('docs/REAL-LOGIN-GUIDE.md', '真實API登入指南'),
+        ('docs/AI-CHAT-GUIDE.md', 'AI聊天功能使用指南'),
+        ('docs/BATCH-GUIDE.md', '批量操作指南'),
+        ('docs/MEMORY-MANAGEMENT-GUIDE.md', '記憶體管理指南')
     ]
     
     for filename, description in guide_files:
         para = doc.add_paragraph()
-        para.add_run(f'{filename}').bold = True
+        display_name = filename.split('/')[-1]
+        para.add_run(f'{display_name}').bold = True
         para.add_run(f' - {description}')
         
         content = read_markdown_file(filename)

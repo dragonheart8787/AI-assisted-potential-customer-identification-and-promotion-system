@@ -42,7 +42,7 @@
 | **`docs/`**、**`reports/`** | 長篇指南、論文式稿件、測試彙整等參考文件。 |
 | **`data/`** | 執行時產生之 KPI 事件檔等（例如 `data/kpi-events.json`），避免堆在根目錄。 |
 
-更細的約定請參考 **`docs/ROOT-FILE-POLICY.md`**。若您從舊分支合併後，根目錄又出現大量 `.md` 或過渡用 `.html`，可執行 **`scripts/sweep-stray-root-docs.ps1`**（會將非白名單之 Markdown 移至 `docs/swept-from-root/`，執行前建議先 commit）。
+更細的約定請參考 **`docs/ROOT-FILE-POLICY.md`**。若您從舊分支合併後，根目錄又出現多餘的 `.md`，可執行 **`scripts/sweep-stray-root-docs.ps1`**（會將非白名單之 Markdown 移至 `docs/swept-from-root/`，執行前建議先 commit）。
 
 ---
 
@@ -111,12 +111,13 @@ docker compose up --build
 
 ## 八、延伸閱讀（與本 README 分工）
 
-本 README 刻意保持精簡；若您需要更完整的學習歷程敘述、效能數據或架構圖文，請參考：
+本 README 刻意保持精簡；根目錄僅保留本檔。其餘 Markdown 集中在 **`docs/`**：
 
-- **`LEARNING-PORTFOLIO.md`** — 學習歷程與反思  
-- **`CAPABILITY-PERFORMANCE-REPORT.md`** — 能力與效能報告  
-- **`SYSTEM-ARCHITECTURE-DIAGRAMS.md`** — 架構圖與說明  
-- **`docs/`** — 安裝／批次／舊稿等參考文件  
+- **[`docs/LEARNING-PORTFOLIO.md`](docs/LEARNING-PORTFOLIO.md)** — 學習歷程與反思  
+- **[`docs/CAPABILITY-PERFORMANCE-REPORT.md`](docs/CAPABILITY-PERFORMANCE-REPORT.md)** — 能力與效能報告  
+- **[`docs/SYSTEM-ARCHITECTURE-DIAGRAMS.md`](docs/SYSTEM-ARCHITECTURE-DIAGRAMS.md)** — 架構圖與說明  
+- **[`docs/推廣中心_學習歷程_20260329.md`](docs/推廣中心_學習歷程_20260329.md)** — MechCalc 式學習歷程長文  
+- **`docs/`** 其餘檔案 — 安裝／批次／舊稿等參考文件  
 - **`reports/`** — 長篇測試與分析報告  
 
 ---

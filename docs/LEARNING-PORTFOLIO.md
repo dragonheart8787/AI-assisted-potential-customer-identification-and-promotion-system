@@ -196,7 +196,7 @@
 |----------|------------|------|
 | **主畫面（儀表板、名單、撰寫訊息、成效、設定）** | **`app-new.html`** | 專題主要操作介面；內嵌發現客戶、報告產生、Demo 模式開關。 |
 | **KPI 儀表板** | **`pages/kpi-dashboard.html`** | 名單數、高分 Lead、Pipeline／產業分布、開信／點擊／跟進；建議截圖。 |
-| **CRM 管理（Pipeline、客戶表）** | **`pages/crm-interface.html`** | 獨立 CRM 頁；與主畫面「目標客戶」資料同源（localStorage）。 |
+| **CRM 管理（Pipeline、客戶表）** | **`pages/crm-interface.html`** | 獨立 CRM 頁；與主畫面「潛在客戶」資料同源（localStorage）。 |
 | **AI 推廣工作流程** | **`pages/ai-promotion-workflow.html`** | 批次分類、聯絡流程展示。 |
 | **系統架構與 API 一覽** | **`pages/system-overview.html`** | 模組、API、測試方式。 |
 | **評分判斷依據（總表＋加權細節）** | **`pages/scoring-explained.html`** | 對應第六節「判斷依據」。 |
@@ -210,7 +210,7 @@
 
 | 建議檔名 | 內容 |
 |----------|------|
-| `01-main-app-new.png` | 主畫面 `app-new.html`（儀表板或目標客戶） |
+| `01-main-app-new.png` | 主畫面 `app-new.html`（儀表板或潛在客戶） |
 | `02-kpi-dashboard.png` | `pages/kpi-dashboard.html` 全頁或主要指標區 |
 | `03-crm-pipeline.png` | `pages/crm-interface.html` 或主畫面客戶列表 |
 | `04-report-or-export.png` | 成效分析產生報告或匯出按鈕 |

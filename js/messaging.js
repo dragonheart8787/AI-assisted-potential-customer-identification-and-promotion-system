@@ -72,7 +72,7 @@ class MessagingSystem {
         templateSelector.appendChild(hintsDiv);
     }
 
-    // 渲染目標客戶列表（商家與隱藏客群）
+    // 渲染潛在客戶列表（商家與隱藏客群）
     renderLeadersList() {
         const leadersList = document.getElementById('leaders-list');
         if (!leadersList) return;
@@ -85,7 +85,7 @@ class MessagingSystem {
         });
     }
     
-    // 創建目標客戶卡片（商家/隱藏客群）
+    // 創建潛在客戶卡片（商家/隱藏客群）
     createEnhancedLeaderCard(leader) {
         const card = document.createElement('div');
         card.className = 'leader-card';
@@ -260,7 +260,7 @@ class MessagingSystem {
         const previewTargets = document.getElementById('preview-targets');
         const previewMessage = document.getElementById('preview-message');
         
-        // 目標客戶列表及其策略信息
+        // 潛在客戶列表及其策略信息
         const selectedLeadersList = Array.from(this.selectedLeaders).map(id => {
             const leader = techLeaders[id] || getTargetProspects?.().find(p => p.id === id);
             if (!leader) return '';

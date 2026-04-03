@@ -2,16 +2,13 @@
 
 為避免根目錄堆滿報告與過渡頁面，請遵守以下約定：
 
-## 應保留在根目錄的 Markdown（僅此四份＋README）
+## 應保留在根目錄的 Markdown（僅 README）
 
 | 檔案 | 用途 |
 |------|------|
 | `README.md` | 專案總覽與啟動方式 |
-| `LEARNING-PORTFOLIO.md` | 學習歷程 |
-| `CAPABILITY-PERFORMANCE-REPORT.md` | 能力與效能 |
-| `SYSTEM-ARCHITECTURE-DIAGRAMS.md` | 架構圖文 |
 
-其餘指南、論文稿、摘要、測試長報告請放在 **`docs/`** 或 **`reports/`**。
+其餘學習歷程、架構圖文、能力報告、MechCalc 式長稿等，請放在 **`docs/`**（見該目錄內檔名）；長篇測試與分析彙整放在 **`reports/`**。
 
 ## 應保留在根目錄的 HTML（僅此三份）
 

@@ -4,7 +4,7 @@
 
 (function() {
     const pages = ['dashboard', 'prospects', 'compose', 'workflow', 'analytics', 'accounts', 'settings'];
-    const pageTitles = { dashboard: '儀表板', prospects: '目標客戶', compose: '撰寫訊息', workflow: '工作流程', analytics: '成效分析', accounts: '帳號登入', settings: '設定' };
+    const pageTitles = { dashboard: '儀表板', prospects: '潛在客戶', compose: '撰寫訊息', workflow: '工作流程', analytics: '成效分析', accounts: '帳號登入', settings: '設定' };
     let selectedProspectIds = new Set();
 
     const SHOWCASE_KEY = 'promo_showcase_auto_demo_v1';
@@ -416,7 +416,7 @@
                 <input type="checkbox" value="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}" ${ids.has(p.id) ? 'checked' : ''}>
                 <span>${escapeHtml(p.name)} · ${escapeHtml(p.company)}</span>
             </label>
-        `).join('') || '<div class="activity-empty">請先在目標客戶頁選擇客戶，或點擊「開始搜尋」發現潛在客戶</div>';
+        `).join('') || '<div class="activity-empty">請先在潛在客戶頁選擇客戶，或點擊「開始搜尋」發現新名單</div>';
     }
 
     function loadProfile() {
@@ -498,7 +498,7 @@
                         btn.disabled = true;
                         loadProspects();
                         loadDashboard();
-                        toast('已加入目標客戶');
+                        toast('已加入潛在客戶名單');
                     } catch (e) {
                         toast(e.message, 'error');
                     }
@@ -564,7 +564,7 @@
                         btn.disabled = true;
                         loadProspects();
                         loadDashboard();
-                        toast('已加入目標客戶');
+                        toast('已加入潛在客戶名單');
                     } catch (e) {
                         toast(e.message, 'error');
                     }
@@ -625,7 +625,7 @@
                         btn.disabled = true;
                         loadProspects();
                         loadDashboard();
-                        toast('已加入目標客戶');
+                        toast('已加入潛在客戶名單');
                     } catch (e) {
                         toast(e.message, 'error');
                     }
@@ -768,7 +768,7 @@
             return;
         }
         if (checked.length === 0) {
-            toast('請選擇至少一位目標客戶', 'error');
+            toast('請至少選擇一位潛在客戶', 'error');
             return;
         }
 
@@ -966,7 +966,7 @@
             loadProspects();
             loadDashboard();
             if (window.operationLogger) window.operationLogger.log('prospect_added', { source: 'manual', name });
-            toast('已新增到目標客戶');
+            toast('已新增至潛在客戶名單');
         } catch (e) {
             if (window.operationLogger) window.operationLogger.log('error', { action: 'add_prospect', message: e.message });
             toast(e.message || '新增失敗', 'error');

@@ -120,7 +120,7 @@ class AISalesBot {
 【市場機會】
 - 市場規模：{market_size}
 - 年增長率：{growth_rate}%
-- 目標客戶：{target_customers}
+- 潛在客戶：{target_customers}
 
 【商業模式】
 {business_model}

@@ -1,6 +1,6 @@
 /**
  * Google Maps / Places API 爬取模組
- * 從 Google Maps 搜尋商家並轉為目標客戶格式
+ * 從 Google Maps 搜尋商家並轉為潛在客戶（CRM）格式
  */
 class GooglePlacesCrawler {
     constructor() {

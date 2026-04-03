@@ -1,4 +1,4 @@
-# 將根目錄誤置的 *.md 移到 docs/swept-from-root/（保留 README 與四份主文件）
+# 將根目錄誤置的 *.md 移到 docs/swept-from-root/（僅保留 README.md）
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 if (-not (Test-Path (Join-Path $root "package.json"))) {
@@ -6,10 +6,7 @@ if (-not (Test-Path (Join-Path $root "package.json"))) {
 }
 Set-Location $root
 $keep = @(
-    "README.md",
-    "LEARNING-PORTFOLIO.md",
-    "CAPABILITY-PERFORMANCE-REPORT.md",
-    "SYSTEM-ARCHITECTURE-DIAGRAMS.md"
+    "README.md"
 )
 $dest = Join-Path $root "docs\swept-from-root"
 New-Item -ItemType Directory -Force -Path $dest | Out-Null

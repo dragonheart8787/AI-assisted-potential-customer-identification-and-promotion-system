@@ -4,7 +4,7 @@
   { "type": "email_sent", "trackingId": "em_demo_3", "ts": "2025-03-10T11:00:00.000Z" },
   { "type": "email_open", "trackingId": "em_demo_1", "ts": "2025-03-10T14:00:00.000Z" },
   { "type": "email_open", "trackingId": "em_demo_2", "ts": "2025-03-10T15:00:00.000Z" },
-  { "type": "link_click", "trackingId": "em_demo_1", "destination": "https://example.com/report", "ts": "2025-03-10T16:00:00.000Z" },
+  { "type": "link_click", "trackingId": "em_demo_1", "destination": "https://github.com/dragonheart8787/AI-assisted-potential-customer-identification-and-promotion-system", "ts": "2025-03-10T16:00:00.000Z" },
   { "type": "email_sent", "trackingId": "em_demo_4", "ts": "2025-03-11T09:00:00.000Z" },
   { "type": "email_open", "trackingId": "em_demo_3", "ts": "2025-03-11T10:00:00.000Z" },
   { "type": "email_open", "trackingId": "em_demo_4", "ts": "2025-03-11T11:00:00.000Z" },
